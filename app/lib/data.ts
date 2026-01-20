@@ -66,7 +66,7 @@ export const events = [
     category: "competition",
     community: "TinkerHub CEV",
     date: "2025-09-24",
-    image: "/images/pookkalam.jpg",
+    image: "/images/cop.jpg",
     description: "Celebrate Onam by coding a digital Pookkalam. Online competition.",
     ai_context: `
       Event: Code a Pookkalam
@@ -87,7 +87,7 @@ export const events = [
     category: "workshop",
     community: "TinkerHub CEV",
     date: "2025-09-29",
-    image: "/images/vibecoding.jpg",
+    image: "/images/vibe.jpg",
     description: "Chill coding session learning backend basics with Supabase.",
     ai_context: `
       Event: Vibe Coding Session

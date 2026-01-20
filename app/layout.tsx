@@ -28,10 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`bg-black ${geistSans.variable} ${geistMono.variable} antialiased overflow-y-hidden overflow-x-hidden`}
       >
-        <ConditionalNavbar />
         <SmoothScroll />
+        <ConditionalNavbar />
         {children}
       </body>
     </html>
