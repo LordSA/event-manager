@@ -34,3 +34,8 @@ It’s not just a list of dates. It’s a **multimodal companion** that understa
 | **Hosting** | Vercel |
 
 ---
+
+## Contributors
+**Shibili Aman TK** : https://github.com/LordSA
+
+**Saivivek M.V** : https://github.com/SaiV-05-18
