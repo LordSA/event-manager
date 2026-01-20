@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Whats @CEV (WhatsAtCEV)
+The definitive contextual bridge for campus events at CEV.
 
-## Getting Started
+[![WE ARE LIVE](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://whatsatcev.shibili.tech)
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📖 Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+In **CEV (College of Engineering Vadakara)**, information is often scattered across 50+ WhatsApp groups. **Whats @CEV** is a high-performance, AI-driven discovery engine that turns "event data" into "campus intuition."
+It’s not just a list of dates. It’s a **multimodal companion** that understands the difference between a formal IEEE seminar and a late-night hostel hack-session.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Key Features
 
-## Learn More
+* **🤖 Intent-Bridge AI Agents:** Every event gets its own specialized AI support agent. Don't read long PDFs—just ask the agent about parking, prerequisites, or the "vibe."
+* **🌉 The Dissonance Gap Solver:** Automatically translates formal faculty event descriptions into informal, student-friendly "intuition."
+* **🪄 Glassmorphic UI:** A futuristic, high-performance interface built with **Next.js 15**, optimized for dark-mode lab environments with a sleek blue/purple aesthetic.
+* **🏎️ Smooth Motion:** Powered by **Lenis** for that buttery-smooth scrolling experience that feels premium.
+* **📱 Mobile-First:** Designed for the student on the move, from the hilltop block to the main gate.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Component | Technology |
+| :--- | :--- |
+| **Frontend** | [Next.js 15](https://nextjs.org/) (App Router, TypeScript) |
+| **Intelligence** | [Google Gemini 3 Flash](https://ai.google.dev/) |
+| **Design** | Tailwind CSS (Glassmorphism + Dark Mode) |
+| **Animations** | Lenis (Smooth Scroll) + Framer Motion |
+| **Formatting** | React Markdown (For AI response styling) |
+| **Hosting** | Vercel |
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
