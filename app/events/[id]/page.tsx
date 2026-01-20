@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { events } from "@/app/lib/data";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
@@ -17,10 +18,10 @@ export default function EventPage() {
 
   if (!event) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
+      <div className="flex flex-col items-center justify-center h-screen bg-[#050505] text-white">
         <h1 className="text-3xl font-bold mb-4">Event Not Found</h1>
-        <Link href="/" className="text-blue-500 hover:underline">
-          Return to Home
+        <Link href="/event" className="text-blue-500 hover:text-blue-400 underline">
+          Return to Events
         </Link>
       </div>
     );
@@ -30,7 +31,7 @@ export default function EventPage() {
     if (!input.trim()) return;
 
     const userMsg = input;
-    setInput(""); // Clear the input box
+    setInput("");
     setChatLog((prev) => [...prev, { role: "user", msg: userMsg }]);
     setLoading(true);
 
@@ -51,61 +52,95 @@ export default function EventPage() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-950 text-white overflow-hidden">
-      {/* LEFT PANEL: Event Details */}
-      <div className="w-full md:w-1/3 border-r border-gray-800 p-8 hidden md:flex flex-col">
-        <Link href="/" className="text-gray-500 hover:text-white mb-8 block">
-          ← Back to Home
+    <div className="flex h-screen bg-[#050505] text-white font-sans overflow-hidden selection:bg-blue-500 selection:text-white">
+      
+      <div className="w-full md:w-[400px] lg:w-[450px] border-r border-gray-800 bg-[#0A0A0A] p-6 hidden md:flex flex-col h-full overflow-y-auto custom-scrollbar">
+        <Link href="/event" className="text-gray-500 hover:text-white mb-8 flex items-center gap-2 text-sm font-medium transition-colors">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          Back to Events
         </Link>
-        <h1 className="text-4xl font-bold mb-4">{event.title}</h1>
-        <p className="text-gray-400 mb-6">{event.description}</p>
+
+        <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-6 border border-gray-800 shadow-2xl shadow-blue-900/10 group">
+          <Image 
+            src={event.image || "/images/placeholder.jpg"} 
+            alt={event.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+          <div className="absolute bottom-4 left-4 right-4">
+             <span className="inline-block px-2 py-1 mb-2 text-xs font-bold text-blue-400 bg-blue-900/30 border border-blue-900/50 rounded uppercase tracking-wider">
+               {event.category}
+             </span>
+          </div>
+        </div>
+
+        <h1 className="text-3xl font-extrabold mb-3 leading-tight">{event.title}</h1>
+        <p className="text-gray-400 text-sm leading-relaxed mb-8 border-b border-gray-800 pb-8">
+          {event.description}
+        </p>
         
-        <div className="mt-auto bg-gray-900 p-4 rounded-lg border border-gray-800">
-          <h3 className="font-bold text-gray-300 mb-2">Event Info</h3>
-          <p className="text-sm text-gray-400">📅 Date: {event.date}</p>
-          <p className="text-sm text-gray-400">🏷️ Type: {event.category}</p>
+        <div className="mt-auto space-y-4">
+          <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 backdrop-blur-sm">
+            <h3 className="font-bold text-gray-200 mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Event Details
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between text-gray-400">
+                <span>Date</span>
+                <span className="text-white font-mono">{event.date}</span>
+              </div>
+              <div className="flex justify-between text-gray-400">
+                <span>Organizer</span>
+                <span className="text-white">{event.community || "N/A"}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* RIGHT PANEL: Chat Interface */}
-      <div className="flex-1 flex flex-col bg-gray-900 h-full">
-        {/* Mobile Header (Only shows on small screens) */}
-        <div className="md:hidden p-4 border-b border-gray-800 bg-black flex justify-between items-center">
-          <Link href="/" className="text-sm text-gray-500">← Back</Link>
-          <span className="font-bold">{event.title}</span>
+      <div className="flex-1 flex flex-col bg-[#050505] relative">
+        
+        <div className="md:hidden p-4 border-b border-gray-800 bg-[#0A0A0A]/80 backdrop-blur-md flex justify-between items-center z-20 absolute top-0 left-0 right-0">
+          <Link href="/events" className="text-sm text-gray-400 hover:text-white">← Back</Link>
+          <span className="font-bold text-sm truncate max-w-[200px]">{event.title}</span>
         </div>
 
-        <div className="p-4 border-b border-gray-800 text-center text-sm text-gray-400 hidden md:block">
-          AI Assistant for {event.title}
+        <div className="p-4 border-b border-gray-800 bg-[#050505]/50 backdrop-blur-sm text-center text-xs font-medium text-gray-500 uppercase tracking-widest hidden md:block">
+          AI Concierge • Live Chat
         </div>
 
-        {/* Chat Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth pt-16 md:pt-8">
           {chatLog.length === 0 && (
-            <div className="text-center text-gray-600 mt-10 px-6">
-              <p>Hello! I am the AI guide for <strong>{event.title}</strong>.</p>
-              <p className="text-sm mt-2">Ask me about the schedule, parking, or rules.</p>
+            <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 space-y-4 opacity-0 animate-fade-in-up" style={{animationFillMode: 'forwards'}}>
+              <div className="w-16 h-16 bg-blue-900/20 rounded-full flex items-center justify-center border border-blue-900/30 mb-2">
+                <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+              </div>
+              <div>
+                <p className="text-lg font-medium text-white">How can I help you?</p>
+                <p className="text-sm mt-1 max-w-xs mx-auto">Ask about the schedule, venue, ticket prices, or specific rules for <span className="text-blue-400">{event.title}</span>.</p>
+              </div>
             </div>
           )}
           
           {chatLog.map((log, i) => (
-            <div key={i} className={`flex ${log.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div key={i} className={`flex ${log.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
               <div
-                className={`max-w-[85%] p-3 rounded-2xl text-sm md:text-base ${
+                className={`max-w-[85%] md:max-w-[70%] p-4 rounded-2xl text-sm md:text-base leading-relaxed shadow-md ${
                   log.role === "user" 
                     ? "bg-blue-600 text-white rounded-br-none" 
-                    : "bg-gray-800 text-gray-200 rounded-bl-none"
+                    : "bg-[#1A1A1A] border border-gray-800 text-gray-200 rounded-bl-none"
                 }`}
               >
                 {log.role === "ai" ? (
                   <ReactMarkdown
                     components={{
-                      // These classes fix the missing bullets and bold text in Tailwind
-                      ul: ({node, ...props}) => <ul className="list-disc ml-5 space-y-1" {...props} />,
-                      ol: ({node, ...props}) => <ol className="list-decimal ml-5 space-y-1" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc ml-4 space-y-1 my-2" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal ml-4 space-y-1 my-2" {...props} />,
                       li: ({node, ...props}) => <li className="pl-1" {...props} />,
                       strong: ({node, ...props}) => <strong className="font-bold text-blue-300" {...props} />,
                       p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                      a: ({node, ...props}) => <a className="text-blue-400 hover:underline" {...props} />
                     }}
                   >
                     {log.msg}
@@ -118,31 +153,37 @@ export default function EventPage() {
           ))}
           
           {loading && (
-            <div className="flex justify-start animate-pulse">
-              <div className="bg-gray-800 text-gray-500 text-xs px-3 py-2 rounded-full ml-2">
-                AI is typing...
+            <div className="flex justify-start">
+              <div className="bg-[#1A1A1A] border border-gray-800 px-4 py-3 rounded-2xl rounded-bl-none flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Input Bar */}
-        <div className="p-4 bg-gray-950 border-t border-gray-800">
-          <div className="flex gap-2 max-w-4xl mx-auto">
-            <input
-              className="flex-1 bg-gray-900 border border-gray-700 rounded-full px-5 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your question..."
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={loading || !input.trim()}
-              className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 rounded-full font-bold transition-colors"
-            >
-              Send
-            </button>
+        <div className="p-4 md:p-6 bg-[#050505] border-t border-gray-800">
+          <div className="max-w-4xl mx-auto relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full opacity-20 group-focus-within:opacity-50 blur transition-opacity duration-500"></div>
+            <div className="relative flex gap-2">
+              <input
+                suppressHydrationWarning
+                className="flex-1 bg-[#0A0A0A] border border-gray-800 rounded-full px-6 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700 transition-all shadow-inner"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your question here..."
+                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              />
+              <button
+                onClick={sendMessage}
+                disabled={loading || !input.trim()}
+                className="bg-white text-black hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed px-6 md:px-8 rounded-full font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-white/10"
+              >
+                <span className="hidden md:inline">Send</span>
+                <span className="md:hidden">→</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

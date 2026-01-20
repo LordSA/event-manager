@@ -142,7 +142,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-900">
         <div className="flex justify-between items-end mb-8">
           <h2 className="text-2xl font-bold text-white">📅 Upcoming Events</h2>
-          <Link href="/events" className="text-blue-500 hover:text-blue-400 text-sm font-medium">View All →</Link>
+          <Link href="/event" className="text-blue-500 hover:text-blue-400 text-sm font-medium">View All →</Link>
         </div>
 
         {upcomingEvents.length > 0 ? (

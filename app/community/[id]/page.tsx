@@ -23,7 +23,6 @@ export default function SingleCommunityPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500 selection:text-white">
-      <Navbar />
 
       {/* --- PART A: HERO SECTION (Community Info) --- */}
       <div className="relative pt-32 pb-12 overflow-hidden border-b border-gray-900">
