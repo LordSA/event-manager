@@ -45,7 +45,7 @@ export const events = [
     category: "hackathon",
     community: "TinkerHub CEV",
     date: "2025-10-08",
-    image: "/images/bitburst.jpg",
+    image: "/images/bit.jpg",
     description: "A 24-hour hackathon focused on solving real-world campus problems.",
     ai_context: `
       Event: Bitburst 2.0
