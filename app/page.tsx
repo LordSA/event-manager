@@ -49,7 +49,7 @@ export default function Home() {
               href="/community" 
               className="px-8 py-4 rounded-full bg-gray-900 border border-gray-700 hover:border-blue-500 text-white font-bold transition-all"
             >
-              Join Community
+              Communities
             </Link>
           </div>
         </div>
