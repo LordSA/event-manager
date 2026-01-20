@@ -4,7 +4,7 @@ export const events = [
     title: "Tech Kerala 2026",
     category: "community",
     date: "2026-02-15",
-    // community: "A",
+    community: "A",
     description: "The biggest tech meetup in Kochi for developers.",
     ai_context: `
       Event: Tech Kerala 2026
@@ -21,7 +21,7 @@ export const events = [
     title: "Neon Music Night",
     category: "entertainment",
     date: "2026-03-01",
-    // community: "B",
+    community: "B",
     description: "Electronic music festival under the stars.",
     ai_context: `
       Event: Neon Music Night
