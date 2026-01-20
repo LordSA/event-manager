@@ -31,7 +31,7 @@ export default function EventPage() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-[#050505] text-white">
         <h1 className="text-3xl font-bold mb-4">Event Not Found</h1>
-        <Link href="/events" className="text-blue-500 hover:text-blue-400 underline">
+        <Link href="/event" className="text-blue-500 hover:text-blue-400 underline">
           Return to Events
         </Link>
       </div>
@@ -66,7 +66,7 @@ export default function EventPage() {
     <div className="flex h-screen bg-[#050505] text-white font-sans overflow-hidden selection:bg-blue-500 selection:text-white">
       
       <div className="w-full md:w-[400px] lg:w-[450px] border-r border-gray-800 bg-[#0A0A0A] p-6 hidden md:flex flex-col h-full overflow-y-auto custom-scrollbar">
-        <Link href="/events" className="text-gray-500 hover:text-white mb-8 flex items-center gap-2 text-sm font-medium transition-colors">
+        <Link href="/event" className="text-gray-500 hover:text-white mb-8 flex items-center gap-2 text-sm font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           Back to Events
         </Link>
@@ -113,7 +113,7 @@ export default function EventPage() {
       <div className="flex-1 flex flex-col bg-[#050505] relative">
         
         <div className="md:hidden p-4 border-b border-gray-800 bg-[#0A0A0A]/80 backdrop-blur-md flex justify-between items-center z-20 absolute top-0 left-0 right-0">
-          <Link href="/events" className="text-sm text-gray-400 hover:text-white">← Back</Link>
+          <Link href="/event" className="text-sm text-gray-400 hover:text-white">← Back</Link>
           <span className="font-bold text-sm truncate max-w-[200px]">{event.title}</span>
         </div>
 
