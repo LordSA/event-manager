@@ -40,7 +40,7 @@ export default function Home() {
           </p>
           <div className="flex justify-center gap-4">
             <Link 
-              href="/events" 
+              href="/event" 
               className="px-8 py-4 rounded-full bg-white text-black font-bold hover:bg-gray-200 transition-all hover:scale-105"
             >
               Browse All Events
