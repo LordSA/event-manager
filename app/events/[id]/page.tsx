@@ -3,6 +3,7 @@ import { useState } from "react";
 import { events } from "@/app/lib/data";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 
 export default function EventPage() {
   const params = useParams();
@@ -96,7 +97,22 @@ export default function EventPage() {
                     : "bg-gray-800 text-gray-200 rounded-bl-none"
                 }`}
               >
-                {log.msg}
+                {log.role === "ai" ? (
+                  <ReactMarkdown
+                    components={{
+                      // These classes fix the missing bullets and bold text in Tailwind
+                      ul: ({node, ...props}) => <ul className="list-disc ml-5 space-y-1" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal ml-5 space-y-1" {...props} />,
+                      li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-bold text-blue-300" {...props} />,
+                      p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                    }}
+                  >
+                    {log.msg}
+                  </ReactMarkdown>
+                ) : (
+                  log.msg
+                )}
               </div>
             </div>
           ))}
