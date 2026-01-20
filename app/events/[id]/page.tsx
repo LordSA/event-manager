@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { events } from "@/app/lib/data";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,14 +13,25 @@ export default function EventPage() {
   const [input, setInput] = useState("");
   const [chatLog, setChatLog] = useState<{ role: string; msg: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const event = events.find((e) => e.id === id);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatLog, loading]);
+
 
   if (!event) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-[#050505] text-white">
         <h1 className="text-3xl font-bold mb-4">Event Not Found</h1>
-        <Link href="/event" className="text-blue-500 hover:text-blue-400 underline">
+        <Link href="/events" className="text-blue-500 hover:text-blue-400 underline">
           Return to Events
         </Link>
       </div>
@@ -55,7 +66,7 @@ export default function EventPage() {
     <div className="flex h-screen bg-[#050505] text-white font-sans overflow-hidden selection:bg-blue-500 selection:text-white">
       
       <div className="w-full md:w-[400px] lg:w-[450px] border-r border-gray-800 bg-[#0A0A0A] p-6 hidden md:flex flex-col h-full overflow-y-auto custom-scrollbar">
-        <Link href="/event" className="text-gray-500 hover:text-white mb-8 flex items-center gap-2 text-sm font-medium transition-colors">
+        <Link href="/events" className="text-gray-500 hover:text-white mb-8 flex items-center gap-2 text-sm font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           Back to Events
         </Link>
@@ -161,6 +172,9 @@ export default function EventPage() {
               </div>
             </div>
           )}
+
+          <div ref={messagesEndRef} />
+          
         </div>
 
         <div className="p-4 md:p-6 bg-[#050505] border-t border-gray-800">

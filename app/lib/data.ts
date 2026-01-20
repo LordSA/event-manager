@@ -111,7 +111,7 @@ export const events = [
     category: "business",
     community: "IEDC CEV",
     date: "2025-11-10",
-    image: "/images/launchpad.jpg",
+    image: "/images/launch.png",
     description: "Pitch your startup idea to investors and win seed grants.",
     ai_context: `
       Event: Launchpad '25
