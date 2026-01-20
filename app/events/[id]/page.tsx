@@ -121,7 +121,7 @@ export default function EventPage() {
           AI Concierge • Live Chat
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth pt-16 md:pt-8">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 space-y-6 pt-16 md:pt-8">
           {chatLog.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 space-y-4 opacity-0 animate-fade-in-up" style={{animationFillMode: 'forwards'}}>
               <div className="w-16 h-16 bg-blue-900/20 rounded-full flex items-center justify-center border border-blue-900/30 mb-2">
