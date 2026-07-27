@@ -1,47 +1,119 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { events } from "@/app/lib/data";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export async function POST(req: Request) {
+interface ChatRequestBody {
+  message: string;
+  systemPrompt?: string;
+  eventId?: string;
+}
+
+async function callGemini(message: string, systemPrompt: string): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('GEMINI_API_KEY is not configured');
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+  const prompt = `System Context:\n${systemPrompt}\n\nUser Question:\n${message}`;
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  return response.text();
+}
+
+async function callGrok(message: string, systemPrompt: string): Promise<string> {
+  const apiKey = process.env.GROK_API_KEY;
+  if (!apiKey) throw new Error('GROK_API_KEY is not configured');
+
+  const res = await fetch('https://api.x.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: 'grok-beta',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: message }
+      ],
+      temperature: 0.7,
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Grok API returned status ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || 'No response from Grok';
+}
+
+async function callOpenRouter(message: string, systemPrompt: string): Promise<string> {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) throw new Error('OPENROUTER_API_KEY is not configured');
+
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': 'https://whatsatcev.shibili.tech',
+      'X-Title': 'Whats @CEV Event Manager',
+    },
+    body: JSON.stringify({
+      model: 'meta-llama/llama-3.1-70b-instruct',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: message }
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`OpenRouter API returned status ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || 'No response from OpenRouter';
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const { message, eventId } = await req.json();
+    const body: ChatRequestBody = await req.json();
+    const { message, systemPrompt = 'You are a helpful campus event assistant.' } = body;
 
-    if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ reply: "Server Error: API Key missing." });
+    if (!message || message.trim() === '') {
+      return NextResponse.json({ error: 'Message cannot be empty' }, { status: 400 });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const event = events.find((e) => e.id === eventId);
-    
-    if (!event) return NextResponse.json({ reply: "Event not found." });
+    let reply = '';
+    let providerUsed = '';
 
-    // --- UPDATED SMART PROMPT ---
-    const systemPrompt = `
-      You are the friendly AI Host for the event "${event.title}".
+    try {
+      reply = await callGemini(message, systemPrompt);
+      providerUsed = 'gemini';
+    } catch (geminiErr: unknown) {
+      try {
+        reply = await callGrok(message, systemPrompt);
+        providerUsed = 'grok';
+      } catch (grokErr: unknown) {
+        try {
+          reply = await callOpenRouter(message, systemPrompt);
+          providerUsed = 'openrouter';
+        } catch (openRouterErr: unknown) {
+          reply = `I am your Event Assistant! Currently running in offline mode. \n\nEvent Context:\n${systemPrompt.slice(0, 300)}...\n\nYour question: "${message}". Please set up AI API keys in .env.local to enable live AI responses.`;
+          providerUsed = 'offline-fallback';
+        }
+      }
+    }
 
-      Here is the OFFICIAL Event Data:
-      """${event.ai_context}"""
-
-      YOUR INSTRUCTIONS:
-      1. **Event Questions:** If the user asks about the event (time, parking, food, rules, etc.), answer STRICTLY based on the Event Data above. Do not make up event details. If the info is missing, say "I don't have that info yet."
-      
-      2. **Normal Conversation:** If the user asks "normal things" (greetings, "how are you", "tell me a joke", or general tech questions), forget the strictness! Be conversational, witty, and helpful. You can use emojis and have a personality.
-
-      3. **Tone:** Always be polite, helpful, and enthusiastic.
-    `;
-
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash", 
-      systemInstruction: systemPrompt 
+    return NextResponse.json({
+      reply,
+      providerUsed,
+      timestamp: new Date().toISOString(),
     });
-
-    const result = await model.generateContent(message);
-    const response = await result.response.text();
-
-    return NextResponse.json({ reply: response });
-
-  } catch (error) {
-    console.error("Gemini Error:", error);
-    return NextResponse.json({ reply: "Sorry, I am having trouble connecting." });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
