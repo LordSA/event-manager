@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.15.0] - 2026-07-27
+
+### 🛠️ Full Edit Access for Super Admins on Reserved Slots
+- **Super Admin Slot Editing (`app/admin/events/page.tsx`):** Added edit modal pre-filling (`openEditModal(evt)`) and update logic. Super Admins (`dev`, `admin`) can view and edit full details, title, category, dates, times, community, publishing status, and full description for any reserved draft slot across all communities.
+
+---
+
 ## [0.14.0] - 2026-07-27
 
 ### 🔒 Cross-Community Visibility Scoping & Edit Protection

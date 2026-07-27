@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle, Clock, ShieldAlert } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle, Clock } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
@@ -18,8 +18,10 @@ export default function EventBookingEnginePage() {
   const [currentUserCommunityId, setCurrentUserCommunityId] = useState<string | null>(null);
   const [currentUserCommunityName, setCurrentUserCommunityName] = useState<string>('');
 
-  // Form State
+  // Modal & Form State
   const [showModal, setShowModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<any | null>(null);
+
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
@@ -63,6 +65,53 @@ export default function EventBookingEnginePage() {
 
   const isSuperAdmin = currentUserRole === 'dev' || currentUserRole === 'admin';
 
+  const openAddModal = () => {
+    setEditingEvent(null);
+    setTitle('');
+    setStartDate(new Date().toISOString().split('T')[0]);
+    setEndDate(new Date().toISOString().split('T')[0]);
+    setStartTime('10:00');
+    setEndTime('16:00');
+    setCategory('Workshop');
+    setCustomCategory('');
+    setSelectedCommunityId(currentUserCommunityId || '');
+    setStatus('closed');
+    setDesc('');
+    setShowModal(true);
+  };
+
+  const openEditModal = (evt: any) => {
+    setEditingEvent(evt);
+    setTitle(evt.title || '');
+    setStartDate(evt.event_date || new Date().toISOString().split('T')[0]);
+    setEndDate(evt.event_date || new Date().toISOString().split('T')[0]);
+    
+    // Parse time slot if available
+    if (evt.time_slot && evt.time_slot.includes('-')) {
+      const parts = evt.time_slot.split('-');
+      setStartTime(parts[0].trim());
+      setEndTime(parts[1].trim());
+    } else {
+      setStartTime('10:00');
+      setEndTime('16:00');
+    }
+
+    const standardCategories = ['Workshop', 'Hackathon', 'Seminar', 'Tech Fest', 'Webinar', 'Competition'];
+    if (standardCategories.includes(evt.category)) {
+      setCategory(evt.category);
+      setCustomCategory('');
+    } else {
+      setCategory('Other');
+      setCustomCategory(evt.category || '');
+    }
+
+    const matchedComm = communities.find((c) => c.name.toLowerCase() === (evt.community || '').toLowerCase());
+    setSelectedCommunityId(matchedComm ? matchedComm.id : (currentUserCommunityId || ''));
+    setStatus(evt.status || 'closed');
+    setDesc(evt.description || '');
+    setShowModal(true);
+  };
+
   const handleBookSlot = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !startDate) return;
@@ -70,45 +119,80 @@ export default function EventBookingEnginePage() {
     const finalCategory = category === 'Other' ? (customCategory || 'Custom Event') : category;
     
     // Determine Community ID
-    const targetCommunityId = isSuperAdmin ? selectedCommunityId : currentUserCommunityId;
+    const targetCommunityId = isSuperAdmin ? (selectedCommunityId || currentUserCommunityId) : currentUserCommunityId;
     const matchedComm = communities.find((c) => c.id === targetCommunityId || c.name === targetCommunityId);
     const commName = matchedComm ? matchedComm.name : (currentUserCommunityName || 'CEV Community');
 
     const formattedTimeSlot = `${startTime} - ${endTime}`;
     const dateRangeString = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
 
-    const newEvt = {
-      id: Date.now().toString(),
-      title,
-      category: finalCategory,
-      community: commName,
-      date: dateRangeString,
-      image: '/images/bit.jpg',
-      description: desc || 'Full event details and schedule.',
-      status,
-      ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
-    };
-
-    setEventsList([newEvt, ...eventsList]);
-
-    try {
-      const supabase = createClient();
-      await supabase.from('events').insert({
+    if (editingEvent) {
+      // Update existing event
+      const updatedEvt = {
+        ...editingEvent,
         title,
         category: finalCategory,
-        event_date: startDate,
-        time_slot: formattedTimeSlot,
+        community: commName,
+        date: dateRangeString,
+        description: desc || 'Full event details and schedule.',
         status,
-        description: desc,
-        system_prompt: desc, // Full Explained description used for AI chatbot context
-        slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
-        community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
-      });
-      setFeedback({ type: 'success', message: 'Slot booked and event details saved successfully!' });
-    } catch (err) {
-      console.error(err);
+        ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
+      };
+
+      setEventsList(eventsList.map((e) => (e.id === editingEvent.id ? updatedEvt : e)));
+
+      try {
+        const supabase = createClient();
+        await supabase.from('events').update({
+          title,
+          category: finalCategory,
+          event_date: startDate,
+          time_slot: formattedTimeSlot,
+          status,
+          description: desc,
+          system_prompt: desc,
+          community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
+        }).eq('id', editingEvent.id);
+        setFeedback({ type: 'success', message: 'Event slot updated successfully!' });
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      // Create new event slot
+      const newEvt = {
+        id: Date.now().toString(),
+        title,
+        category: finalCategory,
+        community: commName,
+        date: dateRangeString,
+        image: '/images/bit.jpg',
+        description: desc || 'Full event details and schedule.',
+        status,
+        ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
+      };
+
+      setEventsList([newEvt, ...eventsList]);
+
+      try {
+        const supabase = createClient();
+        await supabase.from('events').insert({
+          title,
+          category: finalCategory,
+          event_date: startDate,
+          time_slot: formattedTimeSlot,
+          status,
+          description: desc,
+          system_prompt: desc,
+          slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
+          community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
+        });
+        setFeedback({ type: 'success', message: 'Slot booked and event details saved successfully!' });
+      } catch (err) {
+        console.error(err);
+      }
     }
 
+    setEditingEvent(null);
     setTitle('');
     setDesc('');
     setCustomCategory('');
@@ -117,7 +201,6 @@ export default function EventBookingEnginePage() {
   };
 
   const handleToggleStatus = async (id: string, currentStatus: 'closed' | 'live', evtCommunity: string) => {
-    // Check permission
     const isOwnCommunity = isSuperAdmin || (
       currentUserCommunityName &&
       evtCommunity.toLowerCase() === currentUserCommunityName.toLowerCase()
@@ -195,7 +278,7 @@ export default function EventBookingEnginePage() {
           </div>
 
           <button
-            onClick={() => setShowModal(true)}
+            onClick={openAddModal}
             className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/25"
           >
             <Plus className="w-4 h-4" />
@@ -234,7 +317,7 @@ export default function EventBookingEnginePage() {
                 );
                 const isClosed = evt.status === 'closed';
 
-                // CASE 1: Other community's closed (draft) slot -> Show ONLY Date & Time slot booked, hide all details
+                // CASE 1: Other community's closed (draft) slot -> Show ONLY Date & Time slot booked, hide details (Unless Super Admin!)
                 if (!isOwnCommunity && isClosed) {
                   return (
                     <div
@@ -268,7 +351,7 @@ export default function EventBookingEnginePage() {
                   );
                 }
 
-                // CASE 2: Other community's live event -> Show basic info (Name, Category, Date/Time, Community), but NO edit/delete buttons
+                // CASE 2: Other community's live event -> Show basic info, read-only
                 if (!isOwnCommunity && !isClosed) {
                   return (
                     <div
@@ -302,7 +385,7 @@ export default function EventBookingEnginePage() {
                   );
                 }
 
-                // CASE 3: Own community event -> Full visibility, status toggle, and edit/delete controls
+                // CASE 3: Own community OR Super Admin (dev/admin) -> Full visibility, editing, status toggle & deletion controls
                 return (
                   <div
                     key={evt.id}
@@ -347,7 +430,11 @@ export default function EventBookingEnginePage() {
                         <div className="text-[11px] text-slate-500">{evt.date}</div>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+                        <button
+                          onClick={() => openEditModal(evt)}
+                          className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                          title="Edit Event Slot Details"
+                        >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
@@ -367,11 +454,13 @@ export default function EventBookingEnginePage() {
         )}
       </div>
 
-      {/* Booking Modal */}
+      {/* Booking / Editing Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 w-full max-w-xl space-y-5 text-white shadow-2xl my-8">
-            <h3 className="text-xl font-bold border-b border-slate-800 pb-3">Book Date / Time Slot</h3>
+            <h3 className="text-xl font-bold border-b border-slate-800 pb-3">
+              {editingEvent ? 'Modify Event / Reserved Slot' : 'Book Date / Time Slot'}
+            </h3>
             
             <form onSubmit={handleBookSlot} className="space-y-4">
               {/* Event Name */}
@@ -553,7 +642,10 @@ export default function EventBookingEnginePage() {
               <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditingEvent(null);
+                  }}
                   className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-sm"
                 >
                   Cancel
@@ -562,7 +654,7 @@ export default function EventBookingEnginePage() {
                   type="submit"
                   className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-blue-500/20"
                 >
-                  Reserve & Save Slot
+                  {editingEvent ? 'Save Event Changes' : 'Reserve & Save Slot'}
                 </button>
               </div>
             </form>
