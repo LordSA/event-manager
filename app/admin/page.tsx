@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Calendar, Users, Building, ShieldCheck, CheckCircle2, Lock, ArrowUpRight, User } from 'lucide-react';
+import { Calendar, Building, CheckCircle2, Lock, ArrowUpRight, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
@@ -46,7 +46,7 @@ export default function AdminDashboardPage() {
 
   const isScoped = role === 'manager' || role === 'editor';
 
-  // Filter events and communities based on user role
+  // Filter events based on user role
   const filteredEvents = eventsList.filter((e) => {
     if (!isScoped || !communityId) return true;
     const targetComm = communities.find((c) => c.id === communityId);
@@ -71,7 +71,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs uppercase font-semibold">Live Events</span>
@@ -105,15 +105,6 @@ export default function AdminDashboardPage() {
           <p className="text-xs text-slate-500">
             {isScoped ? 'Assigned campus community' : 'IEEE, IEDC, TinkerHub, FOSS, MuLearn'}
           </p>
-        </div>
-
-        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-semibold">Event Assistant</span>
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
-          </div>
-          <div className="text-lg font-bold text-emerald-400">Gemini $\rightarrow$ Grok</div>
-          <p className="text-xs text-slate-500">Automatic multi-provider failover</p>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle, Clock } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
@@ -13,36 +13,80 @@ export default function EventBookingEnginePage() {
 
   const loading = eventsLoading || communitiesLoading;
 
-  const [currentUserRole] = useState<UserRole>('manager');
-  const [userCommunity] = useState('IEEE SB CEV');
+  // Active User Profile Info
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole>('editor');
+  const [currentUserCommunityId, setCurrentUserCommunityId] = useState<string | null>(null);
+  const [currentUserCommunityName, setCurrentUserCommunityName] = useState<string>('');
 
+  // Form State
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('hackathon');
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startTime, setStartTime] = useState('10:00');
+  const [endTime, setEndTime] = useState('16:00');
+
+  const [category, setCategory] = useState('Workshop');
+  const [customCategory, setCustomCategory] = useState('');
   const [selectedCommunityId, setSelectedCommunityId] = useState('');
-  const [date, setDate] = useState('2025-11-20');
   const [status, setStatus] = useState<'closed' | 'live'>('closed');
   const [desc, setDesc] = useState('');
-  const [aiContext, setAiContext] = useState('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  useEffect(() => {
+    const fetchActiveUser = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role, community_id, community:communities(name)')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profile) {
+            setCurrentUserRole(profile.role);
+            setCurrentUserCommunityId(profile.community_id || null);
+            if ((profile as any).community?.name) {
+              setCurrentUserCommunityName((profile as any).community.name);
+            }
+          }
+        }
+      } catch {
+        // Fallback
+      }
+    };
+
+    fetchActiveUser();
+  }, []);
+
+  const isSuperAdmin = currentUserRole === 'dev' || currentUserRole === 'admin';
 
   const handleBookSlot = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !date) return;
+    if (!title || !startDate) return;
 
-    const matchedComm = communities.find((c) => c.id === selectedCommunityId || c.name === selectedCommunityId);
-    const commName = matchedComm ? matchedComm.name : 'CEV Community';
+    const finalCategory = category === 'Other' ? (customCategory || 'Custom Event') : category;
+    
+    // Determine Community ID
+    const targetCommunityId = isSuperAdmin ? selectedCommunityId : currentUserCommunityId;
+    const matchedComm = communities.find((c) => c.id === targetCommunityId || c.name === targetCommunityId);
+    const commName = matchedComm ? matchedComm.name : (currentUserCommunityName || 'CEV Community');
+
+    const formattedTimeSlot = `${startTime} - ${endTime}`;
+    const dateRangeString = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
 
     const newEvt = {
       id: Date.now().toString(),
       title,
-      category,
+      category: finalCategory,
       community: commName,
-      date,
+      date: dateRangeString,
       image: '/images/bit.jpg',
-      description: desc || 'Campus event slot booked.',
+      description: desc || 'Full event details and schedule.',
       status,
-      ai_context: aiContext || `Event: ${title}\nOrganizer: ${commName}\nDate: ${date}`,
+      ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
     };
 
     setEventsList([newEvt, ...eventsList]);
@@ -51,23 +95,23 @@ export default function EventBookingEnginePage() {
       const supabase = createClient();
       await supabase.from('events').insert({
         title,
-        category,
-        event_date: date,
-        time_slot: '10:00 AM - 4:00 PM',
+        category: finalCategory,
+        event_date: startDate,
+        time_slot: formattedTimeSlot,
         status,
         description: desc,
-        system_prompt: aiContext,
+        system_prompt: desc, // Full Explained description used for AI chatbot context
         slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
-        community_id: matchedComm ? matchedComm.id : null,
+        community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
       });
-      setFeedback({ type: 'success', message: 'Slot booked successfully and broadcast to all clients in real time!' });
+      setFeedback({ type: 'success', message: 'Slot booked and event details saved successfully!' });
     } catch (err) {
       console.error(err);
     }
 
     setTitle('');
     setDesc('');
-    setAiContext('');
+    setCustomCategory('');
     setShowModal(false);
     setTimeout(() => setFeedback(null), 4000);
   };
@@ -96,7 +140,7 @@ export default function EventBookingEnginePage() {
       return;
     }
 
-    if (currentUserRole === 'manager' && userCommunity.toLowerCase() !== evtCommunity.toLowerCase()) {
+    if (currentUserRole === 'manager' && currentUserCommunityName.toLowerCase() !== evtCommunity.toLowerCase()) {
       setFeedback({ type: 'error', message: 'RBAC Violation: Managers can only delete events belonging to their own community.' });
       setTimeout(() => setFeedback(null), 4000);
       return;
@@ -115,7 +159,7 @@ export default function EventBookingEnginePage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-20 md:pb-12">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
@@ -130,7 +174,7 @@ export default function EventBookingEnginePage() {
         <div className="flex items-center space-x-3">
           <div className="hidden sm:flex items-center space-x-2 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-emerald-400 font-semibold">
             <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
-            <span>Realtime Broadcast Active</span>
+            <span>Realtime Sync Active</span>
           </div>
 
           <button
@@ -232,67 +276,146 @@ export default function EventBookingEnginePage() {
       {/* Booking Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 w-full max-w-lg space-y-4 text-white shadow-2xl my-8">
-            <h3 className="text-xl font-bold">Book Date / Time Slot</h3>
+          <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 w-full max-w-xl space-y-5 text-white shadow-2xl my-8">
+            <h3 className="text-xl font-bold border-b border-slate-800 pb-3">Book Date / Time Slot</h3>
+            
             <form onSubmit={handleBookSlot} className="space-y-4">
+              {/* Event Name */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Event Title</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Event Name
+                </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. HackCEV 2025"
+                  placeholder="e.g. BitBurst Hackathon 2.0"
                   required
                   className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* Start Date & End Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">Category</label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> Start Date
+                  </label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    required
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="hackathon">Hackathon</option>
-                    <option value="workshop">Workshop</option>
-                    <option value="competition">Competition</option>
-                    <option value="business">Business / Pitch</option>
-                    <option value="robotics">Robotics</option>
-                  </select>
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">Target Date</label>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> End Date
+                  </label>
                   <input
                     type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
                     required
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Organizing Community</label>
-                <select
-                  value={selectedCommunityId}
-                  onChange={(e) => setSelectedCommunityId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-                >
-                  <option value="">-- Select Community --</option>
-                  {communities.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+              {/* Start Time & End Time */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> Start Time
+                  </label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    required
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> End Time
+                  </label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    required
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                  />
+                </div>
               </div>
 
+              {/* Category Selection with 'Other' Custom Box */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Publishing Status</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Category
+                </label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                >
+                  <option value="Workshop">Workshop</option>
+                  <option value="Hackathon">Hackathon</option>
+                  <option value="Seminar">Seminar</option>
+                  <option value="Tech Fest">Tech Fest</option>
+                  <option value="Webinar">Webinar</option>
+                  <option value="Competition">Competition</option>
+                  <option value="Other">Other (Custom Category)</option>
+                </select>
+
+                {category === 'Other' && (
+                  <input
+                    type="text"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    placeholder="Enter custom category name..."
+                    required
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 mt-2"
+                  />
+                )}
+              </div>
+
+              {/* Organizing Community Selection (Only visible for Admins and Devs) */}
+              {isSuperAdmin ? (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Organizing Community
+                  </label>
+                  <select
+                    value={selectedCommunityId}
+                    onChange={(e) => setSelectedCommunityId(e.target.value)}
+                    required
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="">-- Select Organizing Community --</option>
+                    {communities.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
+                  <span className="text-slate-400">Organizing Community:</span>
+                  <span className="font-bold text-cyan-400">{currentUserCommunityName || 'Assigned Community'}</span>
+                </div>
+              )}
+
+              {/* Publishing Status */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Publishing Status
+                </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
@@ -319,12 +442,16 @@ export default function EventBookingEnginePage() {
                 </div>
               </div>
 
+              {/* Full Explained Description of Event */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">System Prompt Context for AI Assistant</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Full Detailed Description of Event
+                </label>
                 <textarea
-                  value={aiContext}
-                  onChange={(e) => setAiContext(e.target.value)}
-                  placeholder="Feed prerequisites, venue rules, food info, prize details for the chatbot..."
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                  placeholder="Explain event details, schedule, venue rules, food info, prize details..."
+                  required
                   className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 h-28"
                 />
               </div>
@@ -339,7 +466,7 @@ export default function EventBookingEnginePage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm shadow-lg shadow-blue-500/20"
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-blue-500/20"
                 >
                   Reserve & Save Slot
                 </button>

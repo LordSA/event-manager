@@ -4,6 +4,23 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.13.0] - 2026-07-27
+
+### 📅 Enhanced Event Creation Form & Auto Community Binding
+- **Start/End Dates & Times (`app/admin/events/page.tsx`):** Added explicit Start Date, End Date, Start Time, and End Time inputs. Formats start/end times into clean time slots (`10:00 AM - 04:00 PM`).
+- **Dynamic Category with Custom 'Other' Option:** Added category dropdown (`Workshop`, `Hackathon`, `Seminar`, `Tech Fest`, `Webinar`, `Competition`, `Other`). Selecting `Other` renders a custom category input box.
+- **Role-Based Community Auto-Binding:** Managers and Editors no longer see the community selection dropdown; their community is automatically retrieved and bound from their profile (`community_id`). Organizing community dropdown selection is reserved exclusively for Super Admins (`dev`, `admin`).
+- **Full Detailed Description Field:** Re-labeled "System Prompt Context for AI Assistant" to **"Full Detailed Description of Event"**.
+
+---
+
+## [0.12.0] - 2026-07-27
+
+### 🎨 Clean Admin Overview Metrics
+- **Removed Event Assistant Card (`app/admin/page.tsx`):** Streamlined Admin Overview layout grid to 3 cards (Live Events, Draft Slots, Community Info), removing the redundant Event Assistant metric card.
+
+---
+
 ## [0.11.0] - 2026-07-27
 
 ### 👤 Community-Scoped Overview, Personal Profile & My Community Edit Mode
