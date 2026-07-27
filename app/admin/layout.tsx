@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, Users, Calendar, Building, LayoutDashboard, LogOut } from 'lucide-react';
+import { Shield, Users, Calendar, Building, LayoutDashboard, User, LogOut } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { createClient } from '@/lib/supabase/client';
 
@@ -38,8 +38,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navItems = [
     { label: 'Overview', href: '/admin', icon: LayoutDashboard, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
     { label: 'Event Booking', href: '/admin/events', icon: Calendar, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
+    { label: 'My Community', href: '/admin/my-community', icon: Building, roleRequired: ['manager', 'editor'] },
     { label: 'User Roles', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin', 'manager'] },
     { label: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin'] },
+    { label: 'My Profile', href: '/admin/profile', icon: User, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
   ];
 
   return (

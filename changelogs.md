@@ -4,6 +4,17 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.11.0] - 2026-07-27
+
+### 👤 Community-Scoped Overview, Personal Profile & My Community Edit Mode
+- **Community-Scoped Admin Overview (`app/admin/page.tsx`):** Filtered metrics and event lists for `manager` and `editor` users to their assigned community entity.
+- **Personal Profile Editing (`/admin/profile` & `/api/profile`):** Built personal profile page allowing all authenticated users (`dev`, `admin`, `manager`, `editor`) to edit their own Full Name, Profile Picture (Avatar URL), and Auth Password.
+- **My Community Editing & Editor Visibility (`/admin/my-community` & `/api/admin/my-community`):**
+  - **Managers (`manager`):** Full editing capabilities for their assigned community's Name, Description, Initials, Accent Color, and Logo.
+  - **Editors (`editor`):** Read-only visibility mode to view their assigned community's profile details and events.
+
+---
+
 ## [0.10.0] - 2026-07-27
 
 ### 🔐 Granular RBAC Permissions & Community-Scoped Admin Views
