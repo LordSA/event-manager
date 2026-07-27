@@ -16,6 +16,35 @@ export interface EventItemData {
   status?: 'closed' | 'live';
 }
 
+function formatSingleTime12(t: string): string {
+  if (!t) return '';
+  const trimmed = t.trim();
+  if (trimmed.toUpperCase().includes('AM') || trimmed.toUpperCase().includes('PM')) {
+    return trimmed;
+  }
+  const parts = trimmed.split(':');
+  if (parts.length < 2) return trimmed;
+  let hours = parseInt(parts[0], 10);
+  const minutes = parts[1];
+  if (isNaN(hours)) return trimmed;
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+
+  const paddedHours = hours < 10 ? `0${hours}` : `${hours}`;
+  return `${paddedHours}:${minutes} ${ampm}`;
+}
+
+function formatTimeSlotTo12Hr(slot?: string): string {
+  if (!slot) return '10:00 AM - 04:00 PM';
+  if (slot.includes('-')) {
+    const parts = slot.split('-');
+    return `${formatSingleTime12(parts[0])} - ${formatSingleTime12(parts[1])}`;
+  }
+  return formatSingleTime12(slot);
+}
+
 interface MasterCalendarProps {
   events: EventItemData[];
   communities: Array<{ id: string; name: string; color: string; initials: string }>;
@@ -159,7 +188,7 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
                 <div className="flex items-center justify-between text-xs pt-1">
                   <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                    {evt.time_slot || '10:00 AM - 04:00 PM'}
+                    {formatTimeSlotTo12Hr(evt.time_slot)}
                   </span>
 
                   <Link

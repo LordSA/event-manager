@@ -7,24 +7,33 @@ import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
 
-function formatTo12HourTime(time24: string): string {
-  if (!time24) return '';
-  if (time24.toUpperCase().includes('AM') || time24.toUpperCase().includes('PM')) {
-    return time24;
+function formatSingleTime12(t: string): string {
+  if (!t) return '';
+  const trimmed = t.trim();
+  if (trimmed.toUpperCase().includes('AM') || trimmed.toUpperCase().includes('PM')) {
+    return trimmed;
   }
-  const parts = time24.split(':');
-  if (parts.length < 2) return time24;
-  
+  const parts = trimmed.split(':');
+  if (parts.length < 2) return trimmed;
   let hours = parseInt(parts[0], 10);
   const minutes = parts[1];
-  if (isNaN(hours)) return time24;
-  
+  if (isNaN(hours)) return trimmed;
+
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours = hours % 12;
   if (hours === 0) hours = 12;
-  
+
   const paddedHours = hours < 10 ? `0${hours}` : `${hours}`;
   return `${paddedHours}:${minutes} ${ampm}`;
+}
+
+function formatTimeSlotTo12Hr(slot?: string): string {
+  if (!slot) return '10:00 AM - 04:00 PM';
+  if (slot.includes('-')) {
+    const parts = slot.split('-');
+    return `${formatSingleTime12(parts[0])} - ${formatSingleTime12(parts[1])}`;
+  }
+  return formatSingleTime12(slot);
 }
 
 export default function EventBookingEnginePage() {
@@ -143,8 +152,8 @@ export default function EventBookingEnginePage() {
     const matchedComm = communities.find((c) => c.id === targetCommunityId || c.name === targetCommunityId);
     const commName = matchedComm ? matchedComm.name : (currentUserCommunityName || 'CEV Community');
 
-    const formattedStartTime = formatTo12HourTime(startTime);
-    const formattedEndTime = formatTo12HourTime(endTime);
+    const formattedStartTime = formatSingleTime12(startTime);
+    const formattedEndTime = formatSingleTime12(endTime);
     const formattedTimeSlot = `${formattedStartTime} - ${formattedEndTime}`;
     const dateRangeString = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
 
@@ -372,7 +381,7 @@ export default function EventBookingEnginePage() {
                             <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
                           </span>
                           <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot || '10:00 AM - 04:00 PM'}
+                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {formatTimeSlotTo12Hr(evt.time_slot)}
                           </span>
                         </div>
                       </div>
@@ -413,7 +422,7 @@ export default function EventBookingEnginePage() {
                             <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
                           </span>
                           <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot || '10:00 AM - 04:00 PM'}
+                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {formatTimeSlotTo12Hr(evt.time_slot)}
                           </span>
                         </div>
                       </div>
@@ -486,7 +495,7 @@ export default function EventBookingEnginePage() {
                           <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
                         </span>
                         <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot || '10:00 AM - 04:00 PM'}
+                          <Clock className="w-3.5 h-3.5 text-cyan-400" /> {formatTimeSlotTo12Hr(evt.time_slot)}
                         </span>
                       </div>
                     </div>

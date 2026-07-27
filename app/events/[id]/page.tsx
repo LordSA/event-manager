@@ -11,6 +11,35 @@ interface PageParams {
   id: string;
 }
 
+function formatSingleTime12(t: string): string {
+  if (!t) return '';
+  const trimmed = t.trim();
+  if (trimmed.toUpperCase().includes('AM') || trimmed.toUpperCase().includes('PM')) {
+    return trimmed;
+  }
+  const parts = trimmed.split(':');
+  if (parts.length < 2) return trimmed;
+  let hours = parseInt(parts[0], 10);
+  const minutes = parts[1];
+  if (isNaN(hours)) return trimmed;
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+
+  const paddedHours = hours < 10 ? `0${hours}` : `${hours}`;
+  return `${paddedHours}:${minutes} ${ampm}`;
+}
+
+function formatTimeSlotTo12Hr(slot?: string): string {
+  if (!slot) return '10:00 AM - 04:00 PM';
+  if (slot.includes('-')) {
+    const parts = slot.split('-');
+    return `${formatSingleTime12(parts[0])} - ${formatSingleTime12(parts[1])}`;
+  }
+  return formatSingleTime12(slot);
+}
+
 export default function DynamicEventPage({ params }: { params: Promise<PageParams> }) {
   const resolvedParams = use(params);
   const eventId = resolvedParams.id;
@@ -141,7 +170,7 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
                   <Clock className="w-5 h-5 text-purple-400" />
                   <div>
                     <div className="text-xs text-slate-500 font-medium">Time Slot</div>
-                    <div className="font-bold">{eventData.time_slot || '10:00 AM - 4:00 PM'}</div>
+                    <div className="font-bold">{formatTimeSlotTo12Hr(eventData.time_slot)}</div>
                   </div>
                 </div>
 

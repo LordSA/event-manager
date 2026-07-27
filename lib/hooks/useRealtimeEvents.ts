@@ -4,6 +4,35 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { EventItemData } from '@/app/components/MasterCalendar';
 
+function formatSingleTime12(t: string): string {
+  if (!t) return '';
+  const trimmed = t.trim();
+  if (trimmed.toUpperCase().includes('AM') || trimmed.toUpperCase().includes('PM')) {
+    return trimmed;
+  }
+  const parts = trimmed.split(':');
+  if (parts.length < 2) return trimmed;
+  let hours = parseInt(parts[0], 10);
+  const minutes = parts[1];
+  if (isNaN(hours)) return trimmed;
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+
+  const paddedHours = hours < 10 ? `0${hours}` : `${hours}`;
+  return `${paddedHours}:${minutes} ${ampm}`;
+}
+
+export function formatTimeSlotTo12Hr(slot?: string): string {
+  if (!slot) return '10:00 AM - 04:00 PM';
+  if (slot.includes('-')) {
+    const parts = slot.split('-');
+    return `${formatSingleTime12(parts[0])} - ${formatSingleTime12(parts[1])}`;
+  }
+  return formatSingleTime12(slot);
+}
+
 export function useRealtimeEvents() {
   const [eventsList, setEventsList] = useState<EventItemData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +52,7 @@ export function useRealtimeEvents() {
           category: item.category || 'workshop',
           community: item.community?.name || 'CEV Community',
           date: item.event_date,
-          time_slot: item.time_slot || '10:00 AM - 04:00 PM',
+          time_slot: formatTimeSlotTo12Hr(item.time_slot),
           description: item.description || '',
           status: item.status as 'closed' | 'live',
           image: item.poster_url || '/images/bit.jpg',
