@@ -2,11 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { communities as defaultCommunities } from '@/app/lib/data';
 import { Community } from '@/types/database.types';
 
 export function useCommunities() {
-  const [communities, setCommunities] = useState<Community[]>([]);
-  const [loading, setLoading] = useState(true);
+  const defaultMapped: Community[] = defaultCommunities.map((c) => ({
+    id: c.id,
+    name: c.name,
+    slug: c.id,
+    logo_url: null,
+    description: c.description,
+    color: c.color,
+    initials: c.initials,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }));
+
+  const [communities, setCommunities] = useState<Community[]>(defaultMapped);
+  const [loading, setLoading] = useState(false);
 
   const fetchCommunities = async () => {
     try {
@@ -16,11 +29,11 @@ export function useCommunities() {
         .select('*')
         .order('name', { ascending: true });
 
-      if (!error && data) {
+      if (!error && data && data.length > 0) {
         setCommunities(data);
       }
-    } catch (err) {
-      console.error('Error fetching communities from Supabase:', err);
+    } catch {
+      // Keep default mapped communities
     } finally {
       setLoading(false);
     }
@@ -29,17 +42,21 @@ export function useCommunities() {
   useEffect(() => {
     fetchCommunities();
 
-    const supabase = createClient();
-    const channel = supabase
-      .channel('realtime-communities')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'communities' }, () => {
-        fetchCommunities();
-      })
-      .subscribe();
+    try {
+      const supabase = createClient();
+      const channel = supabase
+        .channel('realtime-communities')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'communities' }, () => {
+          fetchCommunities();
+        })
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    } catch {
+      // Ignore channel errors in development
+    }
   }, []);
 
   return { communities, setCommunities, loading, refetch: fetchCommunities };

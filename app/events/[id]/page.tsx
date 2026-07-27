@@ -3,7 +3,7 @@
 import React, { useState, useEffect, use } from 'react';
 import EventAiDrawer from '@/app/components/EventAiDrawer';
 import { createClient } from '@/lib/supabase/client';
-import { Calendar, MapPin, ExternalLink, Bot, ArrowLeft, Clock, Award, Users } from 'lucide-react';
+import { Calendar, MapPin, ExternalLink, MessageSquare, ArrowLeft, Clock, Award, Users } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -32,7 +32,6 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
         if (!error && data) {
           setEventData(data);
         } else {
-          // Fallback structure if record not found
           setEventData({
             id: eventId,
             title: 'Campus Event Session',
@@ -45,8 +44,8 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
             redirect_url: 'https://forms.google.com',
           });
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
+        // Fallback
       } finally {
         setLoading(false);
       }
@@ -58,14 +57,13 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
   if (loading || !eventData) {
     return (
       <div className="min-h-screen bg-[#05070E] text-white flex items-center justify-center p-8 text-sm">
-        Loading event details from database...
+        Loading event details...
       </div>
     );
   }
 
   const communityName = eventData.community?.name || eventData.community || 'CEV Community';
 
-  // Structured Data (JSON-LD) for SEO
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Event',
@@ -92,7 +90,6 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
 
   return (
     <div className="min-h-screen bg-[#05070E] text-white flex flex-col relative">
-      {/* Inject SEO JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -109,11 +106,9 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
 
         {/* Hero Card */}
         <div className="relative rounded-3xl bg-slate-900/60 border border-slate-800 p-6 sm:p-10 overflow-hidden shadow-2xl space-y-8">
-          {/* Background Ambient Glow */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Info Column */}
             <div className="lg:col-span-7 space-y-6">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-800 text-cyan-400">
@@ -133,7 +128,6 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
                 {eventData.description}
               </p>
 
-              {/* Event Metadata Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-sm text-slate-300">
                 <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center space-x-3">
                   <Calendar className="w-5 h-5 text-blue-400" />
@@ -168,7 +162,6 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
                 <a
                   href={eventData.redirect_url || 'https://forms.google.com'}
@@ -184,13 +177,12 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
                   onClick={() => setAiDrawerOpen(true)}
                   className="flex-1 py-4 px-6 rounded-2xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-base border border-slate-800 flex items-center justify-center space-x-2 transition-all group"
                 >
-                  <Bot className="w-5 h-5 text-cyan-400 group-hover:rotate-12 transition-transform" />
-                  <span>Event AI Assistant</span>
+                  <MessageSquare className="w-5 h-5 text-cyan-400" />
+                  <span>Event Assistant</span>
                 </button>
               </div>
             </div>
 
-            {/* Right Poster Column */}
             <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
               <Image
                 src={eventData.poster_url || eventData.image || '/images/bit.jpg'}
@@ -204,7 +196,6 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
         </div>
       </main>
 
-      {/* Interactive AI Drawer */}
       <EventAiDrawer
         isOpen={aiDrawerOpen}
         onClose={() => setAiDrawerOpen(false)}

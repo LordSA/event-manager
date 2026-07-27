@@ -2,11 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { events as defaultEvents } from '@/app/lib/data';
 import { EventItemData } from '@/app/components/MasterCalendar';
 
 export function useRealtimeEvents() {
-  const [eventsList, setEventsList] = useState<EventItemData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const defaultMapped: EventItemData[] = defaultEvents.map((e) => ({
+    id: e.id,
+    title: e.title,
+    category: e.category,
+    community: e.community,
+    date: e.date,
+    description: e.description,
+    status: 'live' as const,
+    image: e.image,
+  }));
+
+  const [eventsList, setEventsList] = useState<EventItemData[]>(defaultMapped);
+  const [loading, setLoading] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -16,7 +28,7 @@ export function useRealtimeEvents() {
         .select('*, community:communities(name)')
         .order('event_date', { ascending: true });
 
-      if (!error && data) {
+      if (!error && data && data.length > 0) {
         const mapped: EventItemData[] = data.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -29,8 +41,8 @@ export function useRealtimeEvents() {
         }));
         setEventsList(mapped);
       }
-    } catch (err) {
-      console.error('Error fetching events from Supabase:', err);
+    } catch {
+      // Keep default mapped events on error
     } finally {
       setLoading(false);
     }
@@ -39,17 +51,21 @@ export function useRealtimeEvents() {
   useEffect(() => {
     fetchEvents();
 
-    const supabase = createClient();
-    const channel = supabase
-      .channel('realtime-events')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, () => {
-        fetchEvents();
-      })
-      .subscribe();
+    try {
+      const supabase = createClient();
+      const channel = supabase
+        .channel('realtime-events')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, () => {
+          fetchEvents();
+        })
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    } catch {
+      // Ignore channel errors in development
+    }
   }, []);
 
   return { eventsList, setEventsList, loading, refetch: fetchEvents };

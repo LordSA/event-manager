@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Send, X, Sparkles, AlertCircle } from 'lucide-react';
+import { MessageSquare, Send, X, HelpCircle } from 'lucide-react';
 
 interface EventAiDrawerProps {
   isOpen: boolean;
@@ -29,7 +29,7 @@ export default function EventAiDrawer({
     {
       id: '1',
       sender: 'ai',
-      text: `Hi! I'm the AI Assistant for **${eventTitle}**. Ask me anything about the schedule, venue, prerequisites, or rules!`,
+      text: `Welcome! I can help you with details regarding **${eventTitle}**. Ask me about the venue, timings, prerequisites, or rules!`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -68,19 +68,17 @@ export default function EventAiDrawer({
           id: (Date.now() + 1).toString(),
           sender: 'ai',
           text: data.reply,
-          provider: data.providerUsed,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
         setMessages((prev) => [...prev, aiMsg]);
       } else {
         throw new Error(data.error || 'Failed to get response');
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
-        text: 'Sorry, I ran into an error getting the answer. Please try asking again!',
+        text: 'Sorry, I ran into an issue retrieving that detail. Please try asking again!',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -113,13 +111,13 @@ export default function EventAiDrawer({
             {/* Header */}
             <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl text-white shadow-lg shadow-blue-500/20">
-                  <Bot className="w-5 h-5" />
+                <div className="p-2.5 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-xl text-white shadow-lg shadow-blue-500/20">
+                  <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white flex items-center gap-1.5">
-                    Event AI Companion
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    Event Assistant
+                    <HelpCircle className="w-4 h-4 text-cyan-400" />
                   </h3>
                   <p className="text-xs text-slate-400 truncate max-w-[240px]">
                     {eventTitle}
@@ -153,13 +151,8 @@ export default function EventAiDrawer({
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.text}</p>
-                    <div className="mt-2 flex items-center justify-between text-[10px] opacity-70 gap-2">
-                      <span>{msg.timestamp}</span>
-                      {msg.provider && (
-                        <span className="uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
-                          {msg.provider}
-                        </span>
-                      )}
+                    <div className="mt-2 text-[10px] opacity-70 text-right">
+                      {msg.timestamp}
                     </div>
                   </div>
                 </motion.div>
@@ -168,7 +161,7 @@ export default function EventAiDrawer({
               {loading && (
                 <div className="flex items-center space-x-2 text-slate-400 text-xs bg-slate-900/60 p-3 rounded-xl border border-slate-800 w-fit">
                   <div className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                  <span>Thinking with multi-provider AI pipeline...</span>
+                  <span>Retrieving response...</span>
                 </div>
               )}
             </div>

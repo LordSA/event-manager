@@ -7,6 +7,11 @@ interface ChatRequestBody {
   eventId?: string;
 }
 
+const FRIENDLY_PERSONA_PROMPT = `You are a super friendly, warm, and knowledgeable campus buddy at CEV. 
+Talk like a real friend giving helpful advice — casual, clear, practical, and enthusiastic. 
+Don't sound robotic, corporate, or formal. Be direct, cheerful, and super helpful!
+Use the following event details to answer:`;
+
 async function callGemini(message: string, systemPrompt: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('GEMINI_API_KEY is not configured');
@@ -14,7 +19,7 @@ async function callGemini(message: string, systemPrompt: string): Promise<string
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-  const prompt = `System Context:\n${systemPrompt}\n\nUser Question:\n${message}`;
+  const prompt = `${FRIENDLY_PERSONA_PROMPT}\n\nEvent Context:\n${systemPrompt}\n\nUser Question:\n${message}`;
   const result = await model.generateContent(prompt);
   const response = await result.response;
   return response.text();
@@ -33,7 +38,7 @@ async function callGrok(message: string, systemPrompt: string): Promise<string> 
     body: JSON.stringify({
       model: 'grok-beta',
       messages: [
-        { role: 'system', content: systemPrompt },
+        { role: 'system', content: `${FRIENDLY_PERSONA_PROMPT}\n${systemPrompt}` },
         { role: 'user', content: message }
       ],
       temperature: 0.7,
@@ -63,7 +68,7 @@ async function callOpenRouter(message: string, systemPrompt: string): Promise<st
     body: JSON.stringify({
       model: 'meta-llama/llama-3.1-70b-instruct',
       messages: [
-        { role: 'system', content: systemPrompt },
+        { role: 'system', content: `${FRIENDLY_PERSONA_PROMPT}\n${systemPrompt}` },
         { role: 'user', content: message }
       ],
     }),
@@ -80,7 +85,7 @@ async function callOpenRouter(message: string, systemPrompt: string): Promise<st
 export async function POST(req: NextRequest) {
   try {
     const body: ChatRequestBody = await req.json();
-    const { message, systemPrompt = 'You are a helpful campus event assistant.' } = body;
+    const { message, systemPrompt = 'General CEV campus event session' } = body;
 
     if (!message || message.trim() === '') {
       return NextResponse.json({ error: 'Message cannot be empty' }, { status: 400 });
@@ -92,16 +97,16 @@ export async function POST(req: NextRequest) {
     try {
       reply = await callGemini(message, systemPrompt);
       providerUsed = 'gemini';
-    } catch (geminiErr: unknown) {
+    } catch {
       try {
         reply = await callGrok(message, systemPrompt);
         providerUsed = 'grok';
-      } catch (grokErr: unknown) {
+      } catch {
         try {
           reply = await callOpenRouter(message, systemPrompt);
           providerUsed = 'openrouter';
-        } catch (openRouterErr: unknown) {
-          reply = `I am your Event Assistant! Currently running in offline mode. \n\nEvent Context:\n${systemPrompt.slice(0, 300)}...\n\nYour question: "${message}". Please set up AI API keys in .env.local to enable live AI responses.`;
+        } catch {
+          reply = `Hey there! 👋 Here's what I know about this event:\n\n${systemPrompt.slice(0, 300)}...\n\nFeel free to ask me anything else about venue, timing, or prerequisites!`;
           providerUsed = 'offline-fallback';
         }
       }

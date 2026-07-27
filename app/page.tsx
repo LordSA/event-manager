@@ -2,7 +2,7 @@
 
 import React from 'react';
 import HeroCanvas from '@/app/components/HeroCanvas';
-import { ArrowRight, Sparkles, Calendar, ShieldCheck, Zap, Bot } from 'lucide-react';
+import { ArrowRight, Calendar, MessageSquare, ShieldCheck, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
@@ -21,33 +21,25 @@ export default function LandingHomePage() {
         {/* Hero Section */}
         <section className="text-center space-y-8 max-w-4xl mx-auto pt-8">
           <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-950/80 border border-blue-800/60 text-xs font-bold text-cyan-400 backdrop-blur-md shadow-lg shadow-blue-500/10">
-            <Sparkles className="w-4 h-4 text-cyan-400" />
-            <span>Multi-Community Publishing & AI Discovery</span>
+            <Calendar className="w-4 h-4 text-cyan-400" />
+            <span>Campus Event & Workshop Directory</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight">
-            The Campus Event Hub for <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">Every Community</span>
+            The Central Event Hub for <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">CEV Campus</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Centralizing event discovery across IEEE, IEDC, TinkerHub, FOSS, and MuLearn. Slot booking for community leads, and instant AI assistance for attendees.
+            Discover technical sessions, hackathons, and workshops organized by IEEE, IEDC, TinkerHub, FOSS Club, and MuLearn.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div className="flex justify-center pt-4">
             <Link
               href="/events"
-              className="w-full sm:w-auto py-4 px-8 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-95 text-white font-bold text-base shadow-xl shadow-blue-500/25 flex items-center justify-center space-x-3 transition-all"
+              className="py-4 px-10 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-95 text-white font-bold text-base shadow-xl shadow-blue-500/25 flex items-center justify-center space-x-3 transition-all"
             >
               <span>Explore Events</span>
               <ArrowRight className="w-5 h-5" />
-            </Link>
-
-            <Link
-              href="/login"
-              className="w-full sm:w-auto py-4 px-8 rounded-2xl bg-slate-900/80 hover:bg-slate-800 text-white font-semibold text-base border border-slate-800 backdrop-blur-md transition-all flex items-center justify-center space-x-2"
-            >
-              <ShieldCheck className="w-5 h-5 text-purple-400" />
-              <span>Admin / Lead Portal</span>
             </Link>
           </div>
         </section>
@@ -58,29 +50,29 @@ export default function LandingHomePage() {
             <div className="p-3 w-fit rounded-2xl bg-blue-950 text-blue-400 border border-blue-800">
               <Calendar className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold text-white">Slot Booking Engine</h3>
+            <h3 className="text-xl font-bold text-white">Centralized Schedule</h3>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Reserve dates in `closed` draft state to prevent date collisions across campus communities before publishing `live`.
+              Never miss a workshop or hackathon. Real-time scheduling across all campus organizations in one unified calendar.
             </p>
           </div>
 
           <div className="p-8 rounded-3xl bg-slate-900/50 border border-slate-800 backdrop-blur-xl space-y-4 hover:border-purple-500/50 transition-colors">
             <div className="p-3 w-fit rounded-2xl bg-purple-950 text-purple-400 border border-purple-800">
-              <Bot className="w-6 h-6" />
+              <MessageSquare className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold text-white">Multi-Provider Fallback AI</h3>
+            <h3 className="text-xl font-bold text-white">Contextual Assistant</h3>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Resilient query pipeline fallback (Gemini $\rightarrow$ Grok $\rightarrow$ OpenRouter) answering attendee questions about prerequisites and rules.
+              Get instant answers regarding venue locations, timing slots, prerequisites, and registration details for every event.
             </p>
           </div>
 
           <div className="p-8 rounded-3xl bg-slate-900/50 border border-slate-800 backdrop-blur-xl space-y-4 hover:border-cyan-500/50 transition-colors">
             <div className="p-3 w-fit rounded-2xl bg-cyan-950 text-cyan-400 border border-cyan-800">
-              <Zap className="w-6 h-6" />
+              <Layers className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold text-white">Dynamic RBAC Security</h3>
+            <h3 className="text-xl font-bold text-white">Multi-Community Network</h3>
             <p className="text-sm text-slate-400 leading-relaxed">
-              4-tier permissions matrix (Dev, Admin, Manager, Editor) secured at Supabase Row-Level Security layer.
+              Seamlessly browse initiatives and student achievements organized by campus clubs and student branches.
             </p>
           </div>
         </section>
@@ -93,7 +85,7 @@ export default function LandingHomePage() {
           </div>
 
           {communitiesLoading ? (
-            <div className="p-8 text-slate-500 text-sm">Loading communities from database...</div>
+            <div className="p-8 text-slate-500 text-sm">Loading communities...</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
               {communities.map((c) => (
@@ -122,7 +114,7 @@ export default function LandingHomePage() {
           </div>
 
           {eventsLoading ? (
-            <div className="p-8 text-slate-500 text-sm">Loading live events from database...</div>
+            <div className="p-8 text-slate-500 text-sm">Loading live events...</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {eventsList.slice(0, 3).map((evt) => (
@@ -153,7 +145,7 @@ export default function LandingHomePage() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500 relative z-10">
-        <p>Whats @CEV - Multi-Community Event Publishing Platform</p>
+        <p>Whats @CEV - Campus Event Management Platform</p>
       </footer>
     </div>
   );
