@@ -23,6 +23,7 @@ export function useRealtimeEvents() {
           category: item.category || 'workshop',
           community: item.community?.name || 'CEV Community',
           date: item.event_date,
+          time_slot: item.time_slot || '10:00 AM - 04:00 PM',
           description: item.description || '',
           status: item.status as 'closed' | 'live',
           image: item.poster_url || '/images/bit.jpg',

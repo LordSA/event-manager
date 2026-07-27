@@ -134,6 +134,7 @@ export default function EventBookingEnginePage() {
         category: finalCategory,
         community: commName,
         date: dateRangeString,
+        time_slot: formattedTimeSlot,
         description: desc || 'Full event details and schedule.',
         status,
         ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
@@ -165,6 +166,7 @@ export default function EventBookingEnginePage() {
         category: finalCategory,
         community: commName,
         date: dateRangeString,
+        time_slot: formattedTimeSlot,
         image: '/images/bit.jpg',
         description: desc || 'Full event details and schedule.',
         status,
@@ -341,17 +343,22 @@ export default function EventBookingEnginePage() {
                         </div>
                       </div>
 
-                      <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-                        <div>
-                          <div className="font-semibold text-slate-300">{evt.community}</div>
-                          <div className="text-[11px] text-slate-500">{evt.date}</div>
+                      <div className="pt-4 border-t border-slate-800/80 space-y-1">
+                        <div className="font-semibold text-slate-300 text-xs">{evt.community}</div>
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                          <span className="flex items-center gap-1">
+                            <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
+                          </span>
+                          <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot || '10:00 AM - 04:00 PM'}
+                          </span>
                         </div>
                       </div>
                     </div>
                   );
                 }
 
-                // CASE 2: Other community's live event -> Show basic info, read-only
+                // CASE 2: Other community's live event -> Show basic info, read-only with Start to End Time
                 if (!isOwnCommunity && !isClosed) {
                   return (
                     <div
@@ -374,18 +381,25 @@ export default function EventBookingEnginePage() {
                         </div>
                       </div>
 
-                      <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                        <div>
-                          <div className="font-semibold text-slate-200">{evt.community}</div>
-                          <div className="text-[11px] text-slate-500">{evt.date}</div>
+                      <div className="pt-4 border-t border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-semibold text-slate-200">{evt.community}</span>
+                          <span className="text-[10px] text-slate-500 italic">Read-only</span>
                         </div>
-                        <div className="text-[10px] text-slate-500 italic">Read-only (Other Community)</div>
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                          <span className="flex items-center gap-1">
+                            <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
+                          </span>
+                          <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot || '10:00 AM - 04:00 PM'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
                 }
 
-                // CASE 3: Own community OR Super Admin (dev/admin) -> Full visibility, editing, status toggle & deletion controls
+                // CASE 3: Own community OR Super Admin (dev/admin) -> Full visibility, Start/End Time badge, editing & deletion controls
                 return (
                   <div
                     key={evt.id}
@@ -424,26 +438,34 @@ export default function EventBookingEnginePage() {
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                      <div>
-                        <div className="font-semibold text-slate-200">{evt.community}</div>
-                        <div className="text-[11px] text-slate-500">{evt.date}</div>
+                    <div className="pt-4 border-t border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-200">{evt.community}</span>
+                        <div className="flex items-center space-x-1">
+                          <button
+                            onClick={() => openEditModal(evt)}
+                            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                            title="Edit Event Slot Details"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(evt.id, evt.community)}
+                            className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
+                            title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <button
-                          onClick={() => openEditModal(evt)}
-                          className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
-                          title="Edit Event Slot Details"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(evt.id, evt.community)}
-                          className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
-                          title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+
+                      <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span className="flex items-center gap-1">
+                          <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
+                        </span>
+                        <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot || '10:00 AM - 04:00 PM'}
+                        </span>
                       </div>
                     </div>
                   </div>

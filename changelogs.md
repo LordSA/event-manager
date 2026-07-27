@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.16.0] - 2026-07-27
+
+### ⏱️ Start to End Time Slot Visibility Across All Cards
+- **Time Slot Badges (`app/admin/events/page.tsx` & `app/components/MasterCalendar.tsx`):** Rendered cyan Clock icon + time slot badges (`10:00 AM - 04:00 PM`) on all event cards across the Event Booking Console, Master Schedule timeline, and community filters.
+- **Hook Data Mapping (`lib/hooks/useRealtimeEvents.ts`):** Mapped `time_slot` property from Supabase database rows into React state.
+
+---
+
 ## [0.15.0] - 2026-07-27
 
 ### 🛠️ Full Edit Access for Super Admins on Reserved Slots
