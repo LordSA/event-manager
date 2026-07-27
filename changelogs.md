@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.14.0] - 2026-07-27
+
+### 🔒 Cross-Community Visibility Scoping & Edit Protection
+- **Cross-Community Closed Slots (`app/admin/events/page.tsx`):** For draft (`closed`) slots belonging to other communities, managers and editors can ONLY see the Date and Time slot reservation badge (`Slot Booked`). All event details, titles, descriptions, and action buttons are completely hidden to prevent leaking unannounced event plans.
+- **Cross-Community Live Events (`app/admin/events/page.tsx`):** For published (`live`) events belonging to other communities, managers and editors can see basic event information (Title, Category, Date/Time, Community Name), but Edit and Delete action controls are strictly disabled/removed.
+
+---
+
 ## [0.13.0] - 2026-07-27
 
 ### 📅 Enhanced Event Creation Form & Auto Community Binding

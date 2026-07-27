@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle, Clock } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle, Clock, ShieldAlert } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
@@ -116,7 +116,19 @@ export default function EventBookingEnginePage() {
     setTimeout(() => setFeedback(null), 4000);
   };
 
-  const handleToggleStatus = async (id: string, currentStatus: 'closed' | 'live') => {
+  const handleToggleStatus = async (id: string, currentStatus: 'closed' | 'live', evtCommunity: string) => {
+    // Check permission
+    const isOwnCommunity = isSuperAdmin || (
+      currentUserCommunityName &&
+      evtCommunity.toLowerCase() === currentUserCommunityName.toLowerCase()
+    );
+
+    if (!isOwnCommunity) {
+      setFeedback({ type: 'error', message: 'RBAC Violation: You can only modify events belonging to your own community.' });
+      setTimeout(() => setFeedback(null), 4000);
+      return;
+    }
+
     const nextStatus = currentStatus === 'live' ? 'closed' : 'live';
 
     setEventsList(
@@ -140,7 +152,12 @@ export default function EventBookingEnginePage() {
       return;
     }
 
-    if (currentUserRole === 'manager' && currentUserCommunityName.toLowerCase() !== evtCommunity.toLowerCase()) {
+    const isOwnCommunity = isSuperAdmin || (
+      currentUserCommunityName &&
+      evtCommunity.toLowerCase() === currentUserCommunityName.toLowerCase()
+    );
+
+    if (!isOwnCommunity) {
       setFeedback({ type: 'error', message: 'RBAC Violation: Managers can only delete events belonging to their own community.' });
       setTimeout(() => setFeedback(null), 4000);
       return;
@@ -210,64 +227,141 @@ export default function EventBookingEnginePage() {
                 No events or reserved slots found in database. Click &quot;Book Date / Time Slot&quot; to reserve your first event.
               </div>
             ) : (
-              eventsList.map((evt) => (
-                <div
-                  key={evt.id}
-                  className={`p-6 rounded-2xl bg-slate-900/60 border ${
-                    evt.status === 'closed' ? 'border-amber-800/60' : 'border-slate-800'
-                  } space-y-4 flex flex-col justify-between`}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
-                        {evt.category}
-                      </span>
-                      <button
-                        onClick={() => handleToggleStatus(evt.id, evt.status || 'live')}
-                        className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
-                          evt.status === 'closed'
-                            ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
-                            : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
-                        }`}
-                      >
-                        {evt.status === 'closed' ? (
-                          <>
-                            <Lock className="w-3 h-3" /> Closed (Draft Slot)
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle2 className="w-3 h-3" /> Live (Published)
-                          </>
-                        )}
-                      </button>
+              eventsList.map((evt) => {
+                const isOwnCommunity = isSuperAdmin || (
+                  currentUserCommunityName &&
+                  evt.community.toLowerCase() === currentUserCommunityName.toLowerCase()
+                );
+                const isClosed = evt.status === 'closed';
+
+                // CASE 1: Other community's closed (draft) slot -> Show ONLY Date & Time slot booked, hide all details
+                if (!isOwnCommunity && isClosed) {
+                  return (
+                    <div
+                      key={evt.id}
+                      className="p-6 rounded-2xl bg-slate-900/40 border border-amber-950/80 space-y-4 flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase font-bold text-amber-400 px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-800 flex items-center gap-1">
+                            <Lock className="w-3 h-3" /> Slot Booked (Reserved)
+                          </span>
+                        </div>
+
+                        <div>
+                          <h4 className="text-lg font-bold text-slate-300 flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-amber-400" /> Time Slot Reserved
+                          </h4>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Reserved by another campus community to prevent scheduling conflicts. Details hidden until live.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <div>
+                          <div className="font-semibold text-slate-300">{evt.community}</div>
+                          <div className="text-[11px] text-slate-500">{evt.date}</div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // CASE 2: Other community's live event -> Show basic info (Name, Category, Date/Time, Community), but NO edit/delete buttons
+                if (!isOwnCommunity && !isClosed) {
+                  return (
+                    <div
+                      key={evt.id}
+                      className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
+                            {evt.category}
+                          </span>
+                          <span className="text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> Live
+                          </span>
+                        </div>
+
+                        <div>
+                          <h4 className="text-xl font-bold text-white">{evt.title}</h4>
+                          <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <div>
+                          <div className="font-semibold text-slate-200">{evt.community}</div>
+                          <div className="text-[11px] text-slate-500">{evt.date}</div>
+                        </div>
+                        <div className="text-[10px] text-slate-500 italic">Read-only (Other Community)</div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // CASE 3: Own community event -> Full visibility, status toggle, and edit/delete controls
+                return (
+                  <div
+                    key={evt.id}
+                    className={`p-6 rounded-2xl bg-slate-900/60 border ${
+                      isClosed ? 'border-amber-800/60' : 'border-slate-800'
+                    } space-y-4 flex flex-col justify-between`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
+                          {evt.category}
+                        </span>
+                        <button
+                          onClick={() => handleToggleStatus(evt.id, evt.status || 'live', evt.community)}
+                          className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
+                            isClosed
+                              ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
+                              : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
+                          }`}
+                        >
+                          {isClosed ? (
+                            <>
+                              <Lock className="w-3 h-3" /> Closed (Draft Slot)
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle2 className="w-3 h-3" /> Live (Published)
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <div>
+                        <h4 className="text-xl font-bold text-white">{evt.title}</h4>
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
+                      </div>
                     </div>
 
-                    <div>
-                      <h4 className="text-xl font-bold text-white">{evt.title}</h4>
-                      <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
+                    <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                      <div>
+                        <div className="font-semibold text-slate-200">{evt.community}</div>
+                        <div className="text-[11px] text-slate-500">{evt.date}</div>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(evt.id, evt.community)}
+                          className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
+                          title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                    <div>
-                      <div className="font-semibold text-slate-200">{evt.community}</div>
-                      <div className="text-[11px] text-slate-500">{evt.date}</div>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(evt.id, evt.community)}
-                        className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
-                        title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         )}
