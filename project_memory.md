@@ -1,9 +1,9 @@
 # Program Memory: Multi-Community Event Management Platform
 
 ## 1. Executive Summary & Overview
-This repository contains **Whats @CEV / Event Manager**, a high-performance multi-community event management, publishing, and discovery platform tailored for campus organizations and technical communities (e.g., IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
+This repository contains **Whats @CEV / Event Manager**, a high-performance multi-community event management, publishing, and discovery platform tailored for campus organizations and technical communities (IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
 
-The platform addresses the challenge of scattered event information by centralizing scheduling, slot reservation, public discovery, and real-time contextual event support via an intelligent **Event AI Assistant** powered by a multi-provider fallback architecture.
+The platform centralizes scheduling, slot reservation, public discovery, and real-time contextual event support via an intelligent **Event Assistant** powered by a multi-provider fallback architecture with a friendly peer-to-peer campus buddy persona.
 
 ---
 
@@ -16,21 +16,21 @@ The platform addresses the challenge of scattered event information by centraliz
 
 ### Backend, Database & Authentication
 * **Database:** [Supabase](https://supabase.com/) (PostgreSQL with Row Level Security - RLS)
-* **Authentication:** Supabase Auth (Passwordless Email OTP & Session Management)
-* **RBAC:** Dynamic role validation in database RLS policies and Next.js middleware / server components
+* **Authentication:** Supabase Auth (6-Digit Email OTP verification & Next.js Edge Proxy Session Management)
+* **Auth Callback:** `/auth/callback/route.ts` (Handles code exchange for session creation)
+* **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
+* **RBAC:** Dynamic role validation in database RLS policies and Next.js `proxy.ts` edge middleware
 
 ### Animation, Visual Effects & Motion Engine
 * **Smooth Scrolling:** `Lenis` (buttery smooth scrolling integration)
-* **3D Graphics & Shaders:** `Three.js` & `WebGL` for interactive background particle fields and 3D event card depth
-* **Motion & Micro-interactions:** `Framer Motion` (modal drawers, UI entry transitions) and `GSAP` + `ScrollTrigger` (timeline pinning, visual scroll reveals)
+* **3D Graphics & Shaders:** `Three.js` & `WebGL` for GPU particle starfield hero canvas (`HeroCanvas.tsx`)
+* **Motion & Drawer Physics:** `Framer Motion` (Event Assistant slide-over drawer `EventAiDrawer.tsx`)
 
-### Multi-Provider Fallback AI Architecture
-The platform features an automated sequential fallback engine for event queries:
-1. **Primary Provider:** Google Gemini API (`@google/generative-ai`)
+### Multi-Provider Fallback AI Architecture & Friendly Persona
+The platform features an automated sequential fallback engine for event queries with a warm, conversational peer tone:
+1. **Primary Provider:** Google Gemini API (`gemini-2.5-flash`)
 2. **Secondary Provider (Fallback 1):** Grok API (xAI)
-3. **Tertiary Provider (Fallback 2):** OpenRouter API (Accessing Llama 3 / Mistral)
-
-If a provider fails due to rate limits or outage, the request automatically fails over to the next provider seamlessly.
+3. **Tertiary Provider (Fallback 2):** OpenRouter API (`meta-llama/llama-3.1-70b-instruct`)
 
 ---
 
@@ -41,37 +41,54 @@ event-manager/
 ├── .agents/
 │   └── AGENTS.md                  # Developer agent workspace rules & guidelines
 ├── app/
-│   ├── (main)/                    # Core app layout group
 │   ├── api/
 │   │   └── chat/
-│   │       └── route.ts           # Multi-provider fallback AI chat endpoint
-│   ├── community/
-│   │   ├── page.tsx               # Community listing overview
-│   │   └── [id]/
-│   │       └── page.tsx           # Individual community public page & events
+│   │       └── route.ts           # Multi-provider fallback AI chat endpoint with friendly peer persona
+│   ├── auth/
+│   │   └── callback/
+│   │       └── route.ts           # Supabase Auth code exchange handler
+│   ├── admin/
+│   │   ├── layout.tsx             # Protected Admin layout with desktop sidebar & mobile sub-pills
+│   │   ├── page.tsx               # Admin Dashboard overview metrics
+│   │   ├── communities/
+│   │   │   └── page.tsx           # Community CRUD & profile bio editor
+│   │   ├── events/
+│   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine
+│   │   └── users/
+│   │       └── page.tsx           # Super Admin User Accounts & Role Management console
 │   ├── components/
-│   │   ├── ConNav.tsx             # Contextual Sub-navigation bar
-│   │   ├── Navbar.tsx             # Main header with brand & auth entry
+│   │   ├── ConNav.tsx             # Global conditional Navbar wrapper
+│   │   ├── EventAiDrawer.tsx      # Framer Motion Event Assistant slide-over drawer
+│   │   ├── HeroCanvas.tsx         # Three.js / WebGL particle canvas
+│   │   ├── MasterCalendar.tsx     # 3-way view switcher (Calendar, List, Community Filter)
+│   │   ├── Navbar.tsx             # Single global header & Mobile App UI bottom nav bar
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
-│   ├── event/
-│   │   └── page.tsx               # Public event listing with filter controls
 │   ├── events/
+│   │   ├── page.tsx               # Public events discovery page
 │   │   └── [id]/
-│   │       └── page.tsx           # Dynamic event detail page with AI modal
-│   ├── lib/
-│   │   └── data.ts                # Mock dataset & default fallback data definitions
-│   ├── favicon.ico
-│   ├── globals.css                # Custom CSS variables, glassmorphic utilities
-│   ├── layout.tsx                 # Root layout with font definitions & Lenis
-│   └── page.tsx                   # Interactive hero landing page
+│   │       └── page.tsx           # Dynamic event detail page with SEO JSON-LD schema
+│   ├── login/
+│   │   └── page.tsx               # 6-Digit Email OTP Authentication page
+│   ├── page.tsx                   # Public hero landing page
+│   ├── globals.css
+│   └── layout.tsx                 # Root layout with Lenis & ConditionalNavbar
+├── lib/
+│   ├── auth/
+│   │   └── rbac.ts                # Dynamic RBAC matrix permission rules
+│   ├── hooks/
+│   │   ├── useCommunities.ts      # Real-time Supabase hook for communities with fallbacks
+│   │   ├── useProfiles.ts         # Real-time Supabase hook for user profiles
+│   │   └── useRealtimeEvents.ts   # Real-time Supabase hook for events with fallbacks
+│   └── supabase/
+│       ├── client.ts              # Browser Supabase client creator
+│       ├── middleware.ts          # Edge cookie session updater & protected route proxy
+│       └── server.ts              # Server Supabase client creator
 ├── public/                        # Static assets, posters, images
-├── changelogs.md                  # Project versioning and change history
+├── proxy.ts                       # Next.js 16 Edge proxy middleware entry point
+├── changelogs.md                  # Versioning history & release notes
 ├── design.md                      # Design system, color tokens, motion rules
-├── project_memory.md              # Complete technical program memory (this file)
-├── README.md                      # Technical installation & developer guide
-├── package.json                   # Project dependencies and script scripts
-├── tsconfig.json                  # TypeScript compiler settings
-└── next.config.ts                 # Next.js configuration settings
+├── project_memory.md              # Technical program memory (this file)
+└── README.md                      # Technical setup & developer guide
 ```
 
 ---
@@ -114,10 +131,10 @@ Stores metadata for each participating campus community.
 ### `events` Table
 Holds all event details, slot reservations, and AI knowledge context.
 * `id` (`UUID`, PK, DEFAULT `gen_random_uuid()`)
-* `community_id` (`UUID`, FK -> `communities.id` ON DELETE CASCADE, NOT NULL)
+* `community_id` (`UUID`, FK -> `communities.id` ON DELETE CASCADE, NULLABLE)
 * `slug` (`TEXT`, UNIQUE, NOT NULL)
 * `title` (`TEXT`, NOT NULL)
-* `category` (`TEXT`, e.g., `'hackathon'`, `'workshop'`, `'competition'`)
+* `category` (`TEXT`, DEFAULT `'workshop'`)
 * `poster_url` (`TEXT`)
 * `event_date` (`DATE`, NOT NULL)
 * `time_slot` (`TEXT`, NOT NULL, e.g., `'10:00 AM - 4:00 PM'`)
@@ -129,43 +146,10 @@ Holds all event details, slot reservations, and AI knowledge context.
 * `created_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
 * `updated_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
 
-### `ai_configs` Table
-Server-side configuration table for managing AI provider priority routing and API keys fallback.
-* `id` (`UUID`, PK, DEFAULT `gen_random_uuid()`)
-* `provider_name` (`TEXT`, UNIQUE, e.g., `'gemini'`, `'grok'`, `'openrouter'`)
-* `priority_order` (`INT`, NOT NULL)
-* `is_active` (`BOOLEAN`, DEFAULT true)
-* `api_key_env_var` (`TEXT`, NOT NULL)
-* `model_name` (`TEXT`, NOT NULL)
-
 ---
 
-## 6. Key Workflows & Engines
-
-### A. Slot Booking & Publishing Engine
-1. **Slot Reservation (`closed` state):**
-   * Managers and Editors select a target date and time slot for their event.
-   * The system saves the record in `closed` status.
-   * Internal calendar view renders `closed` events for **all authenticated community managers**, allowing cross-community conflict checks and avoiding date overlaps.
-   * **Public front-end hides `closed` events completely.**
-2. **Event Publication (`live` state):**
-   * Once event logistics are confirmed, a Manager or Editor toggles status to `live`.
-   * Row-Level Security policies permit public SELECT queries for `live` events.
-   * Event surfaces immediately across public search, calendar view, and community pages.
-
-### B. Multi-Provider AI Fallback Pipeline
-When a user asks a question on an event page (`/events/[slug]`):
-1. Client sends request to `/api/chat` with `eventId` and user query message.
-2. Server retrieves event details and `system_prompt`.
-3. Server executes API request chain:
-   * **Step 1:** Call **Google Gemini 3 Flash** API using `system_prompt` + user query.
-   * **Step 2:** If Gemini returns an error or times out, trigger fallback to **Grok API** (xAI).
-   * **Step 3:** If Grok returns an error, trigger fallback to **OpenRouter API**.
-4. Formatted Markdown response is streamed or returned to the client UI drawer.
-
----
-
-## 7. SEO & Performance Guidelines
-* **SEO Metadata:** Every page exports dynamic metadata via Next.js `generateMetadata` including OpenGraph cards, Twitter cards, canonical tags, and structured JSON-LD schemas.
-* **Scroll Performance:** Lenis smooth scrolling initialized on top of Next.js root layout.
-* **Graphic Optimization:** Three.js and WebGL canvas elements rendered with requestAnimationFrame throttling and automatic canvas resize observers.
+## 6. Security, Authentication & Proxy Scoping
+* **Next.js 16 Edge Proxy (`proxy.ts`):** Automatically refreshes auth session cookies on every incoming request.
+* **Protected Routes:** Intercepts unauthenticated requests to `/admin/*` and redirects to `/login?redirectTo=...`.
+* **Super Admin Role Enforcement:** `/admin/users` is restricted to `dev` and `admin` roles only.
+* **Direct 6-Digit OTP Login:** Managers enter their email on `/login`, receive a 6-digit OTP code, and verify directly in the UI. Supabase template is configured to output `{{ .Token }}`.

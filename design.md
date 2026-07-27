@@ -12,7 +12,7 @@ The design language of **Whats @CEV / Event Manager** is crafted to provide a fu
 * **Surface Background:** `#0B0F19` / `rgba(15, 23, 42, 0.65)` (Glass Panel Dark)
 * **Border Color:** `rgba(255, 255, 255, 0.08)` (Subtle Metallic Rim)
 * **Primary Accent:** `#3B82F6` (Electric Blue)
-* **Secondary Accent:** `#8B5CF6` (Vibrant Purple)
+* **Secondary Accent:** `#06B6D4` (Electric Cyan)
 * **Text Primary:** `#F8FAFC` (Pure Slate 50)
 * **Text Muted:** `#94A3B8` (Slate 400)
 
@@ -26,7 +26,21 @@ Each community carries a distinct gradient signature used across cards, badges, 
 
 ---
 
-## 3. Typography & Hierarchy
+## 3. Navigation & Mobile App UI Architecture
+
+### A. Desktop Header Navigation
+* Sticky top header (`sticky top-0 z-40`) with translucent backdrop blur (`backdrop-blur-xl bg-[#05070E]/90`).
+* Clean brand logo, direct links (`Home`, `Discover Events`, `Communities`), and conditional manager badge + logout controls when authenticated.
+
+### B. Mobile App Bottom Navigation Bar
+* On mobile viewports (`< 768px`), the navigation transfers to a native mobile app-style bottom bar (`fixed bottom-0 left-0 right-0 z-50 md:hidden`).
+* **Surface:** Translucent glassmorphism panel (`bg-[#05070E]/95 backdrop-blur-2xl border-t border-slate-800/80`).
+* **Active Indicator:** Gradient accent bar (`w-8 h-1 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400`) positioned above the active tab icon.
+* **Layout Spacing:** Main page containers incorporate safe bottom padding (`pb-20 md:pb-0`) to prevent bottom navigation overlap.
+
+---
+
+## 4. Typography & Hierarchy
 
 ### Font Family
 * **Primary Sans:** Inter / System UI Font Stack (`var(--font-sans)`)
@@ -35,57 +49,22 @@ Each community carries a distinct gradient signature used across cards, badges, 
 ### Scale & Weight Matrix
 | Element | Size | Weight | Tracking | Utility Class |
 | :--- | :--- | :--- | :--- | :--- |
-| **Hero Title** | 3.5rem - 5rem (56-80px) | 800 (Extrabold) | `-0.03em` | `text-5xl md:text-7xl font-extrabold` |
+| **Hero Title** | 3.5rem - 5rem (56-80px) | 800 (Extrabold) | `-0.03em` | `text-4xl sm:text-6xl lg:text-7xl font-extrabold` |
 | **Section Heading**| 2.25rem - 3rem (36-48px) | 700 (Bold) | `-0.02em` | `text-3xl md:text-5xl font-bold` |
-| **Card Title** | 1.25rem - 1.5rem (20-24px)| 600 (Semibold) | `-0.01em` | `text-xl md:text-2xl font-semibold` |
+| **Card Title** | 1.25rem - 1.5rem (20-24px)| 600 (Semibold) | `-0.01em` | `text-xl font-bold` |
 | **Body Lead** | 1.125rem (18px) | 400 / 500 | Normal | `text-lg text-slate-300` |
 | **Body Regular** | 0.875rem - 1rem (14-16px)| 400 (Regular) | Normal | `text-sm text-slate-400` |
 | **Badge / Tag** | 0.75rem (12px) | 600 (Semibold) | `0.05em` | `text-xs uppercase tracking-wider` |
 
 ---
 
-## 4. Animation & Motion Architecture
+## 5. Animation & Visual Shader Architecture
 
-### A. Lenis Smooth Scroll Engine
-Scroll inertia is driven by `Lenis` for smooth momentum-based navigation:
-* `lerp`: `0.1` (Smooth fluid interpolation)
-* `duration`: `1.2s`
-* `smoothWheel`: `true`
-* `wheelMultiplier`: `1.0`
+### A. Three.js & WebGL Visual Effects
+* **GPU Particle Starfield (`HeroCanvas.tsx`):** Renders 200 animated particles with color interpolation between electric blue, vibrant purple, and cyan. Smooth camera drift reacts to mouse movement.
 
-### B. Three.js & WebGL Visual Effects
-* **Interactive Background Canvas:** A GPU-accelerated WebGL particle starfield and organic floating noise sphere rendered behind the hero landing section.
-* **Dynamic Card Shader Depth:** Mouse movement computes subtle 3D tilt transformations (`rotateX`, `rotateY`) and glint specular highlights across event cards.
+### B. Framer Motion UI Interactions
+* **Event Assistant Slide-Over Drawer (`EventAiDrawer.tsx`):** Physics spring transition (`type: "spring"`, `damping: 25`, `stiffness: 250`). Slide-in from right (`x: '100%'` to `x: 0`).
 
-### C. Framer Motion UI Interactions
-* **Page Transitions:** Staggered opacity (`0` to `1`) and vertical translate (`y: 20` to `y: 0`).
-* **AI Drawer Modal:** Slide-in spring physics (`type: "spring"`, `stiffness: 300`, `damping: 30`).
-* **Hover Micro-Interactions:** Scales card element by `1.02` with an expanded box-shadow glow.
-
-### D. GSAP & ScrollTrigger Engine
-* **Timeline Animations:** Text reveal triggers synced with vertical scroll depth.
-* **Sticky Section Pinning:** Event discovery filter panel pins seamlessly while scrolling through event cards.
-
----
-
-## 5. UI Layout Components & Patterns
-
-### A. Glassmorphism Card Utility
-```css
-.glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-```
-
-### B. Glowing Button Pattern
-Interactive call-to-actions feature dual-layer ambient lighting:
-* Outer gradient shadow ring (`blur-md opacity-50 group-hover:opacity-100 transition-opacity`)
-* Solid inner glass capsule (`bg-slate-900/90 hover:bg-slate-800/90 text-white`)
-
-### C. Event AI Modal Component Layout
-* Responsive side drawer on desktop / bottom sheet on mobile devices.
-* Conversational message bubbles styled with distinct user slate bubbles vs AI gradient-bordered markdown bubbles.
+### C. Lenis Smooth Scroll Engine
+* Momentum-based fluid scroll (`lerp: 0.1`) integrated globally across Next.js root layout.
