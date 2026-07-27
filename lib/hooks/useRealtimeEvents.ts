@@ -2,23 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { events as defaultEvents } from '@/app/lib/data';
 import { EventItemData } from '@/app/components/MasterCalendar';
 
 export function useRealtimeEvents() {
-  const defaultMapped: EventItemData[] = defaultEvents.map((e) => ({
-    id: e.id,
-    title: e.title,
-    category: e.category,
-    community: e.community,
-    date: e.date,
-    description: e.description,
-    status: 'live' as const,
-    image: e.image,
-  }));
-
-  const [eventsList, setEventsList] = useState<EventItemData[]>(defaultMapped);
-  const [loading, setLoading] = useState(false);
+  const [eventsList, setEventsList] = useState<EventItemData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchEvents = async () => {
     try {
@@ -28,7 +16,7 @@ export function useRealtimeEvents() {
         .select('*, community:communities(name)')
         .order('event_date', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         const mapped: EventItemData[] = data.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -41,8 +29,8 @@ export function useRealtimeEvents() {
         }));
         setEventsList(mapped);
       }
-    } catch {
-      // Keep default mapped events on error
+    } catch (err) {
+      console.error('Failed to fetch events from Supabase:', err);
     } finally {
       setLoading(false);
     }
@@ -64,7 +52,7 @@ export function useRealtimeEvents() {
         supabase.removeChannel(channel);
       };
     } catch {
-      // Ignore channel errors in development
+      // Ignore channel errors
     }
   }, []);
 

@@ -3,11 +3,15 @@
 import React from 'react';
 import { Calendar, Users, Building, ShieldCheck, CheckCircle2, Lock, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
-import { events, communities } from '@/app/lib/data';
+import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
+import { useCommunities } from '@/lib/hooks/useCommunities';
 
 export default function AdminDashboardPage() {
-  const liveCount = events.length;
-  const draftCount = 2; // Simulated draft reserved slots
+  const { eventsList } = useRealtimeEvents();
+  const { communities } = useCommunities();
+
+  const liveCount = eventsList.filter((e) => e.status === 'live').length;
+  const draftCount = eventsList.filter((e) => e.status === 'closed').length;
 
   return (
     <div className="space-y-8">
@@ -50,7 +54,7 @@ export default function AdminDashboardPage() {
 
         <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-semibold">AI Fallback Engine</span>
+            <span className="text-xs uppercase font-semibold">Event Assistant</span>
             <ShieldCheck className="w-4 h-4 text-purple-400" />
           </div>
           <div className="text-lg font-bold text-emerald-400">Gemini $\rightarrow$ Grok</div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, X, HelpCircle } from 'lucide-react';
 
@@ -35,6 +35,14 @@ export default function EventAiDrawer({
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll to bottom when messages or loading state changes
+  useEffect(() => {
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, loading, isOpen]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,8 +140,8 @@ export default function EventAiDrawer({
               </button>
             </div>
 
-            {/* Chat Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+            {/* Chat Body (data-lenis-prevent prevents background page scrolling) */}
+            <div data-lenis-prevent className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}
@@ -164,6 +172,9 @@ export default function EventAiDrawer({
                   <span>Looking that up for you...</span>
                 </div>
               )}
+
+              {/* Scroll End Anchor */}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Input Bar */}

@@ -1,21 +1,21 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
-import { communities } from "@/app/lib/data";
+import { useCommunities } from "@/lib/hooks/useCommunities";
 
 export default function CommunityPage() {
+  const { communities, loading } = useCommunities();
   const [search, setSearch] = useState("");
 
   const filteredCommunities = communities.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.description.toLowerCase().includes(search.toLowerCase())
+    (c.description || "").toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500 selection:text-white">
-      
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500 selection:text-white pb-20 md:pb-12">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        
         <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16 border-b border-gray-800 pb-8">
           <div className="flex-1">
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
@@ -40,53 +40,50 @@ export default function CommunityPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredCommunities.map((comm) => (
-            <Link key={comm.id} href={`/community/${comm.id}`} className="group block h-full">
-              <div className="bg-[#0A0A0A] border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all duration-300 h-full flex flex-col hover:shadow-2xl hover:shadow-blue-900/10">
-                
-                <div className="relative w-full aspect-[1080/1350] overflow-hidden">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${comm.color} opacity-80 group-hover:opacity-100 transition-all duration-700 ease-out`} />
-                  
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-9xl font-extrabold text-white/20 group-hover:text-white/30 transition-colors select-none">
-                        {comm.initials}
-                    </span>
-                  </div>
+        {loading ? (
+          <div className="p-12 text-center text-gray-500">Loading campus communities...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredCommunities.map((comm) => (
+              <Link key={comm.id} href={`/community/${comm.id}`} className="group block h-full">
+                <div className="bg-[#0A0A0A] border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all duration-300 h-full flex flex-col hover:shadow-2xl hover:shadow-blue-900/10">
+                  <div className="relative w-full aspect-[1080/1350] overflow-hidden">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${comm.color || 'from-blue-600 to-cyan-400'} opacity-80 group-hover:opacity-100 transition-all duration-700 ease-out`} />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-9xl font-extrabold text-white/20 group-hover:text-white/30 transition-colors select-none">
+                        {comm.initials || comm.name.slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/60 to-transparent"></div>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/60 to-transparent"></div>
-
-                  <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col">
+                    <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col">
                       <h2 className="text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition-colors drop-shadow-lg">
                         {comm.name}
                       </h2>
-                      
                       <p className="text-gray-300 text-sm leading-relaxed mb-6 line-clamp-3">
                         {comm.description}
                       </p>
-
                       <div className="flex items-center justify-between pt-4 border-t border-gray-700/50 mt-auto">
                         <span className="text-xs font-medium text-gray-400">
                           View Profile
                         </span>
                         <span className="flex items-center gap-2 text-sm font-semibold text-white group-hover:gap-3 transition-all">
-                          Join Us <span className="text-blue-500">→</span>
+                          Explore <span className="text-blue-500">&rarr;</span>
                         </span>
                       </div>
+                    </div>
                   </div>
                 </div>
+              </Link>
+            ))}
 
+            {filteredCommunities.length === 0 && (
+              <div className="col-span-full py-20 text-center text-gray-500">
+                No communities found matching &quot;{search}&quot;
               </div>
-            </Link>
-          ))}
-
-          {filteredCommunities.length === 0 && (
-            <div className="col-span-full py-20 text-center text-gray-500">
-              No communities found matching "{search}"
-            </div>
-          )}
-        </div>
-
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

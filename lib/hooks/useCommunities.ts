@@ -2,24 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { communities as defaultCommunities } from '@/app/lib/data';
 import { Community } from '@/types/database.types';
 
 export function useCommunities() {
-  const defaultMapped: Community[] = defaultCommunities.map((c) => ({
-    id: c.id,
-    name: c.name,
-    slug: c.id,
-    logo_url: null,
-    description: c.description,
-    color: c.color,
-    initials: c.initials,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }));
-
-  const [communities, setCommunities] = useState<Community[]>(defaultMapped);
-  const [loading, setLoading] = useState(false);
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchCommunities = async () => {
     try {
@@ -29,11 +16,11 @@ export function useCommunities() {
         .select('*')
         .order('name', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         setCommunities(data);
       }
-    } catch {
-      // Keep default mapped communities
+    } catch (err) {
+      console.error('Failed to fetch communities from Supabase:', err);
     } finally {
       setLoading(false);
     }
@@ -55,7 +42,7 @@ export function useCommunities() {
         supabase.removeChannel(channel);
       };
     } catch {
-      // Ignore channel errors in development
+      // Ignore channel errors
     }
   }, []);
 

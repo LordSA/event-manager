@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.7.0] - 2026-07-27
+
+### 💬 Chat Auto-Scroll Fix & Complete Static Data Cleanup
+- **Chat Drawer Auto-Scrolling (`EventAiDrawer.tsx`):** Implemented smooth auto-scrolling to bottom (`scrollIntoView({ behavior: 'smooth' })`) on new message sent/received. Added `data-lenis-prevent` to the chat container so user scrolling inside the chat drawer never causes background Lenis page scrolling.
+- **Static Data Removal (`app/lib/data.ts`):** Emptied static mock data arrays. All pages ([app/community/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/community/page.tsx), [app/community/[id]/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/community/[id]/page.tsx), [app/event/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/event/page.tsx), [app/admin/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/page.tsx)) now query dynamic Supabase database tables directly.
+
+---
+
 ## [0.6.0] - 2026-07-27
 
 ### 🤝 Friendly Peer Persona & Direct 6-Digit OTP Auth
