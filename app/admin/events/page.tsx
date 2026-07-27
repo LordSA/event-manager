@@ -1,15 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, ShieldAlert } from 'lucide-react';
-import { events as initialEvents, communities } from '@/app/lib/data';
+import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle } from 'lucide-react';
+import { communities } from '@/app/lib/data';
 import { UserRole } from '@/types/database.types';
+import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
+import { createClient } from '@/lib/supabase/client';
 
 export default function EventBookingEnginePage() {
-  const [eventList, setEventList] = useState(
-    initialEvents.map((e) => ({ ...e, status: 'live' as 'closed' | 'live' }))
-  );
-  // Simulated current user role & community (Defaults to Manager for IEEE SB CEV)
+  const { eventsList, setEventsList, loading } = useRealtimeEvents();
+
+  // Simulated active user role & community
   const [currentUserRole] = useState<UserRole>('manager');
   const [userCommunity] = useState('IEEE SB CEV');
 
@@ -21,8 +22,9 @@ export default function EventBookingEnginePage() {
   const [status, setStatus] = useState<'closed' | 'live'>('closed');
   const [desc, setDesc] = useState('');
   const [aiContext, setAiContext] = useState('');
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  const handleBookSlot = (e: React.FormEvent) => {
+  const handleBookSlot = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !date) return;
 
@@ -38,34 +40,78 @@ export default function EventBookingEnginePage() {
       ai_context: aiContext || `Event: ${title}\nOrganizer: ${community}\nDate: ${date}`,
     };
 
-    setEventList([newEvt, ...eventList]);
+    // Optimistic UI update
+    setEventsList([newEvt, ...eventsList]);
+
+    try {
+      const supabase = createClient();
+      await supabase.from('events').insert({
+        title,
+        category,
+        event_date: date,
+        time_slot: '10:00 AM - 4:00 PM',
+        status,
+        description: desc,
+        system_prompt: aiContext,
+        slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
+        community_id: '00000000-0000-0000-0000-000000000000',
+      });
+      setFeedback({ type: 'success', message: 'Slot booked successfully and broadcast to all clients in real time!' });
+    } catch (err) {
+      console.error(err);
+    }
+
     setTitle('');
     setDesc('');
     setAiContext('');
     setShowModal(false);
+    setTimeout(() => setFeedback(null), 4000);
   };
 
-  const handleToggleStatus = (id: string) => {
-    setEventList(
-      eventList.map((e) =>
-        e.id === id ? { ...e, status: e.status === 'live' ? 'closed' : 'live' } : e
-      )
+  const handleToggleStatus = async (id: string, currentStatus: 'closed' | 'live') => {
+    const nextStatus = currentStatus === 'live' ? 'closed' : 'live';
+
+    // Optimistic update
+    setEventsList(
+      eventsList.map((e) => (e.id === id ? { ...e, status: nextStatus } : e))
     );
+
+    try {
+      const supabase = createClient();
+      await supabase.from('events').update({ status: nextStatus }).eq('id', id);
+      setFeedback({ type: 'success', message: `Event status toggled to ${nextStatus}!` });
+    } catch (err) {
+      console.error(err);
+    }
+    setTimeout(() => setFeedback(null), 4000);
   };
 
-  const handleDelete = (id: string, evtCommunity: string) => {
+  const handleDelete = async (id: string, evtCommunity: string) => {
     // RBAC Enforced: Editors CANNOT delete events
     if (currentUserRole === 'editor') {
-      alert('RBAC Violation: Editors are not permitted to delete events. Contact your Community Manager.');
-      return;
-    }
-    // Managers can only delete own community events
-    if (currentUserRole === 'manager' && userCommunity.toLowerCase() !== evtCommunity.toLowerCase()) {
-      alert('RBAC Violation: Managers can only delete events belonging to their own community.');
+      setFeedback({ type: 'error', message: 'RBAC Violation: Editors are not permitted to delete events.' });
+      setTimeout(() => setFeedback(null), 4000);
       return;
     }
 
-    setEventList(eventList.filter((e) => e.id !== id));
+    // Managers can only delete own community events
+    if (currentUserRole === 'manager' && userCommunity.toLowerCase() !== evtCommunity.toLowerCase()) {
+      setFeedback({ type: 'error', message: 'RBAC Violation: Managers can only delete events belonging to their own community.' });
+      setTimeout(() => setFeedback(null), 4000);
+      return;
+    }
+
+    // Optimistic update
+    setEventsList(eventsList.filter((e) => e.id !== id));
+
+    try {
+      const supabase = createClient();
+      await supabase.from('events').delete().eq('id', id);
+      setFeedback({ type: 'success', message: 'Event deleted successfully.' });
+    } catch (err) {
+      console.error(err);
+    }
+    setTimeout(() => setFeedback(null), 4000);
   };
 
   return (
@@ -81,78 +127,100 @@ export default function EventBookingEnginePage() {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/25"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Book Date / Time Slot</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <div className="hidden sm:flex items-center space-x-2 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-emerald-400 font-semibold">
+            <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
+            <span>Realtime Broadcast Active</span>
+          </div>
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/25"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Book Date / Time Slot</span>
+          </button>
+        </div>
       </div>
+
+      {feedback && (
+        <div className={`p-4 rounded-xl text-xs font-semibold flex items-center gap-2 border ${
+          feedback.type === 'success' ? 'bg-emerald-950/80 border-emerald-800 text-emerald-300' : 'bg-red-950/80 border-red-800 text-red-300'
+        }`}>
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{feedback.message}</span>
+        </div>
+      )}
 
       {/* Master Event List */}
       <div className="space-y-4">
         <h3 className="text-lg font-bold text-white">Master Schedule & Conflict Matrix</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {eventList.map((evt) => (
-            <div
-              key={evt.id}
-              className={`p-6 rounded-2xl bg-slate-900/60 border ${
-                evt.status === 'closed' ? 'border-amber-800/60' : 'border-slate-800'
-              } space-y-4 flex flex-col justify-between`}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
-                    {evt.category}
-                  </span>
-                  <button
-                    onClick={() => handleToggleStatus(evt.id)}
-                    className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
-                      evt.status === 'closed'
-                        ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
-                        : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
-                    }`}
-                  >
-                    {evt.status === 'closed' ? (
-                      <>
-                        <Lock className="w-3 h-3" /> Closed (Draft Slot)
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-3 h-3" /> Live (Published)
-                      </>
-                    )}
-                  </button>
+        {loading ? (
+          <div className="p-8 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
+            Synchronizing realtime slots...
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {eventsList.map((evt) => (
+              <div
+                key={evt.id}
+                className={`p-6 rounded-2xl bg-slate-900/60 border ${
+                  evt.status === 'closed' ? 'border-amber-800/60' : 'border-slate-800'
+                } space-y-4 flex flex-col justify-between`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
+                      {evt.category}
+                    </span>
+                    <button
+                      onClick={() => handleToggleStatus(evt.id, evt.status || 'live')}
+                      className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
+                        evt.status === 'closed'
+                          ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
+                          : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
+                      }`}
+                    >
+                      {evt.status === 'closed' ? (
+                        <>
+                          <Lock className="w-3 h-3" /> Closed (Draft Slot)
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-3 h-3" /> Live (Published)
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <div>
+                    <h4 className="text-xl font-bold text-white">{evt.title}</h4>
+                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
+                  </div>
                 </div>
 
-                <div>
-                  <h4 className="text-xl font-bold text-white">{evt.title}</h4>
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
+                <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                  <div>
+                    <div className="font-semibold text-slate-200">{evt.community}</div>
+                    <div className="text-[11px] text-slate-500">{evt.date}</div>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(evt.id, evt.community)}
+                      className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
+                      title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                <div>
-                  <div className="font-semibold text-slate-200">{evt.community}</div>
-                  <div className="text-[11px] text-slate-500">{evt.date}</div>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
-                    <Edit3 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(evt.id, evt.community)}
-                    className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
-                    title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Booking Modal */}

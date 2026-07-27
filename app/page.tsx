@@ -17,7 +17,7 @@ export default function LandingHomePage() {
       <Navbar />
 
       {/* Main Content */}
-      <main className="flex-1 relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 space-y-24">
+      <main className="flex-1 relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 md:pb-24 space-y-24">
         {/* Hero Section */}
         <section className="text-center space-y-8 max-w-4xl mx-auto pt-8">
           <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-950/80 border border-blue-800/60 text-xs font-bold text-cyan-400 backdrop-blur-md shadow-lg shadow-blue-500/10">
