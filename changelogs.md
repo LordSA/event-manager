@@ -4,6 +4,18 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.10.0] - 2026-07-27
+
+### 🔐 Granular RBAC Permissions & Community-Scoped Admin Views
+- **Community Management Access (`/admin/communities` & `middleware.ts`):** Restricted community page creation/editing to `dev` and `admin` roles ONLY. Automatically hides menu items and blocks access for `manager` and `editor` roles.
+- **User Roles Scoping (`/admin/users`):**
+  - **Super Admin (`dev`, `admin`):** Full access to all profiles and community assignments.
+  - **Manager (`manager`):** Access scoped ONLY to adding and editing leads/editors within their assigned `community_id`. Locked community selector in creation modal.
+  - **Editor (`editor`):** Completely blocked from accessing User Roles (`/admin/users`).
+- **Dynamic Navigation Layout (`app/admin/layout.tsx`):** Navigation links dynamically adapt based on active user profile role fetched from Supabase.
+
+---
+
 ## [0.9.0] - 2026-07-27
 
 ### ⚡ User Management Form Resiliency & Optimistic UI Update

@@ -20,11 +20,22 @@ The platform centralizes scheduling, slot reservation, public discovery, and rea
 * **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
 * **Auth Callback:** `/auth/callback/route.ts` (Handles code exchange for session creation)
 * **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
-* **RBAC:** Dynamic role validation in database RLS policies and Next.js `proxy.ts` edge middleware
+* **RBAC Scoping:** Granular route and page-level permission scoping in Next.js `middleware.ts` and UI layout.
 
 ---
 
-## 3. Directory & Codebase Layout
+## 3. Role-Based Access Control (RBAC) Matrix
+
+| User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Community Page Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Dev / Admin** | ✅ (All Users) | ✅ | ✅ (All) | ✅ (All) | ✅ (All) | ✅ (All) | ✅ |
+| **Manager (Lead)** | ✅ (Own Community Leads) | ❌ | ❌ | ✅ (Own Community) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
+| **Editor** | ❌ | ❌ | ❌ | ✅ (Own Community) | ❌ | ✅ (Own Community) | ✅ |
+| **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+
+---
+
+## 4. Directory & Codebase Layout
 
 ```
 event-manager/
@@ -41,14 +52,14 @@ event-manager/
 │   │   └── callback/
 │   │       └── route.ts           # Supabase Auth code exchange handler
 │   ├── admin/
-│   │   ├── layout.tsx             # Protected Admin layout with desktop sidebar & mobile sub-pills
+│   │   ├── layout.tsx             # Protected Admin layout with role-based navigation sidebar
 │   │   ├── page.tsx               # Admin Dashboard overview metrics
 │   │   ├── communities/
-│   │   │   └── page.tsx           # Community CRUD & profile bio editor
+│   │   │   └── page.tsx           # Community Entity Management (Restricted to Dev & Admin)
 │   │   ├── events/
 │   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine
 │   │   └── users/
-│   │       └── page.tsx           # User & Admin Accounts Management Console (Name, Position, Email, Password, Avatar, Role, Community)
+│   │       └── page.tsx           # Community Leads & Team Management Console (Scoped to Dev, Admin, Manager)
 │   ├── components/
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper
 │   │   ├── EventAiDrawer.tsx      # Framer Motion Event Assistant slide-over drawer
@@ -82,49 +93,3 @@ event-manager/
 ├── project_memory.md              # Technical program memory (this file)
 └── README.md                      # Technical setup & developer guide
 ```
-
----
-
-## 4. Database Schema & Supabase Blueprint
-
-### `profiles` Table
-Stores user role assignments, position designations, and community affiliations. Linked directly to `auth.users`.
-* `id` (`UUID`, PK, references `auth.users.id` ON DELETE CASCADE)
-* `email` (`TEXT`, NOT NULL)
-* `full_name` (`TEXT`)
-* `position` (`TEXT`, e.g., `'IEEE SB Lead'`, `'IEDC Nodal Officer'`, `'Super Admin'`)
-* `avatar_url` (`TEXT`, Profile picture URL)
-* `role` (`ENUM`: `'dev'`, `'admin'`, `'manager'`, `'editor'`, DEFAULT `'editor'`)
-* `community_id` (`UUID`, FK -> `communities.id`, NULLABLE for Super Admins)
-* `created_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
-* `updated_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
-
-### `communities` Table
-Stores metadata for each participating campus community.
-* `id` (`UUID`, PK, DEFAULT `gen_random_uuid()`)
-* `name` (`TEXT`, NOT NULL)
-* `slug` (`TEXT`, UNIQUE, NOT NULL)
-* `logo_url` (`TEXT`)
-* `description` (`TEXT`)
-* `color` (`TEXT`, e.g., `'from-blue-600 to-cyan-400'`)
-* `initials` (`TEXT`, e.g., `'IE'`)
-* `created_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
-* `updated_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
-
-### `events` Table
-Holds all event details, slot reservations, and AI knowledge context.
-* `id` (`UUID`, PK, DEFAULT `gen_random_uuid()`)
-* `community_id` (`UUID`, FK -> `communities.id` ON DELETE CASCADE, NULLABLE)
-* `slug` (`TEXT`, UNIQUE, NOT NULL)
-* `title` (`TEXT`, NOT NULL)
-* `category` (`TEXT`, DEFAULT `'workshop'`)
-* `poster_url` (`TEXT`)
-* `event_date` (`DATE`, NOT NULL)
-* `time_slot` (`TEXT`, NOT NULL, e.g., `'10:00 AM - 4:00 PM'`)
-* `venue` (`TEXT`)
-* `redirect_url` (`TEXT`, Registration external link)
-* `status` (`ENUM`: `'closed'`, `'live'`, DEFAULT `'closed'`)
-* `system_prompt` (`TEXT`, Prompt context fed to the AI assistant for this specific event)
-* `description` (`TEXT`)
-* `created_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
-* `updated_at` (`TIMESTAMPTZ`, DEFAULT `now()`)

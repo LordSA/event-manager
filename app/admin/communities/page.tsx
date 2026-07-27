@@ -1,17 +1,57 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Building, Plus, Edit2, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Building, Plus, Edit2, Trash2, ShieldAlert } from 'lucide-react';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
+import { UserRole } from '@/types/database.types';
 
 export default function CommunitiesManagementPage() {
   const { communities, setCommunities, loading } = useCommunities();
+  const [userRole, setUserRole] = useState<UserRole>('editor');
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [color, setColor] = useState('from-blue-600 to-cyan-400');
   const [initials, setInitials] = useState('');
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profile?.role) {
+            setUserRole(profile.role);
+          }
+        }
+      } catch {
+        // Fallback
+      }
+    };
+
+    fetchUserRole();
+  }, []);
+
+  if (userRole === 'manager' || userRole === 'editor') {
+    return (
+      <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-4 max-w-2xl mx-auto my-12">
+        <div className="p-4 rounded-2xl bg-amber-950/60 border border-amber-800 text-amber-300 w-fit mx-auto">
+          <ShieldAlert className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold text-white">Access Restricted</h2>
+        <p className="text-sm text-slate-400 leading-relaxed">
+          Community Management is restricted to Super Admins and Developers. Community Managers and Editors do not have permission to add, edit, or delete campus community entities.
+        </p>
+      </div>
+    );
+  }
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +109,7 @@ export default function CommunitiesManagementPage() {
             Community Management
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Dev & Admins can create or delete communities. Managers can update their own community bio and accent styling.
+            Dev & Admins can create or delete communities.
           </p>
         </div>
 

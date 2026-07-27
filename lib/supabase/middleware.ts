@@ -46,16 +46,27 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Role-based route protection for /admin/users (Dev/Admin only)
-    if (pathname.startsWith('/admin/users')) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
+    // Role-based route protection
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
 
-      const role = profile?.role;
+    const role = profile?.role || 'editor';
+
+    // 1. /admin/communities is restricted to Dev/Admin ONLY (Managers & Editors cannot access)
+    if (pathname.startsWith('/admin/communities')) {
       if (role !== 'dev' && role !== 'admin') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/admin';
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // 2. /admin/users is restricted to Dev, Admin, and Manager (Editors cannot access)
+    if (pathname.startsWith('/admin/users')) {
+      if (role === 'editor') {
         const url = request.nextUrl.clone();
         url.pathname = '/admin';
         return NextResponse.redirect(url);

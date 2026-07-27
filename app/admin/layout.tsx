@@ -1,20 +1,45 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Shield, Users, Calendar, Building, LayoutDashboard, LogOut } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
+import { createClient } from '@/lib/supabase/client';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [currentRole] = useState<UserRole>('admin');
+  const [currentRole, setCurrentRole] = useState<UserRole>('editor');
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profile?.role) {
+            setCurrentRole(profile.role);
+          }
+        }
+      } catch {
+        // Fallback
+      }
+    };
+
+    fetchUserRole();
+  }, []);
 
   const navItems = [
     { label: 'Overview', href: '/admin', icon: LayoutDashboard, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
-    { label: 'User Roles', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin'] },
-    { label: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin', 'manager'] },
     { label: 'Event Booking', href: '/admin/events', icon: Calendar, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
+    { label: 'User Roles', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin', 'manager'] },
+    { label: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin'] },
   ];
 
   return (
