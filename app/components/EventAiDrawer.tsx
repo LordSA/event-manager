@@ -29,7 +29,7 @@ export default function EventAiDrawer({
     {
       id: '1',
       sender: 'ai',
-      text: `Welcome! I can help you with details regarding **${eventTitle}**. Ask me about the venue, timings, prerequisites, or rules!`,
+      text: `Hey! 👋 Ask me anything about **${eventTitle}**! Venue, timings, prerequisites, or KTU points — I've got you covered!`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -78,7 +78,7 @@ export default function EventAiDrawer({
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
-        text: 'Sorry, I ran into an issue retrieving that detail. Please try asking again!',
+        text: "Hey, sorry! I ran into a quick glitch looking up that detail. Mind asking me one more time?",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -161,7 +161,7 @@ export default function EventAiDrawer({
               {loading && (
                 <div className="flex items-center space-x-2 text-slate-400 text-xs bg-slate-900/60 p-3 rounded-xl border border-slate-800 w-fit">
                   <div className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                  <span>Retrieving response...</span>
+                  <span>Looking that up for you...</span>
                 </div>
               )}
             </div>
@@ -173,7 +173,7 @@ export default function EventAiDrawer({
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Ask about schedule, venue, rules..."
+                  placeholder="Ask about schedule, venue, prerequisites..."
                   className="w-full bg-slate-900 text-white placeholder-slate-500 rounded-xl px-4 py-3 text-sm border border-slate-800 focus:outline-none focus:border-blue-500 transition-colors pr-12"
                 />
                 <button

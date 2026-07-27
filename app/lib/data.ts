@@ -177,7 +177,7 @@ export const events = [
       Event: Women in Tech Summit (WIE)
       Organizer: IEEE SB CEV (WIE Affinity Group)
       Date: November 5, 2025
-      Time: 2:00 PM - 5:00 PM
+      Time: 2:00 PM - 5:00 PM   
       Venue: Mini Auditorium
       Guests: Engineering Managers from Google and Microsoft.
       Topics: Overcoming Imposter Syndrome, Career Growth, and Networking.

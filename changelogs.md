@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.6.0] - 2026-07-27
+
+### 🤝 Friendly Peer Persona & Direct 6-Digit OTP Auth
+- **Campus Buddy Persona (`/api/chat` & `EventAiDrawer.tsx`):** Configured assistant prompt persona to act like a warm, friendly, all-knowing campus friend. Replies in natural, casual, super-helpful language without corporate or robotic phrasing.
+- **Direct 6-Digit OTP Email Auth (`app/login/page.tsx`):** Updated login flow to explicitly send and verify 6-digit OTP verification codes (`verifyOtp` with `type: 'email'`). Added clear 6-digit input styling and verification steps.
+
+---
+
 ## [0.5.0] - 2026-07-27
 
 ### 🎨 UI Polish, Public Navigation Cleanup & Robust Fetch Fallbacks
