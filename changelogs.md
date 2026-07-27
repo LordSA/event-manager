@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.17.0] - 2026-07-27
+
+### 🕒 12-Hour Time Format Converter
+- **12-Hour AM/PM Time Conversion (`app/admin/events/page.tsx`):** Added `formatTo12HourTime` helper function converting 24-hour time input strings (`10:00`, `16:30`) into standard 12-hour AM/PM time slot strings (e.g. `10:00 AM - 04:30 PM`).
+
+---
+
 ## [0.16.0] - 2026-07-27
 
 ### ⏱️ Start to End Time Slot Visibility Across All Cards

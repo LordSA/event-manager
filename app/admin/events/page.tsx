@@ -7,6 +7,26 @@ import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
 
+function formatTo12HourTime(time24: string): string {
+  if (!time24) return '';
+  if (time24.toUpperCase().includes('AM') || time24.toUpperCase().includes('PM')) {
+    return time24;
+  }
+  const parts = time24.split(':');
+  if (parts.length < 2) return time24;
+  
+  let hours = parseInt(parts[0], 10);
+  const minutes = parts[1];
+  if (isNaN(hours)) return time24;
+  
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+  
+  const paddedHours = hours < 10 ? `0${hours}` : `${hours}`;
+  return `${paddedHours}:${minutes} ${ampm}`;
+}
+
 export default function EventBookingEnginePage() {
   const { eventsList, setEventsList, loading: eventsLoading } = useRealtimeEvents();
   const { communities, loading: communitiesLoading } = useCommunities();
@@ -123,7 +143,9 @@ export default function EventBookingEnginePage() {
     const matchedComm = communities.find((c) => c.id === targetCommunityId || c.name === targetCommunityId);
     const commName = matchedComm ? matchedComm.name : (currentUserCommunityName || 'CEV Community');
 
-    const formattedTimeSlot = `${startTime} - ${endTime}`;
+    const formattedStartTime = formatTo12HourTime(startTime);
+    const formattedEndTime = formatTo12HourTime(endTime);
+    const formattedTimeSlot = `${formattedStartTime} - ${formattedEndTime}`;
     const dateRangeString = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
 
     if (editingEvent) {
@@ -533,7 +555,7 @@ export default function EventBookingEnginePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> Start Time
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> Start Time (12-Hr Format)
                   </label>
                   <input
                     type="time"
@@ -546,7 +568,7 @@ export default function EventBookingEnginePage() {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> End Time
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> End Time (12-Hr Format)
                   </label>
                   <input
                     type="time"
