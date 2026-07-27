@@ -2,36 +2,62 @@
 
 import React, { useState } from 'react';
 import { Building, Plus, Edit2, Trash2 } from 'lucide-react';
-import { communities as initialCommunities } from '@/app/lib/data';
+import { useCommunities } from '@/lib/hooks/useCommunities';
+import { createClient } from '@/lib/supabase/client';
 
 export default function CommunitiesManagementPage() {
-  const [commList, setCommList] = useState(initialCommunities);
+  const { communities, setCommunities, loading } = useCommunities();
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [color, setColor] = useState('from-blue-600 to-cyan-400');
   const [initials, setInitials] = useState('');
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return;
 
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
     const newComm = {
-      id: name.toLowerCase().replace(/\s+/g, '-'),
+      id: Date.now().toString(),
       name,
+      slug,
       description: desc || 'Campus technical community.',
       color,
       initials: initials || name.slice(0, 2).toUpperCase(),
+      logo_url: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
-    setCommList([...commList, newComm]);
+    setCommunities([...communities, newComm]);
+
+    try {
+      const supabase = createClient();
+      await supabase.from('communities').insert({
+        name,
+        slug,
+        description: desc,
+        color,
+        initials: initials || name.slice(0, 2).toUpperCase(),
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
     setName('');
     setDesc('');
     setShowModal(false);
   };
 
-  const handleDelete = (id: string) => {
-    setCommList(commList.filter((c) => c.id !== id));
+  const handleDelete = async (id: string) => {
+    setCommunities(communities.filter((c) => c.id !== id));
+    try {
+      const supabase = createClient();
+      await supabase.from('communities').delete().eq('id', id);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -56,43 +82,48 @@ export default function CommunitiesManagementPage() {
         </button>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {commList.map((c) => (
-          <div key={c.id} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${c.color} flex items-center justify-center text-white font-extrabold text-lg shadow-lg`}>
-                  {c.initials}
+      {loading ? (
+        <div className="p-8 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
+          Loading community entities from database...
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {communities.map((c) => (
+            <div key={c.id} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${c.color || 'from-blue-600 to-cyan-400'} flex items-center justify-center text-white font-extrabold text-lg shadow-lg`}>
+                    {c.initials || c.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c.id)}
+                      className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(c.id)}
-                    className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+
+                <div>
+                  <h3 className="text-xl font-bold text-white">{c.name}</h3>
+                  <p className="text-sm text-slate-400 mt-1">{c.description}</p>
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-xl font-bold text-white">{c.name}</h3>
-                <p className="text-sm text-slate-400 mt-1">{c.description}</p>
+              <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 flex items-center justify-between">
+                <span>Slug: {c.slug || c.name.toLowerCase().replace(/\s+/g, '-')}</span>
+                <span className="font-mono text-[10px] text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">
+                  {c.color || 'from-blue-600 to-cyan-400'}
+                </span>
               </div>
             </div>
-
-            <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 flex items-center justify-between">
-              <span>ID: {c.id}</span>
-              <span className="font-mono text-[10px] text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">
-                {c.color}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (

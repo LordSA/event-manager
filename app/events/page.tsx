@@ -2,18 +2,18 @@
 
 import React from 'react';
 import MasterCalendar from '@/app/components/MasterCalendar';
-import Navbar from '@/app/components/Navbar';
-import { communities } from '@/app/lib/data';
 import { Sparkles, Radio } from 'lucide-react';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
+import { useCommunities } from '@/lib/hooks/useCommunities';
 
 export default function EventsDiscoveryPage() {
-  const { eventsList, loading } = useRealtimeEvents();
+  const { eventsList, loading: eventsLoading } = useRealtimeEvents();
+  const { communities, loading: communitiesLoading } = useCommunities();
+
+  const loading = eventsLoading || communitiesLoading;
 
   return (
     <div className="min-h-screen bg-[#05070E] text-white flex flex-col">
-      <Navbar />
-
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-20 md:pb-12 space-y-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-3">
@@ -38,7 +38,7 @@ export default function EventsDiscoveryPage() {
         {/* Master Discovery Component */}
         {loading ? (
           <div className="p-12 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
-            Synchronizing live events...
+            Synchronizing live events from database...
           </div>
         ) : (
           <MasterCalendar events={eventsList} communities={communities} isManagerView={false} />

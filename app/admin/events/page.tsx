@@ -2,22 +2,24 @@
 
 import React, { useState } from 'react';
 import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle } from 'lucide-react';
-import { communities } from '@/app/lib/data';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
+import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
 
 export default function EventBookingEnginePage() {
-  const { eventsList, setEventsList, loading } = useRealtimeEvents();
+  const { eventsList, setEventsList, loading: eventsLoading } = useRealtimeEvents();
+  const { communities, loading: communitiesLoading } = useCommunities();
 
-  // Simulated active user role & community
+  const loading = eventsLoading || communitiesLoading;
+
   const [currentUserRole] = useState<UserRole>('manager');
   const [userCommunity] = useState('IEEE SB CEV');
 
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('hackathon');
-  const [community, setCommunity] = useState('IEEE SB CEV');
+  const [selectedCommunityId, setSelectedCommunityId] = useState('');
   const [date, setDate] = useState('2025-11-20');
   const [status, setStatus] = useState<'closed' | 'live'>('closed');
   const [desc, setDesc] = useState('');
@@ -28,19 +30,21 @@ export default function EventBookingEnginePage() {
     e.preventDefault();
     if (!title || !date) return;
 
+    const matchedComm = communities.find((c) => c.id === selectedCommunityId || c.name === selectedCommunityId);
+    const commName = matchedComm ? matchedComm.name : 'CEV Community';
+
     const newEvt = {
       id: Date.now().toString(),
       title,
       category,
-      community,
+      community: commName,
       date,
       image: '/images/bit.jpg',
       description: desc || 'Campus event slot booked.',
       status,
-      ai_context: aiContext || `Event: ${title}\nOrganizer: ${community}\nDate: ${date}`,
+      ai_context: aiContext || `Event: ${title}\nOrganizer: ${commName}\nDate: ${date}`,
     };
 
-    // Optimistic UI update
     setEventsList([newEvt, ...eventsList]);
 
     try {
@@ -54,7 +58,7 @@ export default function EventBookingEnginePage() {
         description: desc,
         system_prompt: aiContext,
         slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
-        community_id: '00000000-0000-0000-0000-000000000000',
+        community_id: matchedComm ? matchedComm.id : null,
       });
       setFeedback({ type: 'success', message: 'Slot booked successfully and broadcast to all clients in real time!' });
     } catch (err) {
@@ -71,7 +75,6 @@ export default function EventBookingEnginePage() {
   const handleToggleStatus = async (id: string, currentStatus: 'closed' | 'live') => {
     const nextStatus = currentStatus === 'live' ? 'closed' : 'live';
 
-    // Optimistic update
     setEventsList(
       eventsList.map((e) => (e.id === id ? { ...e, status: nextStatus } : e))
     );
@@ -87,21 +90,18 @@ export default function EventBookingEnginePage() {
   };
 
   const handleDelete = async (id: string, evtCommunity: string) => {
-    // RBAC Enforced: Editors CANNOT delete events
     if (currentUserRole === 'editor') {
       setFeedback({ type: 'error', message: 'RBAC Violation: Editors are not permitted to delete events.' });
       setTimeout(() => setFeedback(null), 4000);
       return;
     }
 
-    // Managers can only delete own community events
     if (currentUserRole === 'manager' && userCommunity.toLowerCase() !== evtCommunity.toLowerCase()) {
       setFeedback({ type: 'error', message: 'RBAC Violation: Managers can only delete events belonging to their own community.' });
       setTimeout(() => setFeedback(null), 4000);
       return;
     }
 
-    // Optimistic update
     setEventsList(eventsList.filter((e) => e.id !== id));
 
     try {
@@ -157,68 +157,74 @@ export default function EventBookingEnginePage() {
         <h3 className="text-lg font-bold text-white">Master Schedule & Conflict Matrix</h3>
         {loading ? (
           <div className="p-8 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
-            Synchronizing realtime slots...
+            Synchronizing realtime slots from database...
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {eventsList.map((evt) => (
-              <div
-                key={evt.id}
-                className={`p-6 rounded-2xl bg-slate-900/60 border ${
-                  evt.status === 'closed' ? 'border-amber-800/60' : 'border-slate-800'
-                } space-y-4 flex flex-col justify-between`}
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
-                      {evt.category}
-                    </span>
-                    <button
-                      onClick={() => handleToggleStatus(evt.id, evt.status || 'live')}
-                      className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
-                        evt.status === 'closed'
-                          ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
-                          : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
-                      }`}
-                    >
-                      {evt.status === 'closed' ? (
-                        <>
-                          <Lock className="w-3 h-3" /> Closed (Draft Slot)
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="w-3 h-3" /> Live (Published)
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  <div>
-                    <h4 className="text-xl font-bold text-white">{evt.title}</h4>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                  <div>
-                    <div className="font-semibold text-slate-200">{evt.community}</div>
-                    <div className="text-[11px] text-slate-500">{evt.date}</div>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(evt.id, evt.community)}
-                      className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
-                      title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+            {eventsList.length === 0 ? (
+              <div className="col-span-full p-8 text-center text-slate-500 text-xs italic bg-slate-900/40 border border-slate-800 rounded-2xl">
+                No events or reserved slots found in database. Click &quot;Book Date / Time Slot&quot; to reserve your first event.
               </div>
-            ))}
+            ) : (
+              eventsList.map((evt) => (
+                <div
+                  key={evt.id}
+                  className={`p-6 rounded-2xl bg-slate-900/60 border ${
+                    evt.status === 'closed' ? 'border-amber-800/60' : 'border-slate-800'
+                  } space-y-4 flex flex-col justify-between`}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
+                        {evt.category}
+                      </span>
+                      <button
+                        onClick={() => handleToggleStatus(evt.id, evt.status || 'live')}
+                        className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
+                          evt.status === 'closed'
+                            ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
+                            : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
+                        }`}
+                      >
+                        {evt.status === 'closed' ? (
+                          <>
+                            <Lock className="w-3 h-3" /> Closed (Draft Slot)
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-3 h-3" /> Live (Published)
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <div>
+                      <h4 className="text-xl font-bold text-white">{evt.title}</h4>
+                      <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                    <div>
+                      <div className="font-semibold text-slate-200">{evt.community}</div>
+                      <div className="text-[11px] text-slate-500">{evt.date}</div>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(evt.id, evt.community)}
+                        className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
+                        title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>
@@ -272,12 +278,13 @@ export default function EventBookingEnginePage() {
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1">Organizing Community</label>
                 <select
-                  value={community}
-                  onChange={(e) => setCommunity(e.target.value)}
+                  value={selectedCommunityId}
+                  onChange={(e) => setSelectedCommunityId(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
                 >
+                  <option value="">-- Select Community --</option>
                   {communities.map((c) => (
-                    <option key={c.id} value={c.name}>
+                    <option key={c.id} value={c.id}>
                       {c.name}
                     </option>
                   ))}

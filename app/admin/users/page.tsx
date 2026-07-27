@@ -3,52 +3,65 @@
 import React, { useState } from 'react';
 import { Users, Shield, Plus, Check, Mail, Building } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
-
-interface UserAccount {
-  id: string;
-  email: string;
-  full_name: string;
-  role: UserRole;
-  community: string;
-}
+import { useProfiles, UserAccountWithCommunity } from '@/lib/hooks/useProfiles';
+import { useCommunities } from '@/lib/hooks/useCommunities';
+import { createClient } from '@/lib/supabase/client';
 
 export default function UsersManagementPage() {
-  const [usersList, setUsersList] = useState<UserAccount[]>([
-    { id: '1', email: 'shibili@cev.ac.in', full_name: 'Shibili Aman TK', role: 'dev', community: 'Super Admin (All)' },
-    { id: '2', email: 'saivivek@cev.ac.in', full_name: 'Saivivek M.V', role: 'admin', community: 'Super Admin (All)' },
-    { id: '3', email: 'ieee.lead@cev.ac.in', full_name: 'IEEE Lead', role: 'manager', community: 'IEEE SB CEV' },
-    { id: '4', email: 'iedc.lead@cev.ac.in', full_name: 'IEDC Lead', role: 'manager', community: 'IEDC CEV' },
-    { id: '5', email: 'tinkerhub.editor@cev.ac.in', full_name: 'TinkerHub Editor', role: 'editor', community: 'TinkerHub CEV' },
-  ]);
+  const { profiles, setProfiles, loading } = useProfiles();
+  const { communities } = useCommunities();
 
   const [emailInput, setEmailInput] = useState('');
   const [nameInput, setNameInput] = useState('');
   const [roleInput, setRoleInput] = useState<UserRole>('editor');
-  const [communityInput, setCommunityInput] = useState('IEEE SB CEV');
+  const [communityInput, setCommunityInput] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
-  const handleAddUser = (e: React.FormEvent) => {
+  const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput || !nameInput) return;
 
-    const newUser: UserAccount = {
+    const newProfile: UserAccountWithCommunity = {
       id: Date.now().toString(),
       email: emailInput,
       full_name: nameInput,
       role: roleInput,
-      community: roleInput === 'dev' || roleInput === 'admin' ? 'Super Admin (All)' : communityInput,
+      community_id: communityInput || null,
+      community_name: communityInput ? (communities.find(c => c.id === communityInput)?.name || 'Assigned Community') : 'Super Admin (All)',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
-    setUsersList([...usersList, newUser]);
+    setProfiles([...profiles, newProfile]);
+
+    try {
+      const supabase = createClient();
+      await supabase.from('profiles').insert({
+        email: emailInput,
+        full_name: nameInput,
+        role: roleInput,
+        community_id: communityInput || null,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
     setEmailInput('');
     setNameInput('');
     setShowAddModal(false);
   };
 
-  const handleRoleChange = (userId: string, newRole: UserRole) => {
-    setUsersList(
-      usersList.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
+    setProfiles(
+      profiles.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
     );
+
+    try {
+      const supabase = createClient();
+      await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -73,56 +86,69 @@ export default function UsersManagementPage() {
         </button>
       </div>
 
-      {/* Users Table */}
-      <div className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-950/80 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
-              <tr>
-                <th className="px-6 py-4">User</th>
-                <th className="px-6 py-4">Assigned Community</th>
-                <th className="px-6 py-4">Current Role</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/80">
-              {usersList.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-semibold text-white">{user.full_name}</div>
-                    <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                      <Mail className="w-3 h-3" /> {user.email}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs font-medium text-slate-300">
-                      <Building className="w-3.5 h-3.5 text-blue-400" />
-                      {user.community}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <select
-                      value={user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
-                      className="bg-slate-950 text-slate-200 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-semibold uppercase focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="dev">Dev (Super Admin)</option>
-                      <option value="admin">Admin</option>
-                      <option value="manager">Manager (Lead)</option>
-                      <option value="editor">Editor</option>
-                    </select>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <span className="text-xs text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-800/50 inline-flex items-center gap-1">
-                      <Check className="w-3 h-3" /> Active
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {loading ? (
+        <div className="p-8 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
+          Loading user profiles from database...
         </div>
-      </div>
+      ) : (
+        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-hidden shadow-xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-300">
+              <thead className="bg-slate-950/80 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th className="px-6 py-4">User</th>
+                  <th className="px-6 py-4">Assigned Community</th>
+                  <th className="px-6 py-4">Current Role</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/80">
+                {profiles.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-slate-500 text-xs italic">
+                      No user accounts registered yet. Click &quot;Invite / Assign User&quot; to add your first team member.
+                    </td>
+                  </tr>
+                ) : (
+                  profiles.map((user) => (
+                    <tr key={user.id} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="font-semibold text-white">{user.full_name || 'Anonymous User'}</div>
+                        <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                          <Mail className="w-3 h-3" /> {user.email}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs font-medium text-slate-300">
+                          <Building className="w-3.5 h-3.5 text-blue-400" />
+                          {user.community_name || 'Super Admin (All)'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
+                          className="bg-slate-950 text-slate-200 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-semibold uppercase focus:outline-none focus:border-blue-500"
+                        >
+                          <option value="dev">Dev (Super Admin)</option>
+                          <option value="admin">Admin</option>
+                          <option value="manager">Manager (Lead)</option>
+                          <option value="editor">Editor</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="text-xs text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-800/50 inline-flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Active
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Add User Modal */}
       {showAddModal && (
@@ -176,11 +202,12 @@ export default function UsersManagementPage() {
                     onChange={(e) => setCommunityInput(e.target.value)}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
                   >
-                    <option value="IEEE SB CEV">IEEE SB CEV</option>
-                    <option value="IEDC CEV">IEDC CEV</option>
-                    <option value="TinkerHub CEV">TinkerHub CEV</option>
-                    <option value="FOSS Club CEV">FOSS Club CEV</option>
-                    <option value="MuLearn CEV">MuLearn CEV</option>
+                    <option value="">-- Select Community --</option>
+                    {communities.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               )}

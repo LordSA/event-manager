@@ -1,23 +1,23 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/app/components/Navbar';
 import HeroCanvas from '@/app/components/HeroCanvas';
-import { communities, events } from '@/app/lib/data';
 import { ArrowRight, Sparkles, Calendar, ShieldCheck, Zap, Bot } from 'lucide-react';
 import Link from 'next/link';
+import { useCommunities } from '@/lib/hooks/useCommunities';
+import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 
 export default function LandingHomePage() {
+  const { communities, loading: communitiesLoading } = useCommunities();
+  const { eventsList, loading: eventsLoading } = useRealtimeEvents();
+
   return (
     <div className="min-h-screen bg-[#05070E] text-white flex flex-col relative overflow-hidden">
       {/* Three.js / WebGL Particle Canvas */}
       <HeroCanvas />
 
-      {/* Header */}
-      <Navbar />
-
       {/* Main Content */}
-      <main className="flex-1 relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 md:pb-24 space-y-24">
+      <main className="flex-1 relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 md:pb-24 space-y-24">
         {/* Hero Section */}
         <section className="text-center space-y-8 max-w-4xl mx-auto pt-8">
           <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-950/80 border border-blue-800/60 text-xs font-bold text-cyan-400 backdrop-blur-md shadow-lg shadow-blue-500/10">
@@ -92,20 +92,24 @@ export default function LandingHomePage() {
             <p className="text-slate-400 text-sm mt-2">Discover technical sessions, hackathons, and workshops by organization.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {communities.map((c) => (
-              <div
-                key={c.id}
-                className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-md flex flex-col items-center text-center space-y-3 hover:border-slate-700 transition-all"
-              >
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${c.color} flex items-center justify-center text-white font-extrabold text-lg shadow-lg`}>
-                  {c.initials}
+          {communitiesLoading ? (
+            <div className="p-8 text-slate-500 text-sm">Loading communities from database...</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {communities.map((c) => (
+                <div
+                  key={c.id}
+                  className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-md flex flex-col items-center text-center space-y-3 hover:border-slate-700 transition-all"
+                >
+                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${c.color || 'from-blue-600 to-cyan-400'} flex items-center justify-center text-white font-extrabold text-lg shadow-lg`}>
+                    {c.initials || c.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <h3 className="font-bold text-white text-base">{c.name}</h3>
+                  <p className="text-xs text-slate-400 line-clamp-2">{c.description || 'Campus community.'}</p>
                 </div>
-                <h3 className="font-bold text-white text-base">{c.name}</h3>
-                <p className="text-xs text-slate-400 line-clamp-2">{c.description}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Featured Events */}
@@ -117,29 +121,33 @@ export default function LandingHomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {events.slice(0, 3).map((evt) => (
-              <div
-                key={evt.id}
-                className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between space-y-4 hover:border-blue-500/50 transition-colors"
-              >
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950 px-2.5 py-1 rounded-full border border-cyan-800">
-                    {evt.category}
-                  </span>
-                  <h3 className="text-xl font-bold text-white mt-3">{evt.title}</h3>
-                  <p className="text-xs text-slate-400 mt-2 line-clamp-2">{evt.description}</p>
-                </div>
+          {eventsLoading ? (
+            <div className="p-8 text-slate-500 text-sm">Loading live events from database...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {eventsList.slice(0, 3).map((evt) => (
+                <div
+                  key={evt.id}
+                  className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between space-y-4 hover:border-blue-500/50 transition-colors"
+                >
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950 px-2.5 py-1 rounded-full border border-cyan-800">
+                      {evt.category}
+                    </span>
+                    <h3 className="text-xl font-bold text-white mt-3">{evt.title}</h3>
+                    <p className="text-xs text-slate-400 mt-2 line-clamp-2">{evt.description}</p>
+                  </div>
 
-                <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                  <span>{evt.community}</span>
-                  <Link href={`/events/${evt.id}`} className="text-blue-400 font-bold hover:underline">
-                    Details &rarr;
-                  </Link>
+                  <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                    <span>{evt.community}</span>
+                    <Link href={`/events/${evt.id}`} className="text-blue-400 font-bold hover:underline">
+                      Details &rarr;
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
 
