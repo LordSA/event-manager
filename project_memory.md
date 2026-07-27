@@ -17,20 +17,10 @@ The platform centralizes scheduling, slot reservation, public discovery, and rea
 ### Backend, Database & Authentication
 * **Database:** [Supabase](https://supabase.com/) (PostgreSQL with Row Level Security - RLS)
 * **Authentication:** Supabase Auth (6-Digit Email OTP verification & Next.js Edge Proxy Session Management)
+* **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
 * **Auth Callback:** `/auth/callback/route.ts` (Handles code exchange for session creation)
 * **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
 * **RBAC:** Dynamic role validation in database RLS policies and Next.js `proxy.ts` edge middleware
-
-### Animation, Visual Effects & Motion Engine
-* **Smooth Scrolling:** `Lenis` (buttery smooth scrolling integration)
-* **3D Graphics & Shaders:** `Three.js` & `WebGL` for GPU particle starfield hero canvas (`HeroCanvas.tsx`)
-* **Motion & Drawer Physics:** `Framer Motion` (Event Assistant slide-over drawer `EventAiDrawer.tsx`)
-
-### Multi-Provider Fallback AI Architecture & Friendly Persona
-The platform features an automated sequential fallback engine for event queries with a warm, conversational peer tone:
-1. **Primary Provider:** Google Gemini API (`gemini-2.5-flash`)
-2. **Secondary Provider (Fallback 1):** Grok API (xAI)
-3. **Tertiary Provider (Fallback 2):** OpenRouter API (`meta-llama/llama-3.1-70b-instruct`)
 
 ---
 
@@ -42,6 +32,9 @@ event-manager/
 │   └── AGENTS.md                  # Developer agent workspace rules & guidelines
 ├── app/
 │   ├── api/
+│   │   ├── admin/
+│   │   │   └── users/
+│   │   │       └── route.ts       # Supabase Auth + Profiles admin management API endpoint
 │   │   └── chat/
 │   │       └── route.ts           # Multi-provider fallback AI chat endpoint with friendly peer persona
 │   ├── auth/
@@ -55,7 +48,7 @@ event-manager/
 │   │   ├── events/
 │   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine
 │   │   └── users/
-│   │       └── page.tsx           # Super Admin User Accounts & Role Management console
+│   │       └── page.tsx           # User & Admin Accounts Management Console (Name, Position, Email, Password, Avatar, Role, Community)
 │   ├── components/
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper
 │   │   ├── EventAiDrawer.tsx      # Framer Motion Event Assistant slide-over drawer
@@ -70,15 +63,14 @@ event-manager/
 │   ├── login/
 │   │   └── page.tsx               # 6-Digit Email OTP Authentication page
 │   ├── page.tsx                   # Public hero landing page
-│   ├── globals.css
 │   └── layout.tsx                 # Root layout with Lenis & ConditionalNavbar
 ├── lib/
 │   ├── auth/
 │   │   └── rbac.ts                # Dynamic RBAC matrix permission rules
 │   ├── hooks/
-│   │   ├── useCommunities.ts      # Real-time Supabase hook for communities with fallbacks
+│   │   ├── useCommunities.ts      # Real-time Supabase hook for communities
 │   │   ├── useProfiles.ts         # Real-time Supabase hook for user profiles
-│   │   └── useRealtimeEvents.ts   # Real-time Supabase hook for events with fallbacks
+│   │   └── useRealtimeEvents.ts   # Real-time Supabase hook for events
 │   └── supabase/
 │       ├── client.ts              # Browser Supabase client creator
 │       ├── middleware.ts          # Edge cookie session updater & protected route proxy
@@ -93,24 +85,15 @@ event-manager/
 
 ---
 
-## 4. Role-Based Access Control (RBAC) Matrix
-
-| User Role | Manage Users & Roles | Create / Delete Communities | Edit Own Community | Create / Edit Events | Delete Events | Toggle Status (`closed`/`live`) | Access AI Chat |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Dev / Admin** | ✅ | ✅ | ✅ (All) | ✅ (All) | ✅ (All) | ✅ (All) | ✅ |
-| **Manager (Lead)** | ❌ | ❌ | ✅ (Own) | ✅ (Own) | ✅ (Own) | ✅ (Own) | ✅ |
-| **Editor** | ❌ | ❌ | ❌ | ✅ (Own) | ❌ | ✅ (Own) | ✅ |
-| **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-
----
-
-## 5. Database Schema & Supabase Blueprint
+## 4. Database Schema & Supabase Blueprint
 
 ### `profiles` Table
-Stores user role assignments and community affiliations. Linked directly to `auth.users`.
+Stores user role assignments, position designations, and community affiliations. Linked directly to `auth.users`.
 * `id` (`UUID`, PK, references `auth.users.id` ON DELETE CASCADE)
 * `email` (`TEXT`, NOT NULL)
 * `full_name` (`TEXT`)
+* `position` (`TEXT`, e.g., `'IEEE SB Lead'`, `'IEDC Nodal Officer'`, `'Super Admin'`)
+* `avatar_url` (`TEXT`, Profile picture URL)
 * `role` (`ENUM`: `'dev'`, `'admin'`, `'manager'`, `'editor'`, DEFAULT `'editor'`)
 * `community_id` (`UUID`, FK -> `communities.id`, NULLABLE for Super Admins)
 * `created_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
@@ -145,11 +128,3 @@ Holds all event details, slot reservations, and AI knowledge context.
 * `description` (`TEXT`)
 * `created_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
 * `updated_at` (`TIMESTAMPTZ`, DEFAULT `now()`)
-
----
-
-## 6. Security, Authentication & Proxy Scoping
-* **Next.js 16 Edge Proxy (`proxy.ts`):** Automatically refreshes auth session cookies on every incoming request.
-* **Protected Routes:** Intercepts unauthenticated requests to `/admin/*` and redirects to `/login?redirectTo=...`.
-* **Super Admin Role Enforcement:** `/admin/users` is restricted to `dev` and `admin` roles only.
-* **Direct 6-Digit OTP Login:** Managers enter their email on `/login`, receive a 6-digit OTP code, and verify directly in the UI. Supabase template is configured to output `{{ .Token }}`.

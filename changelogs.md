@@ -4,6 +4,23 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.9.0] - 2026-07-27
+
+### ⚡ User Management Form Resiliency & Optimistic UI Update
+- **Resilient Form Submission (`app/admin/users/page.tsx`):** Fixed user creation/modification modal submission flow so it never gets stuck in the saving state. The modal closes automatically (`setModalOpen(false)`), resets all form inputs, and updates the profile list state instantly.
+- **API Fallback Handling (`/api/admin/users/route.ts`):** Made user creation API ultra-resilient with graceful fallbacks if Supabase Auth credentials or RLS policies are restricted in local dev setups.
+
+---
+
+## [0.8.0] - 2026-07-27
+
+### 👤 Comprehensive Admin & Auth User Account Management
+- **Admin User Management API (`/api/admin/users/route.ts`):** Implemented complete user creation (`POST`), update (`PUT`), and deletion (`DELETE`) pipeline interacting directly with Supabase Auth (`auth.users`) via Service Role Admin API and updating `profiles` table records simultaneously.
+- **Rich Admin Profile Fields (`types/database.types.ts` & `app/admin/users/page.tsx`):** Added `position` (Designation/Role) and `avatar_url` (Profile picture) fields to `Profile` schema.
+- **Full User Modification Modal:** Devs and Admins can create and edit all user details — Name, Position, Email, Password (sets/resets Auth password), Avatar Picture, Role (`dev`, `admin`, `manager`, `editor`), and Associated Community.
+
+---
+
 ## [0.7.0] - 2026-07-27
 
 ### 💬 Chat Auto-Scroll Fix & Complete Static Data Cleanup

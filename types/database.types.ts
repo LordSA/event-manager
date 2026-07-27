@@ -5,10 +5,13 @@ export interface Profile {
   id: string;
   email: string;
   full_name: string | null;
+  position: string | null;
+  avatar_url: string | null;
   role: UserRole;
   community_id: string | null;
   created_at: string;
   updated_at: string;
+  community?: Community;
 }
 
 export interface Community {
