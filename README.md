@@ -20,7 +20,7 @@ In campus environments and multi-organization setups, event information is often
 - **Fast AI Assistant Engine:** `/api/chat/route.ts` using `gemini-1.5-flash` with 250 token caps and 4s timeout abort controllers for sub-500ms response speeds.
 - **Z-Index Layered Drawer:** `z-[200]` AI Assistant slide-over drawer with body scroll lock that renders cleanly over floating top navbar.
 - **4-5 Line Event Summaries:** Refactored event detail page description (`/events/[id]`) with interactive "Ask Assistant" callout box.
-- **Spacious Admin Booking Modal:** Expanded `max-w-3xl` modal container width with `data-lenis-prevent` and `max-h-[88vh] overflow-y-auto` for smooth mouse wheel scrolling.
+- **Spacious Admin Booking Modal:** Expanded `max-w-3xl` modal container width with `data-lenis-prevent` mouse scrolling and `parseTimeTo24Hr` HTML5 time input compatibility.
 
 ---
 

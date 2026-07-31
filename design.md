@@ -29,8 +29,9 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ---
 
-## 4. Modal Window Sizing & Lenis Mouse Scroll Prevention
+## 4. Modal Window Sizing, HTML5 Time Parsing & Scroll Rules
 
 ### Admin Event Booking Modal Layout (`app/admin/events/page.tsx`)
 * **Spacious 2-Column Layout (`max-w-3xl`):** Extended modal container width to `768px` (`max-w-3xl`) with responsive 2-column grid layout for event details, date ranges, venue, and publishing controls.
-* **Lenis Mouse Scroll Interception (`data-lenis-prevent`):** Added `data-lenis-prevent` to both modal backdrop and content panel with `max-h-[88vh] overflow-y-auto`, restoring native mouse wheel and trackpad scrolling inside modal overlays without smooth-scroll locks.
+* **HTML5 Time Parser (`parseTimeTo24Hr`):** Automatically converts 12-hour database strings (e.g. `01:00 PM - 04:00 PM`) into strict 24-hour `HH:mm` format (`13:00` / `16:00`), ensuring HTML `<input type="time" />` elements display start/end times during editing.
+* **Lenis Mouse Scroll Interception (`data-lenis-prevent`):** Restores native mouse wheel and trackpad scrolling inside modal overlays without smooth-scroll locks.

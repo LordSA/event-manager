@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.32.0] - 2026-07-31
+
+### ⏰ HTML5 Time Input 24-Hr Converter (`parseTimeTo24Hr`)
+- **HTML5 Time Input Parsing Fix ([app/admin/events/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/events/page.tsx)):** Added `parseTimeTo24Hr()` helper function to convert stored 12-hour database strings (e.g. `01:00 PM - 04:00 PM`) into strict 24-hour `HH:mm` format (`13:00` / `16:00`), resolving the blank input box bug when opening event edit modals.
+
+---
+
 ## [0.31.0] - 2026-07-31
 
 ### 📐 Event Booking Modal Width Expansion & Lenis Mouse Scroll Fix

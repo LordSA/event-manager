@@ -37,6 +37,34 @@ function formatTimeSlotTo12Hr(slot?: string): string {
   return formatSingleTime12(slot);
 }
 
+function parseTimeTo24Hr(timeStr?: string): string {
+  if (!timeStr) return '10:00';
+  const trimmed = timeStr.trim().toUpperCase();
+
+  const match12 = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (match12) {
+    let hours = parseInt(match12[1], 10);
+    const minutes = match12[2];
+    const ampm = match12[3].toUpperCase();
+
+    if (ampm === 'PM' && hours < 12) hours += 12;
+    if (ampm === 'AM' && hours === 12) hours = 0;
+
+    const paddedHours = hours < 10 ? `0${hours}` : `${hours}`;
+    return `${paddedHours}:${minutes}`;
+  }
+
+  const match24 = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+  if (match24) {
+    let hours = parseInt(match24[1], 10);
+    const minutes = match24[2];
+    const paddedHours = hours < 10 ? `0${hours}` : `${hours}`;
+    return `${paddedHours}:${minutes}`;
+  }
+
+  return '10:00';
+}
+
 export default function EventBookingEnginePage() {
   const { eventsList, setEventsList, loading: eventsLoading } = useRealtimeEvents();
   const { communities, loading: communitiesLoading } = useCommunities();
@@ -149,11 +177,14 @@ export default function EventBookingEnginePage() {
     setStartDate(evt.event_date || new Date().toISOString().split('T')[0]);
     setEndDate(evt.event_date || new Date().toISOString().split('T')[0]);
     
-    // Parse time slot if available
+    // Parse time slot into valid 24-hr format (HH:mm) for HTML5 time inputs
     if (evt.time_slot && evt.time_slot.includes('-')) {
       const parts = evt.time_slot.split('-');
-      setStartTime(parts[0].trim());
-      setEndTime(parts[1].trim());
+      setStartTime(parseTimeTo24Hr(parts[0]));
+      setEndTime(parseTimeTo24Hr(parts[1]));
+    } else if (evt.time_slot) {
+      setStartTime(parseTimeTo24Hr(evt.time_slot));
+      setEndTime('16:00');
     } else {
       setStartTime('10:00');
       setEndTime('16:00');

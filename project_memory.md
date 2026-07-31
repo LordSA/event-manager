@@ -62,7 +62,7 @@ event-manager/
 │   │   ├── communities/
 │   │   │   └── page.tsx           # Community Entity Management with Edit & Create modals & WebP upload
 │   │   ├── events/
-│   │   │   └── page.tsx           # Extended max-w-3xl booking modal with data-lenis-prevent mouse scroll
+│   │   │   └── page.tsx           # Extended max-w-3xl booking modal with parseTimeTo24Hr HTML time input fix
 │   │   └── users/
 │   │       └── page.tsx           # Community Leads & Team Management Console
 │   ├── calendar/
