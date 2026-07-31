@@ -19,6 +19,24 @@ interface Message {
   timestamp: string;
 }
 
+function renderFormattedMessage(text: string) {
+  if (!text) return null;
+
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      const boldText = part.slice(2, -2);
+      return (
+        <strong key={index} className="font-bold text-white font-mono px-1 py-0.5 bg-[#161a29] rounded border border-[#1e2436] inline-block my-0.5">
+          {boldText}
+        </strong>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
 export default function EventAiDrawer({
   isOpen,
   onClose,
@@ -184,7 +202,9 @@ export default function EventAiDrawer({
                         : 'bg-[#0f121d] text-slate-200 border border-[#1e2436] rounded-bl-none shadow-md'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                    <div className="whitespace-pre-wrap leading-relaxed">
+                      {renderFormattedMessage(msg.text)}
+                    </div>
                     <div className="mt-2 text-[10px] opacity-70 text-right font-mono">
                       {msg.timestamp}
                     </div>

@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.47.0] - 2026-07-31
+
+### 💬 AI Assistant Markdown Bold Renderer
+- **Bold Element Renderer ([app/components/EventAiDrawer.tsx](./app/components/EventAiDrawer.tsx)):** Added `renderFormattedMessage` helper to parse markdown bold syntax (`**text**`) and convert it into styled `<strong>` elements instead of rendering literal asterisks in chat bubbles.
+
+---
+
 ## [0.46.0] - 2026-07-31
 
 ### 🛠️ Description Parser Algorithm Upgrade
