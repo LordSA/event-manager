@@ -40,17 +40,10 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ---
 
-## 5. Navigation & Asset Upload Architecture
+## 5. Header Navigation & Admin Scoping
 
-### Header Navigation (`app/components/Navbar.tsx`)
-* **Single CTA Button Architecture:** Navbar pill links are strictly public (`Home`, `Calendar`, `Events`, `Communities`). `Dashboard` is NEVER duplicated in nav links.
-* **Authentication Role Display:**
-  - **Logged-in Users / Admins:** Displays **`Dashboard`** right CTA button (`href="/admin"`).
-  - **Unauthenticated Visitors:** Displays **`Calendar`** right CTA button (`href="/calendar"`) with a subtle `Log In` link (`href="/login"`).
-* **Logo Alignment Engine:** Flexible logo box with error fallback logic (`setLogoFailed`) preventing layout shifts.
-* **Body Scroll Locking:** Automatically locks background body scroll (`overflow: hidden`) when the full-screen mobile menu drawer is open.
-
-### Image Asset Storage Engine (`@vercel/blob` + `/api/upload` API Route)
-* **Vercel Blob Storage Integration:** Images (posters, community logos, user avatars) uploaded via `/api/upload` route using `@vercel/blob`.
-* **Browser WebP Auto-Compression (`lib/upload.ts`):** Converts PNG, JPEG, GIF, AVIF, HEIC input images to WebP format in the browser (`image/webp` 0.82 quality) prior to uploading.
-* **Database Table Link Persistence:** Public CDN links returned by Vercel Blob (`https://...public.blob.vercel-storage.com/...`) are stored directly in Supabase PostgreSQL table columns (`events.poster_url`, `communities.logo_url`, `profiles.avatar_url`).
+### Public User POV Header Navigation (`app/components/Navbar.tsx`)
+* **Single CTA Button Architecture:** Public navigation links are strictly `Home`, `Events`, `Communities`. `Calendar` is exclusively rendered as the primary right-side CTA pill button (`Calendar ->`).
+* **Zero Header Clutter:** Removed top header `Log In` text link completely.
+* **Vector Brand Badge:** Replaced broken image icon fallback with a crisp vector shield badge with electric indigo gradient (`#6366f1`).
+* **Admin Layout Isolation (`app/components/ConNav.tsx`):** Main public navbar is completely hidden on `/admin` and `/login` routes. On admin pages, only the Admin layout sidebar (`app/admin/layout.tsx`) is rendered.

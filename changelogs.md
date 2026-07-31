@@ -4,6 +4,25 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.26.0] - 2026-07-31
+
+### 🎯 Clean Public Header POV, Vector Brand Badge & Admin Navbar Isolation
+- **Admin Page Navbar Isolation ([app/components/ConNav.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/components/ConNav.tsx)):** Configured `ConNav.tsx` to return `null` on `/admin` and `/login` routes, hiding the public top floating navbar completely inside the admin dashboard so only the admin sidebar renders.
+- **Single Calendar CTA Button ([app/components/Navbar.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/components/Navbar.tsx)):** Nav pill links are strictly public (`Home`, `Events`, `Communities`). `Calendar` is rendered exclusively as the single primary right-side CTA button (`Calendar ->`).
+- **Removed Header `Log In` Link:** Completely removed the top header `Log In` text link for zero public clutter.
+- **Vector Brand Badge:** Replaced `/logo.png` fallback with a crisp vector shield badge with electric indigo gradient styling, eliminating broken image placeholders.
+
+---
+
+## [0.25.0] - 2026-07-31
+
+### 🚀 Next.js 16 Proxy Convention Migration & Route Cache Cleanup
+- **Next.js 16 Proxy Convention (`proxy.ts`):** Migrated from deprecated `middleware.ts` naming to `proxy.ts` exporting `export async function proxy(request: NextRequest)` to resolve Next.js 16 deprecation warning.
+- **Route Matching & Error Boundary:** Scoped `proxy.ts` matchers strictly to `/admin/:path*` and `/login` with safe try/catch error boundaries.
+- **Removed Duplicate Routes:** Cleaned up unused `app/event/` directory and `.next` build cache, resolving 404 routing errors across all public and admin pages.
+
+---
+
 ## [0.24.0] - 2026-07-31
 
 ### 🔑 Single Dashboard Button Architecture, Sign-Out Engine & Middleware Routing

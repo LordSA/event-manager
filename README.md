@@ -12,9 +12,10 @@
 
 In campus environments and multi-organization setups, event information is often scattered across dozens of messaging groups, posters, and scattered sites. **Whats @CEV** is a high-performance event discovery and management platform designed with a clean, dark product aesthetic (Linear / Vercel / Google Calendar level). It acts as a central hub for campus communities to coordinate event dates, publish schedules, prevent date overlaps via slot booking, upload WebP images via Vercel Blob Storage, explore interactive Google Calendar views, and answer attendee questions using an interactive **Event Assistant**.
 
-- **Framework:** Next.js 16 (App Router)
+- **Framework:** Next.js 16 (App Router) + Next.js 16 Proxy Convention (`proxy.ts`)
 - **Styling & Theme:** Tailwind CSS v4 + Obsidian Dark Palette (`#08090d`, `#0f121d`, `#6366f1`)
 - **Typography:** Custom Font Engine (`Quera`, `Gued`, `Rondured`) configured via `next/font/local` for zero CLS and preloaded web fonts.
+- **Header & Navigation:** Single CTA `Calendar` button for public visitors, zero duplicate links, crisp vector brand badge, and admin navbar isolation.
 - **Database & Auth:** Supabase PostgreSQL & Auth with Dual Login Modes (Password + 6-Digit Email OTP) + One-Click Sign Out.
 - **Storage Engine:** Vercel Blob Storage (`@vercel/blob`) with client-side WebP auto-compression.
 

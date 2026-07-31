@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { X, ArrowRight, UserCheck, LogIn } from "lucide-react"
+import { X, ArrowRight, Shield, Calendar } from "lucide-react"
 import { usePathname } from "next/navigation"
 import gsap from "gsap"
 import { createClient } from "@/lib/supabase/client"
@@ -13,7 +13,6 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [logoFailed, setLogoFailed] = useState(false)
   const pathname = usePathname()
   const navRef = useRef<HTMLDivElement>(null)
 
@@ -86,10 +85,9 @@ export default function Navbar() {
     return () => ctx.revert()
   }, [])
 
-  // Public Nav Links ONLY - Never duplicate Dashboard here
+  // Public Nav Links (Home, Events, Communities) - Calendar is the right CTA button
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Calendar", href: "/calendar" },
     { name: "Events", href: "/events" },
     { name: "Communities", href: "/community" },
   ]
@@ -109,19 +107,11 @@ export default function Navbar() {
         }`}
       >
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href="/" className="nav-logo flex items-center group relative space-x-3 shrink-0">
-            {!logoFailed && (
-              <div className="relative h-9 w-auto flex items-center transition-transform duration-500 group-hover:scale-105">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/logo.png"
-                  alt="Whats @CEV Logo"
-                  className="h-9 w-auto object-contain"
-                  onError={() => setLogoFailed(true)}
-                />
-              </div>
-            )}
+          {/* Logo Brand */}
+          <Link href="/" className="nav-logo flex items-center group space-x-3 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6366f1] to-[#4f46e5] border border-[#4f46e5] flex items-center justify-center text-white shadow-[2px_2px_0px_0px_#312e81] transition-transform group-hover:scale-105">
+              <Shield className="w-4 h-4 text-white" />
+            </div>
             <span className="font-bold text-white tracking-tight text-lg font-display group-hover:text-[#6366f1] transition-colors">
               Whats @CEV
             </span>
@@ -144,24 +134,14 @@ export default function Navbar() {
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#6366f1] rounded-full shadow-[0_0_8px_rgba(99,102,241,0.9)]" />
                 )}
 
-                {/* Hover Background - Premium Glassy Pill */}
+                {/* Hover Background Pill */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#6366f1]/15 to-[#6366f1]/25 rounded-full opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out -z-0 border border-[#6366f1]/30" />
               </Link>
             ))}
 
             {!loading && (
-              <div className="nav-item pl-4 flex items-center space-x-3">
-                {/* Subtle Manager Log In link if not logged in */}
-                {!session && (
-                  <Link
-                    href="/login"
-                    className="text-xs font-semibold uppercase tracking-wider text-[#94a3b8] hover:text-white transition-colors px-3 py-1.5"
-                  >
-                    Log In
-                  </Link>
-                )}
-
-                {/* Main Action CTA Button */}
+              <div className="nav-item pl-4 flex items-center">
+                {/* Single Primary Action CTA Button (Calendar for users, Dashboard for logged-in admins) */}
                 <Link
                   href={session ? "/admin" : "/calendar"}
                   className="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-semibold text-white rounded-full bg-gradient-to-br from-[#6366f1] to-[#4f46e5] shadow-md hover:shadow-[0_10px_25px_rgba(99,102,241,0.45)] hover:-translate-y-0.5 transition-all duration-300"
@@ -237,29 +217,17 @@ export default function Navbar() {
               </div>
             </div>
 
-            <div className="flex flex-col space-y-3">
-              <Link
-                href={session ? "/admin" : "/calendar"}
-                onClick={() => setIsOpen(false)}
-                className="group flex flex-col text-left"
-              >
-                <p className="text-[#94a3b8] text-[10px] md:text-xs font-bold tracking-widest uppercase mb-2">CEV Event Manager</p>
-                <span className="text-3xl md:text-5xl font-bold flex items-center gap-4 md:gap-6 group-hover:text-[#6366f1] transition-colors font-display">
-                  {session ? "Dashboard" : "Calendar"}{" "}
-                  <ArrowRight className="h-7 w-7 md:h-10 md:w-10 group-hover:translate-x-4 transition-transform text-[#6366f1]" />
-                </span>
-              </Link>
-
-              {!session && (
-                <Link
-                  href="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="text-xs font-bold text-[#6366f1] uppercase tracking-widest hover:underline pt-2 flex items-center gap-1.5"
-                >
-                  <LogIn className="w-3.5 h-3.5" /> Manager Portal Login
-                </Link>
-              )}
-            </div>
+            <Link
+              href={session ? "/admin" : "/calendar"}
+              onClick={() => setIsOpen(false)}
+              className="group flex flex-col text-left"
+            >
+              <p className="text-[#94a3b8] text-[10px] md:text-xs font-bold tracking-widest uppercase mb-2">CEV Event Manager</p>
+              <span className="text-3xl md:text-5xl font-bold flex items-center gap-4 md:gap-6 group-hover:text-[#6366f1] transition-colors font-display">
+                {session ? "Dashboard" : "Calendar"}{" "}
+                <ArrowRight className="h-7 w-7 md:h-10 md:w-10 group-hover:translate-x-4 transition-transform text-[#6366f1]" />
+              </span>
+            </Link>
           </div>
         </div>
       </div>

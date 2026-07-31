@@ -1,12 +1,15 @@
 "use client";
+
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 
 export default function ConditionalNavbar() {
   const pathname = usePathname();
-  const isChatPage = pathname.startsWith("/events/") && pathname.split("/").length > 2;
+  
+  // Hide public navbar on Admin dashboard pages and login page
+  const isHidePage = pathname.startsWith("/admin") || pathname.startsWith("/login");
 
-  if (isChatPage) {
+  if (isHidePage) {
     return null; 
   }
 

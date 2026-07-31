@@ -12,7 +12,7 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 ### Framework & Runtime
 * **Framework:** Next.js 16 (App Router)
 * **Runtime:** Node.js with React 19 & TypeScript 5
-* **Middleware:** Root `middleware.ts` & `proxy.ts` updating Supabase cookies and enforcing role permissions.
+* **Proxy Middleware:** `proxy.ts` (Next.js 16 proxy convention) updating Supabase cookies and enforcing role permissions for `/admin` paths.
 * **Styling:** Tailwind CSS v4 with Dark Design System combining Restrained Glassmorphism & Light Brutalism
 * **Typography:** `next/font/local` font optimization (`Quera`, `Gued`, `Rondured`) — zero CLS & preloaded fonts.
 
@@ -23,7 +23,7 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 * **Authentication:** Supabase Auth with Dual Login Modes: 6-Digit Email OTP verification & Password Authentication.
 * **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
 * **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
-* **RBAC Scoping:** Granular route and page-level permission scoping in Next.js `middleware.ts` and UI layout.
+* **RBAC Scoping:** Granular route and page-level permission scoping in Next.js `proxy.ts` and UI layout.
 
 ---
 
@@ -68,21 +68,21 @@ event-manager/
 │   ├── calendar/
 │   │   └── page.tsx               # Google Calendar view route (Month, Week, Day time-grid views)
 │   ├── components/
-│   │   ├── ConNav.tsx             # Global conditional Navbar wrapper
+│   │   ├── ConNav.tsx             # Global conditional Navbar wrapper hiding main navbar on /admin
 │   │   ├── EventAiDrawer.tsx      # Event Assistant slide-over drawer
 │   │   ├── GoogleCalendarView.tsx # Google Calendar component (Month/Week/Day time-grid views)
 │   │   ├── MasterCalendar.tsx     # Master event list timeline
-│   │   ├── Navbar.tsx             # Floating navbar with single Dashboard CTA button & Calendar fallback
+│   │   ├── Navbar.tsx             # Floating navbar with vector badge & single Calendar CTA button
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
 │   │   ├── page.tsx               # Public events directory
 │   │   └── [id]/
 │   │       └── page.tsx           # Dynamic event detail page with SEO JSON-LD schema
 │   ├── login/
-│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Authentication page with navbar clearance
+│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Authentication page
 │   ├── page.tsx                   # Public landing page with Quera/Gued font typography and brutalist tokens
 │   └── layout.tsx                 # Root layout with next/font/local (Quera, Gued, Rondured)
-├── middleware.ts                  # Root Next.js middleware routing for session refresh & admin security
+├── proxy.ts                       # Next.js 16 Proxy file for session refresh & admin security
 ├── fonts/                         # Custom font binaries (.otf, .ttf)
 ├── lib/
 │   ├── auth/
@@ -99,7 +99,6 @@ event-manager/
 │   └── upload.ts                  # Client-side WebP image converter & Vercel Blob API uploader
 ├── public/
 │   └── fonts/                     # Public font binaries for fallback web loading
-├── proxy.ts                       # Next.js 16 Edge proxy middleware entry point
 ├── changelogs.md                  # Versioning history & release notes
 ├── design.md                      # Design system & motion specification
 ├── project_memory.md              # Technical program memory (this file)
