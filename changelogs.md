@@ -4,6 +4,16 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.18.0] - 2026-07-31
+
+### 🎨 Clean Dark Product Redesign (Landing, Navigation & Google Calendar)
+- **Eliminated AI Fluff:** Permanently removed Three.js starfields/particles (`HeroCanvas.tsx`), excessive glassmorphism backdrop blurs, neon gradient glows, and tight font tracking.
+- **Landing Page Header (`app/page.tsx`):** Built clean product header with exactly two primary action buttons: `Explore Events` and `Explore Calendar`.
+- **Navigation Bar (`app/components/Navbar.tsx`):** Redesigned desktop and mobile header navigation displaying `Logo | Home | Calendar | Events | Communities` and dynamically including `Dashboard` when an admin/manager user is logged in.
+- **Google Calendar Route & View (`app/calendar/page.tsx` & `app/components/GoogleCalendarView.tsx`):** Built full Google Calendar interface supporting Month, Week, and Day views with hourly time-block grid cards positioned by actual duration, community filters, and click-to-open popover modals.
+
+---
+
 ## [0.17.0] - 2026-07-27
 
 ### 🕒 12-Hour Time Format Converter

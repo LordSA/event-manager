@@ -3,14 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  Calendar,
-  Home,
-  Users,
-  Search,
-  MessageSquare,
-  LogOut,
-} from 'lucide-react';
+import { Calendar, LogOut } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { UserRole } from '@/types/database.types';
 
@@ -73,111 +66,65 @@ export default function Navbar() {
     setRole(null);
   };
 
-  const mobileNavTabs = [
-    { label: 'Home', href: '/', icon: Home },
-    { label: 'Events', href: '/events', icon: Search },
-    { label: 'Communities', href: '/community', icon: Users },
+  const navLinks = [
+    { label: 'Home', href: '/' },
+    { label: 'Calendar', href: '/calendar' },
+    { label: 'Events', href: '/events' },
+    { label: 'Communities', href: '/community' },
   ];
 
+  if (user && role) {
+    navLinks.push({ label: 'Dashboard', href: '/admin' });
+  }
+
   return (
-    <>
-      {/* Desktop & Mobile Header */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#05070E]/90 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Brand Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <Calendar className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-extrabold text-lg tracking-tight text-white group-hover:text-cyan-400 transition-colors">
-                Whats @CEV
-              </span>
-            </div>
-          </Link>
-
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link
-              href="/"
-              className={`text-sm font-medium transition-colors ${
-                pathname === '/' ? 'text-cyan-400 font-bold' : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Home
-            </Link>
-
-            <Link
-              href="/events"
-              className={`text-sm font-medium transition-colors ${
-                pathname === '/events' ? 'text-cyan-400 font-bold' : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Discover Events
-            </Link>
-
-            <Link
-              href="/community"
-              className={`text-sm font-medium transition-colors ${
-                pathname === '/community' ? 'text-cyan-400 font-bold' : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Communities
-            </Link>
-
-            {user && (
-              <div className="flex items-center space-x-3 pl-3 border-l border-slate-800">
-                <Link
-                  href="/admin"
-                  className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-white hover:bg-slate-800 transition-colors flex items-center gap-1.5"
-                >
-                  <span>Manager Panel</span>
-                  {role && (
-                    <span className="uppercase text-[9px] font-bold text-cyan-400 bg-cyan-950 px-1.5 py-0.5 rounded border border-cyan-800">
-                      {role}
-                    </span>
-                  )}
-                </Link>
-
-                <button
-                  onClick={handleLogout}
-                  className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-900 transition-colors"
-                  title="Logout"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            )}
+    <header className="sticky top-0 z-40 w-full border-b border-neutral-800 bg-[#0a0a0a]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Brand Logo */}
+        <Link href="/" className="flex items-center space-x-2.5">
+          <div className="p-2 rounded-lg bg-neutral-800 border border-neutral-700 text-white">
+            <Calendar className="w-4 h-4 text-white" />
           </div>
-        </div>
-      </header>
+          <span className="font-bold text-base tracking-tight text-white">
+            Whats @CEV
+          </span>
+        </Link>
 
-      {/* Mobile App UI Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#05070E]/95 backdrop-blur-2xl border-t border-slate-800/80 px-2 py-2 shadow-[0_-10px_25px_rgba(0,0,0,0.5)]">
-        <div className="flex items-center justify-around">
-          {mobileNavTabs.map((tab) => {
-            const isActive = pathname === tab.href;
-            const Icon = tab.icon;
+        {/* Navigation Links */}
+        <nav className="flex items-center space-x-1 sm:space-x-6">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
             return (
               <Link
-                key={tab.label}
-                href={tab.href}
-                className={`flex flex-col items-center justify-center w-full py-1 rounded-xl transition-all relative ${
-                  isActive ? 'text-cyan-400' : 'text-slate-400 hover:text-slate-200'
+                key={link.label}
+                href={link.href}
+                className={`text-xs sm:text-sm font-medium transition-colors px-2 py-1 rounded-md ${
+                  isActive
+                    ? 'text-white font-semibold bg-neutral-800'
+                    : 'text-neutral-400 hover:text-white'
                 }`}
               >
-                {isActive && (
-                  <span className="absolute -top-2 w-8 h-1 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 shadow-md shadow-cyan-400/50" />
-                )}
-                <Icon className={`w-5 h-5 mb-1 ${isActive ? 'scale-110' : ''} transition-transform`} />
-                <span className={`text-[10px] tracking-tight ${isActive ? 'font-bold text-white' : 'font-medium'}`}>
-                  {tab.label}
-                </span>
+                {link.label}
               </Link>
             );
           })}
-        </div>
-      </nav>
-    </>
+
+          {user && (
+            <div className="flex items-center space-x-2 pl-3 border-l border-neutral-800">
+              <span className="hidden sm:inline-block uppercase text-[10px] font-bold text-neutral-300 bg-neutral-800 px-2 py-0.5 rounded border border-neutral-700">
+                {role}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="p-1.5 text-neutral-400 hover:text-white rounded-md hover:bg-neutral-800 transition-colors"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </nav>
+      </div>
+    </header>
   );
 }

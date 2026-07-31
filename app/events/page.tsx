@@ -13,24 +13,23 @@ export default function EventsDiscoveryPage() {
   const loading = eventsLoading || communitiesLoading;
 
   return (
-    <div className="min-h-screen bg-[#05070E] text-white flex flex-col">
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-20 md:pb-12 space-y-8">
-        <div className="space-y-3">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-800/60 text-xs font-semibold text-cyan-400">
-            <Calendar className="w-3.5 h-3.5" />
+    <div className="min-h-screen bg-[#0a0a0a] text-[#ededed] flex flex-col">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div className="space-y-2 border-b border-neutral-800 pb-6">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-xs font-medium text-neutral-300">
+            <Calendar className="w-3.5 h-3.5 text-neutral-400" />
             <span>Campus Event Directory</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-            Discover Campus Events
+          <h1 className="text-3xl font-bold tracking-tight text-white">
+            Campus Events & Workshops
           </h1>
-          <p className="text-slate-400 max-w-2xl text-base">
-            Toggle between Calendar View, Date Order List, or filter by your favorite campus community (IEEE, IEDC, TinkerHub, FOSS, MuLearn).
+          <p className="text-neutral-400 text-xs sm:text-sm max-w-2xl">
+            Discover workshops, hackathons, and technical sessions organized by student branches and technical communities across CEV.
           </p>
         </div>
 
-        {/* Master Discovery Component */}
         {loading ? (
-          <div className="p-12 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
+          <div className="p-12 text-center text-neutral-500 text-xs bg-[#121212] border border-neutral-800 rounded-xl">
             Loading campus events...
           </div>
         ) : (

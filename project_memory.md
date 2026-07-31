@@ -10,12 +10,12 @@ The platform centralizes scheduling, slot reservation, public discovery, and rea
 ## 2. Core Architecture & Tech Stack
 
 ### Framework & Runtime
-* **Framework:** [Next.js 16 (App Router)](https://nextjs.org/)
+* **Framework:** Next.js 16 (App Router)
 * **Runtime:** Node.js with React 19 & TypeScript 5
-* **Styling:** Tailwind CSS v4 with Glassmorphism, Custom HSL Gradients, and Dark-mode aesthetics
+* **Styling:** Tailwind CSS v4 with Clean Dark-Mode Product Aesthetic (Linear / Notion / Vercel design standard)
 
 ### Backend, Database & Authentication
-* **Database:** [Supabase](https://supabase.com/) (PostgreSQL with Row Level Security - RLS)
+* **Database:** Supabase (PostgreSQL with Row Level Security - RLS)
 * **Authentication:** Supabase Auth (6-Digit Email OTP verification & Next.js Edge Proxy Session Management)
 * **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
 * **Auth Callback:** `/auth/callback/route.ts` (Handles code exchange for session creation)
@@ -59,22 +59,25 @@ event-manager/
 │   │   ├── events/
 │   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine
 │   │   └── users/
-│   │       └── page.tsx           # Community Leads & Team Management Console (Scoped to Dev, Admin, Manager)
+│   │       └── page.tsx           # Community Leads & Team Management Console
+│   ├── calendar/
+│   │   └── page.tsx               # Google Calendar view route (Month, Week, Day time-grid views)
 │   ├── components/
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper
-│   │   ├── EventAiDrawer.tsx      # Framer Motion Event Assistant slide-over drawer
-│   │   ├── HeroCanvas.tsx         # Three.js / WebGL particle canvas
-│   │   ├── MasterCalendar.tsx     # 3-way view switcher (Calendar, List, Community Filter)
-│   │   ├── Navbar.tsx             # Single global header & Mobile App UI bottom nav bar
+│   │   ├── EventAiDrawer.tsx      # Event Assistant slide-over drawer
+│   │   ├── GoogleCalendarView.tsx # Google Calendar component (Month/Week/Day time-grid views)
+│   │   ├── HeroCanvas.tsx         # Clean background placeholder (particles removed)
+│   │   ├── MasterCalendar.tsx     # Master event list timeline
+│   │   ├── Navbar.tsx             # Clean product navigation bar (Logo | Home | Calendar | Events | Communities | Dashboard)
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
-│   │   ├── page.tsx               # Public events discovery page
+│   │   ├── page.tsx               # Public events discovery directory
 │   │   └── [id]/
 │   │       └── page.tsx           # Dynamic event detail page with SEO JSON-LD schema
 │   ├── login/
 │   │   └── page.tsx               # 6-Digit Email OTP Authentication page
-│   ├── page.tsx                   # Public hero landing page
-│   └── layout.tsx                 # Root layout with Lenis & ConditionalNavbar
+│   ├── page.tsx                   # Public landing page with two CTA buttons (Explore Events, Explore Calendar)
+│   └── layout.tsx                 # Root layout with Lenis & Navbar
 ├── lib/
 │   ├── auth/
 │   │   └── rbac.ts                # Dynamic RBAC matrix permission rules
@@ -89,7 +92,7 @@ event-manager/
 ├── public/                        # Static assets, posters, images
 ├── proxy.ts                       # Next.js 16 Edge proxy middleware entry point
 ├── changelogs.md                  # Versioning history & release notes
-├── design.md                      # Design system, color tokens, motion rules
+├── design.md                      # Design system & motion specification
 ├── project_memory.md              # Technical program memory (this file)
 └── README.md                      # Technical setup & developer guide
 ```
