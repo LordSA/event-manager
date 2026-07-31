@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Building, Plus, Trash2, ShieldAlert, Image as ImageIcon, Link2 } from 'lucide-react';
+import { Building, Plus, Trash2, ShieldAlert, Image as ImageIcon, Link2, Upload } from 'lucide-react';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
 import { UserRole } from '@/types/database.types';
+import { uploadImageFile } from '@/lib/upload';
 
 export default function CommunitiesManagementPage() {
   const { communities, setCommunities, loading } = useCommunities();
@@ -16,6 +17,23 @@ export default function CommunitiesManagementPage() {
   const [color, setColor] = useState('from-blue-600 to-cyan-400');
   const [initials, setInitials] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+
+  const handleLogoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    setUploading(true);
+    try {
+      const publicUrl = await uploadImageFile(file, 'logos');
+      setLogoUrl(publicUrl);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -212,17 +230,37 @@ export default function CommunitiesManagementPage() {
 
               <div>
                 <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
-                  Community Logo Image URL
+                  Community Logo (File Upload or URL)
                 </label>
-                <div className="relative">
-                  <input
-                    type="url"
-                    value={logoUrl}
-                    onChange={(e) => setLogoUrl(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
-                  />
-                  <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoFileUpload}
+                      disabled={uploading}
+                      id="comm-logo-modal-upload"
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="comm-logo-modal-upload"
+                      className="w-full bg-[#161a29] hover:bg-[#1e2436] text-[#94a3b8] hover:text-white rounded-lg px-3 py-2 text-xs border border-[#1e2436] flex items-center justify-center space-x-1.5 cursor-pointer transition-colors"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
+                      <span>{uploading ? 'Uploading...' : 'Upload File'}</span>
+                    </label>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type="url"
+                      value={logoUrl}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      placeholder="Or enter Image URL"
+                      className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg pl-8 pr-2.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
+                    />
+                    <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+                  </div>
                 </div>
               </div>
 

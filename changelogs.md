@@ -4,6 +4,16 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.21.0] - 2026-07-31
+
+### ☁️ Vercel Blob Storage Integration & Browser WebP Conversion
+- **Vercel Blob Storage (`@vercel/blob`):** Configured Vercel Blob Storage upload API route (`app/api/upload/route.ts`) for public asset storage.
+- **Client-Side WebP Conversion (`lib/upload.ts`):** Converts PNG, JPEG, GIF, AVIF, HEIC image files into compressed `.webp` format in the browser before sending to `/api/upload`.
+- **Database Link Persistence:** Stores public CDN URL links (`https://...public.blob.vercel-storage.com/...`) in Supabase PostgreSQL table columns (`events.poster_url`, `communities.logo_url`, `profiles.avatar_url`).
+- **Event Poster WebP Uploads (`app/admin/events/page.tsx`):** Added WebP poster file picker upload controls to the Event Booking Console.
+
+---
+
 ## [0.20.0] - 2026-07-31
 
 ### 🚀 Direct Image Asset Uploads & Mobile Responsive Layout Engine

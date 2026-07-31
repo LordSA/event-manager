@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle, Clock } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle, Clock, Upload, Image as ImageIcon } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
+import { uploadImageFile } from '@/lib/upload';
 
 function formatSingleTime12(t: string): string {
   if (!t) return '';
@@ -62,7 +63,34 @@ export default function EventBookingEnginePage() {
   const [selectedCommunityId, setSelectedCommunityId] = useState('');
   const [status, setStatus] = useState<'closed' | 'live'>('closed');
   const [desc, setDesc] = useState('');
+  const [posterUrl, setPosterUrl] = useState('');
+  const [uploadingPoster, setUploadingPoster] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const handlePosterFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFeedback({ type: 'error', message: 'Poster image file size must be under 5MB.' });
+      return;
+    }
+
+    setUploadingPoster(true);
+    setFeedback(null);
+
+    try {
+      const publicUrl = await uploadImageFile(file, 'posters');
+      setPosterUrl(publicUrl);
+      setFeedback({ type: 'success', message: 'Event poster WebP uploaded to Vercel Blob!' });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to upload poster image';
+      setFeedback({ type: 'error', message: msg });
+    } finally {
+      setUploadingPoster(false);
+    }
+  };
 
   useEffect(() => {
     const fetchActiveUser = async () => {
@@ -106,6 +134,7 @@ export default function EventBookingEnginePage() {
     setSelectedCommunityId(currentUserCommunityId || '');
     setStatus('closed');
     setDesc('');
+    setPosterUrl('');
     setShowModal(true);
   };
 
@@ -138,6 +167,7 @@ export default function EventBookingEnginePage() {
     setSelectedCommunityId(matchedComm ? matchedComm.id : (currentUserCommunityId || ''));
     setStatus(evt.status || 'closed');
     setDesc(evt.description || '');
+    setPosterUrl(evt.poster_url || evt.image || '');
     setShowModal(true);
   };
 
@@ -183,6 +213,7 @@ export default function EventBookingEnginePage() {
           status,
           description: desc,
           system_prompt: desc,
+          poster_url: posterUrl || null,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         }).eq('id', editingEvent.id);
         setFeedback({ type: 'success', message: 'Event slot updated successfully!' });
@@ -198,7 +229,8 @@ export default function EventBookingEnginePage() {
         community: commName,
         date: dateRangeString,
         time_slot: formattedTimeSlot,
-        image: '/images/bit.jpg',
+        poster_url: posterUrl || '/images/bit.jpg',
+        image: posterUrl || '/images/bit.jpg',
         description: desc || 'Full event details and schedule.',
         status,
         ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
@@ -216,6 +248,7 @@ export default function EventBookingEnginePage() {
           status,
           description: desc,
           system_prompt: desc,
+          poster_url: posterUrl || null,
           slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         });
@@ -675,6 +708,42 @@ export default function EventBookingEnginePage() {
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" /> Live (Publish Now)
                   </button>
+                </div>
+              </div>
+
+              {/* Event Poster WebP Upload Section */}
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  Event Poster Image (WebP Auto-Compressed Vercel Blob Upload)
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePosterFileUpload}
+                      disabled={uploadingPoster}
+                      id="poster-file-upload"
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="poster-file-upload"
+                      className="w-full bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl px-4 py-2.5 text-xs border border-slate-800 flex items-center justify-center space-x-2 cursor-pointer transition-colors"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>{uploadingPoster ? 'Uploading Poster...' : 'Upload Poster File'}</span>
+                    </label>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type="url"
+                      value={posterUrl}
+                      onChange={(e) => setPosterUrl(e.target.value)}
+                      placeholder="Or enter Poster URL link"
+                      className="w-full bg-slate-900 border border-slate-800 text-white placeholder-slate-500 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
 

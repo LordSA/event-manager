@@ -3,7 +3,7 @@
 ## 1. Executive Summary & Overview
 This repository contains **Whats @CEV / Event Manager**, a high-performance multi-community event management, publishing, and discovery platform tailored for campus organizations and technical communities (IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
 
-The platform centralizes scheduling, slot reservation, public discovery, direct binary image asset uploads (avatars & community logos via Supabase Storage), and real-time contextual event support via an intelligent **Event Assistant** powered by a multi-provider fallback architecture with a friendly peer-to-peer campus buddy persona.
+The platform centralizes scheduling, slot reservation, public discovery, direct binary image asset WebP uploads (via `@vercel/blob` & `/api/upload` API route), and real-time contextual event support via an intelligent **Event Assistant** powered by a multi-provider fallback architecture with a friendly peer-to-peer campus buddy persona.
 
 ---
 
@@ -15,9 +15,10 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 * **Styling:** Tailwind CSS v4 with Dark Design System combining Restrained Glassmorphism & Light Brutalism
 * **Typography:** Custom font stack (`Quera`, `Gued`, `Rondured`) — Inter is completely removed.
 
-### Backend, Database & Storage
-* **Database & Storage:** Supabase PostgreSQL with RLS & Public Storage Buckets (`avatars`, `community-logos`)
-* **Upload Utility:** `lib/supabase/storage.ts` (`uploadImageToSupabase`)
+### Backend, Database & Vercel Blob Storage
+* **Database:** Supabase PostgreSQL with RLS (`events.poster_url`, `communities.logo_url`, `profiles.avatar_url`)
+* **Storage Provider:** Vercel Blob Storage (`@vercel/blob`)
+* **Upload Engine:** Next.js API Route `/api/upload/route.ts` & Client-Side WebP Converter `lib/upload.ts`
 * **Authentication:** Supabase Auth with Dual Login Modes: 6-Digit Email OTP verification & Password Authentication.
 * **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
 * **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
@@ -47,8 +48,10 @@ event-manager/
 │   │   ├── admin/
 │   │   │   └── users/
 │   │   │       └── route.ts       # Supabase Auth + Profiles admin management API endpoint
-│   │   └── chat/
-│   │       └── route.ts           # Multi-provider fallback AI chat endpoint with friendly peer persona
+│   │   ├── chat/
+│   │   │   └── route.ts           # Multi-provider fallback AI chat endpoint with friendly peer persona
+│   │   └── upload/
+│   │       └── route.ts           # Vercel Blob API upload route (@vercel/blob put)
 │   ├── auth/
 │   │   └── callback/
 │   │       └── route.ts           # Supabase Auth code exchange handler
@@ -56,9 +59,9 @@ event-manager/
 │   │   ├── layout.tsx             # Protected Admin layout with role-based navigation sidebar
 │   │   ├── page.tsx               # Admin Dashboard overview metrics
 │   │   ├── communities/
-│   │   │   └── page.tsx           # Community Entity Management with logo image upload & slug editing
+│   │   │   └── page.tsx           # Community Entity Management with logo WebP upload & slug editing
 │   │   ├── events/
-│   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine
+│   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine with poster WebP upload
 │   │   └── users/
 │   │       └── page.tsx           # Community Leads & Team Management Console
 │   ├── calendar/
@@ -85,11 +88,12 @@ event-manager/
 │   │   ├── useCommunities.ts      # Real-time Supabase hook for communities
 │   │   ├── useProfiles.ts         # Real-time Supabase hook for user profiles
 │   │   └── useRealtimeEvents.ts   # Real-time Supabase hook for events
-│   └── supabase/
-│       ├── client.ts              # Browser Supabase client creator
-│       ├── middleware.ts          # Edge cookie session updater & protected route proxy
-│       ├── server.ts              # Server Supabase client creator
-│       └── storage.ts             # Supabase storage image upload utility helper
+│   ├── supabase/
+│   │   ├── client.ts              # Browser Supabase client creator
+│   │   ├── middleware.ts          # Edge cookie session updater & protected route proxy
+│   │   ├── server.ts              # Server Supabase client creator
+│   │   └── storage.ts             # Storage adapter delegating to lib/upload.ts
+│   └── upload.ts                  # Client-side WebP image converter & Vercel Blob API uploader
 ├── public/                        # Static assets, logo.png, posters, images
 ├── proxy.ts                       # Next.js 16 Edge proxy middleware entry point
 ├── changelogs.md                  # Versioning history & release notes

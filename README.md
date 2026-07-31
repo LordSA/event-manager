@@ -4,6 +4,7 @@
 
 [![Framework](https://img.shields.io/badge/Framework-Next.js_16-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
 [![Database](https://img.shields.io/badge/Database-Supabase_PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![Storage](https://img.shields.io/badge/Storage-Vercel_Blob-black?style=for-the-badge&logo=vercel)](https://vercel.com/docs/storage/vercel-blob)
 [![AI Architecture](https://img.shields.io/badge/AI-Gemini_%E2%86%92_Grok_%E2%86%92_OpenRouter-blueviolet?style=for-the-badge)](https://ai.google.dev/)
 [![Design System](https://img.shields.io/badge/Design-Clean_Dark_Product-black?style=for-the-badge)](https://tailwindcss.com/)
 
@@ -11,7 +12,7 @@
 
 ## 📖 Overview
 
-In campus environments and multi-organization setups, event information is often scattered across dozens of messaging groups, posters, and scattered sites. **Whats @CEV** is a high-performance event discovery and management platform designed with a clean, dark product aesthetic (Linear / Vercel / Google Calendar level). It acts as a central hub for multiple campus communities (such as IEEE, IEDC, TinkerHub, FOSS, and MuLearn) to coordinate event dates, publish schedules, prevent date overlaps via slot booking, explore interactive Google Calendar views, and answer attendee questions using an interactive **Event Assistant**.
+In campus environments and multi-organization setups, event information is often scattered across dozens of messaging groups, posters, and scattered sites. **Whats @CEV** is a high-performance event discovery and management platform designed with a clean, dark product aesthetic (Linear / Vercel / Google Calendar level). It acts as a central hub for multiple campus communities (such as IEEE, IEDC, TinkerHub, FOSS, and MuLearn) to coordinate event dates, publish schedules, prevent date overlaps via slot booking, upload WebP images via Vercel Blob Storage, explore interactive Google Calendar views, and answer attendee questions using an interactive **Event Assistant**.
 
 ---
 

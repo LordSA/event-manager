@@ -40,13 +40,14 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ---
 
-## 5. Navigation & Image Upload Architecture
+## 5. Navigation & Asset Upload Architecture
 
 ### Header Navigation (`app/components/Navbar.tsx`)
 * **Floating Glass Pill Design:** Dynamic scroll detection (`window.scrollY > 20`) transitioning from `py-6 px-4` to `py-3 px-10` with a floating rounded pill backdrop (`rounded-[2rem] bg-[#0f121d]/85 backdrop-blur-xl border border-[#1e2436]`).
 * **GSAP Entrance Animations:** GSAP context animations for `.nav-logo` and `.nav-item` stagger entrance on component mount.
 * **Responsive Layout Padding:** All main page containers feature safe top padding (`pt-28 md:pt-32`) to prevent floating header overlaps across mobile, tablet, and desktop viewports.
 
-### Image Asset Storage Engine (`lib/supabase/storage.ts`)
-* **User Avatars Bucket (`avatars`):** Direct image file upload support in user profile management.
-* **Community Logos Bucket (`community-logos`):** Direct image file upload support in admin community console and manager settings.
+### Image Asset Storage Engine (`@vercel/blob` + `/api/upload` API Route)
+* **Vercel Blob Storage Integration:** Images (posters, community logos, user avatars) uploaded via `/api/upload` route using `@vercel/blob`.
+* **Browser WebP Auto-Compression (`lib/upload.ts`):** Converts PNG, JPEG, GIF, AVIF, HEIC input images to WebP format in the browser (`image/webp` 0.82 quality) prior to uploading.
+* **Database Table Link Persistence:** Public CDN links returned by Vercel Blob (`https://...public.blob.vercel-storage.com/...`) are stored directly in Supabase PostgreSQL table columns (`events.poster_url`, `communities.logo_url`, `profiles.avatar_url`).

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Key, Image as ImageIcon, CheckCircle2, AlertCircle, Shield, Building, Upload } from 'lucide-react';
 import Image from 'next/image';
-import { uploadImageToSupabase } from '@/lib/supabase/storage';
+import { uploadImageFile } from '@/lib/upload';
 
 export default function MyProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -43,9 +43,8 @@ export default function MyProfilePage() {
     if (!files || files.length === 0) return;
     const file = files[0];
 
-    // File size validation (Max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      setToastMsg({ type: 'error', text: 'Image file size must be under 2MB.' });
+    if (file.size > 5 * 1024 * 1024) {
+      setToastMsg({ type: 'error', text: 'Image file size must be under 5MB.' });
       return;
     }
 
@@ -53,9 +52,9 @@ export default function MyProfilePage() {
     setToastMsg(null);
 
     try {
-      const publicUrl = await uploadImageToSupabase(file, 'avatars', profile?.id || 'users');
+      const publicUrl = await uploadImageFile(file, 'avatars');
       setAvatarUrl(publicUrl);
-      setToastMsg({ type: 'success', text: 'Profile image uploaded successfully!' });
+      setToastMsg({ type: 'success', text: 'Profile WebP avatar uploaded to Vercel Blob!' });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to upload image';
       setToastMsg({ type: 'error', text: msg });
@@ -82,7 +81,7 @@ export default function MyProfilePage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setToastMsg({ type: 'success', text: 'Your profile and avatar have been updated!' });
+        setToastMsg({ type: 'success', text: 'Your profile and avatar link have been saved to Supabase!' });
         setPassword('');
         if (data.profile) {
           setProfile((prev: any) => ({ ...prev, ...data.profile }));
@@ -114,7 +113,7 @@ export default function MyProfilePage() {
           My Profile & Account Settings
         </h1>
         <p className="text-xs text-[#94a3b8] mt-0.5">
-          Manage your personal profile details, upload avatar picture, and change password.
+          Manage your personal profile details, WebP avatar picture, and password.
         </p>
       </div>
 
@@ -202,10 +201,10 @@ export default function MyProfilePage() {
             </div>
           </div>
 
-          {/* Profile Picture Upload Section */}
+          {/* Profile Picture WebP Upload Section */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider">
-              Profile Avatar Picture (File Upload or URL)
+              Profile Avatar (WebP Auto-Compressed Vercel Blob Upload)
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="relative">
@@ -222,7 +221,7 @@ export default function MyProfilePage() {
                   className="w-full bg-[#161a29] hover:bg-[#1e2436] text-[#94a3b8] hover:text-white rounded-lg px-4 py-2.5 text-xs border border-[#1e2436] flex items-center justify-center space-x-2 cursor-pointer transition-colors"
                 >
                   <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
-                  <span>{uploading ? 'Uploading Image...' : 'Upload Image File'}</span>
+                  <span>{uploading ? 'Converting & Uploading...' : 'Upload Image File'}</span>
                 </label>
               </div>
 
@@ -231,7 +230,7 @@ export default function MyProfilePage() {
                   type="url"
                   value={avatarUrl}
                   onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="Or enter Image URL"
+                  placeholder="Or enter Image URL link"
                   className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-9 pr-3 py-2.5 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
                 />
                 <ImageIcon className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-3" />
@@ -261,7 +260,7 @@ export default function MyProfilePage() {
               disabled={saving || uploading}
               className="brutalist-btn-primary px-6 py-2 rounded-lg text-xs disabled:opacity-50"
             >
-              {saving ? 'Saving...' : 'Save Profile Changes'}
+              {saving ? 'Saving Profile...' : 'Save Profile Changes'}
             </button>
           </div>
         </form>

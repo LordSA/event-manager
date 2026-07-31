@@ -1,25 +1,16 @@
-import { createClient } from '@/lib/supabase/client';
+import { uploadImageFile } from '@/lib/upload';
 
 export async function uploadImageToSupabase(
   file: File,
-  bucket: 'avatars' | 'community-logos',
+  bucket: 'avatars' | 'community-logos' | 'posters',
   folderPath: string = ''
 ): Promise<string> {
-  const supabase = createClient();
-  const fileExt = file.name.split('.').pop() || 'png';
-  const fileName = `${folderPath ? `${folderPath}/` : ''}${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+  const categoryMap: Record<string, 'posters' | 'logos' | 'avatars'> = {
+    'avatars': 'avatars',
+    'community-logos': 'logos',
+    'posters': 'posters',
+  };
 
-  const { error: uploadError } = await supabase.storage
-    .from(bucket)
-    .upload(fileName, file, {
-      cacheControl: '3600',
-      upsert: true,
-    });
-
-  if (uploadError) {
-    throw new Error(`Upload failed: ${uploadError.message}`);
-  }
-
-  const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
-  return data.publicUrl;
+  const category = categoryMap[bucket] || 'posters';
+  return await uploadImageFile(file, category);
 }

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Building, Edit2, CheckCircle2, AlertCircle, Eye, ShieldAlert, Image as ImageIcon, Upload } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
-import { uploadImageToSupabase } from '@/lib/supabase/storage';
+import { uploadImageFile } from '@/lib/upload';
 
 export default function MyCommunityPage() {
   const [community, setCommunity] = useState<any>(null);
@@ -54,8 +54,8 @@ export default function MyCommunityPage() {
     if (!files || files.length === 0) return;
     const file = files[0];
 
-    if (file.size > 2 * 1024 * 1024) {
-      setToastMsg({ type: 'error', text: 'Logo image file size must be under 2MB.' });
+    if (file.size > 5 * 1024 * 1024) {
+      setToastMsg({ type: 'error', text: 'Logo image file size must be under 5MB.' });
       return;
     }
 
@@ -63,9 +63,9 @@ export default function MyCommunityPage() {
     setToastMsg(null);
 
     try {
-      const publicUrl = await uploadImageToSupabase(file, 'community-logos', community?.id || 'communities');
+      const publicUrl = await uploadImageFile(file, 'logos');
       setLogoUrl(publicUrl);
-      setToastMsg({ type: 'success', text: 'Community logo uploaded successfully!' });
+      setToastMsg({ type: 'success', text: 'Community WebP logo uploaded to Vercel Blob!' });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to upload logo';
       setToastMsg({ type: 'error', text: msg });
@@ -103,7 +103,7 @@ export default function MyCommunityPage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setToastMsg({ type: 'success', text: 'Community details updated successfully!' });
+        setToastMsg({ type: 'success', text: 'Community details and logo link saved to Supabase!' });
         if (data.community) {
           setCommunity((prev: any) => ({ ...prev, ...data.community }));
         }
@@ -229,10 +229,10 @@ export default function MyCommunityPage() {
             </div>
           </div>
 
-          {/* Logo Upload Section */}
+          {/* WebP Logo Upload Section */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider">
-              Community Logo (File Upload or Image URL)
+              Community Logo (WebP Auto-Compressed Vercel Blob Upload)
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
@@ -251,7 +251,7 @@ export default function MyCommunityPage() {
                   }`}
                 >
                   <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
-                  <span>{uploading ? 'Uploading Logo...' : 'Upload Logo File'}</span>
+                  <span>{uploading ? 'Converting & Uploading...' : 'Upload Logo File'}</span>
                 </label>
               </div>
 
@@ -261,7 +261,7 @@ export default function MyCommunityPage() {
                   disabled={!isEditable}
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
-                  placeholder="Or enter Image URL"
+                  placeholder="Or enter Image URL link"
                   className="w-full bg-[#161a29] text-white disabled:text-slate-500 rounded-lg px-3.5 py-2 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
                 />
               </div>
