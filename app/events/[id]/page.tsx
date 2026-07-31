@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Shield, Users } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users } from 'lucide-react';
 import EventAiDrawer from '@/app/components/EventAiDrawer';
 import { createClient } from '@/lib/supabase/client';
 
@@ -33,6 +33,35 @@ function formatTimeSlotTo12Hr(slot?: string): string {
     return `${formatSingleTime12(parts[0])} - ${formatSingleTime12(parts[1])}`;
   }
   return formatSingleTime12(slot);
+}
+
+/**
+ * Refactors detailed event description into a clean 4-5 line public overview,
+ * filtering out raw AI system prompts if accidentally included in description.
+ */
+function refactorDescription4To5Lines(text: string | null | undefined): string {
+  if (!text) return 'Join us for an interactive technical session with campus community leads and organizers.';
+
+  // Strip system prompt preamble if present
+  let cleaned = text
+    .replace(/You are the official AI Assistant[\s\S]*/gi, '')
+    .replace(/EVENT DETAILS:[\s\S]*/gi, '')
+    .replace(/TONE INSTRUCTIONS:[\s\S]*/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!cleaned) {
+    return 'Discover event details, workshop modules, and interactive sessions organized for campus students.';
+  }
+
+  // Extract up to 4-5 sentences
+  const sentences = cleaned.match(/[^.!?]+[.!?]+/g);
+  if (sentences && sentences.length >= 4) {
+    const fourToFiveSentences = sentences.slice(0, 5).map(s => s.trim()).join(' ');
+    return fourToFiveSentences.length > 380 ? fourToFiveSentences.slice(0, 377) + '...' : fourToFiveSentences;
+  }
+
+  return cleaned.length > 350 ? cleaned.slice(0, 347) + '...' : cleaned;
 }
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -88,9 +117,10 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
   const communityName = eventData.community?.name || 'Campus Community';
   const cleanTitle = eventData.title ? eventData.title.replace(/\*\*/g, '').trim() : 'Event Session';
+  const publicDescription = refactorDescription4To5Lines(eventData.description);
 
   return (
-    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 font-sans relative">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Top Back Link */}
         <Link
@@ -119,9 +149,25 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 {cleanTitle}
               </h1>
 
-              {/* Event Description (Full Admin Version) */}
-              <div className="text-sm text-[#94a3b8] leading-relaxed space-y-3 whitespace-pre-wrap border-t border-b border-[#1e2436] py-4">
-                {eventData.description}
+              {/* 4-5 Line Refactored Public Description */}
+              <div className="space-y-4 border-t border-b border-[#1e2436] py-5">
+                <p className="text-sm text-[#94a3b8] leading-relaxed">
+                  {publicDescription}
+                </p>
+
+                {/* Callout box encouraging user to ask Assistant */}
+                <div className="p-3.5 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center justify-between gap-3 text-xs text-[#94a3b8]">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-[#6366f1] shrink-0" />
+                    <span>Need full guidelines, timeline, or FAQs?</span>
+                  </div>
+                  <button
+                    onClick={() => setAiDrawerOpen(true)}
+                    className="text-[#6366f1] hover:text-white font-bold uppercase tracking-wider text-[11px] underline shrink-0"
+                  >
+                    Ask Assistant &rarr;
+                  </button>
+                </div>
               </div>
 
               {/* Event Metadata Grid */}
@@ -203,7 +249,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         isOpen={aiDrawerOpen}
         onClose={() => setAiDrawerOpen(false)}
         eventTitle={cleanTitle}
-        systemPrompt={eventData.system_prompt || `You are the event assistant for ${cleanTitle}.`}
+        systemPrompt={eventData.system_prompt || eventData.description || `You are the event assistant for ${cleanTitle}.`}
       />
     </div>
   );

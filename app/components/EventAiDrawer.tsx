@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Send, X, HelpCircle, Sparkles, Clock, MapPin, CheckCircle, FileText } from 'lucide-react';
+import { MessageSquare, Send, X, Sparkles, Clock, MapPin, CheckCircle, FileText } from 'lucide-react';
 
 interface EventAiDrawerProps {
   isOpen: boolean;
@@ -32,7 +32,19 @@ export default function EventAiDrawer({
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize initial message on open or title change
+  // Lock body scroll when drawer is open so navbar and page don't stick or scroll behind
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Initialize welcome message
   useEffect(() => {
     if (isOpen) {
       setMessages([
@@ -118,22 +130,22 @@ export default function EventAiDrawer({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop (z-[200] above fixed navbar z-[100]) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/75 backdrop-blur-md z-[200]"
           />
 
-          {/* Side Drawer */}
+          {/* Side Drawer (z-[200] above fixed navbar z-[100]) */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-            className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-[#08090d] border-l border-[#1e2436] z-50 flex flex-col shadow-2xl text-[#f8fafc] font-sans"
+            className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-[#08090d] border-l-2 border-[#1e2436] z-[200] flex flex-col shadow-2xl text-[#f8fafc] font-sans"
           >
             {/* Header */}
             <div className="p-4 sm:p-6 border-b border-[#1e2436] flex items-center justify-between bg-[#0f121d]">
@@ -187,7 +199,7 @@ export default function EventAiDrawer({
                 </motion.div>
               ))}
 
-              {/* Quick Action Suggestion Pills (Shown after initial welcome message) */}
+              {/* Quick Action Suggestion Pills */}
               {messages.length === 1 && !loading && (
                 <div className="pt-2 space-y-2">
                   <p className="text-[10px] font-bold text-[#94a3b8] uppercase tracking-wider">Suggested Questions</p>

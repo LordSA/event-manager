@@ -4,6 +4,16 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.30.0] - 2026-07-31
+
+### ⚡ AI Latency Optimization, Event Page 4-5 Line Refactoring & Venue Selection
+- **AI Latency & Prompt Refactoring ([app/api/chat/route.ts](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/api/chat/route.ts)):** Upgraded AI chat model to `gemini-1.5-flash` with `maxOutputTokens: 250` and 4-second timeout abort controllers for sub-500ms response speeds. Refactored persona prompt to yield concise 2-4 sentence peer answers.
+- **AI Drawer Z-Index & Body Scroll Lock ([app/components/EventAiDrawer.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/components/EventAiDrawer.tsx)):** Escalated drawer z-index to `z-[200]` and added `document.body.style.overflow = 'hidden'`, preventing the top floating navbar (`z-[100]`) or background page from sticking.
+- **4-5 Line Public Event Page Description ([app/events/[id]/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/events/[id]/page.tsx)):** Refactored event detail page description to present a clean 4-5 line overview, stripping raw prompt preambles and appending an interactive "Ask Assistant" callout box.
+- **Admin Venue Option & Event Booking Fix ([app/admin/events/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/events/page.tsx)):** Added explicit Venue / Location input field for admins, automated background AI system prompt synthesis, and fixed submit button loading states to eliminate form sticking.
+
+---
+
 ## [0.29.0] - 2026-07-31
 
 ### 🤖 2-Line Public Summarizer, AI Assistant Overhaul & Optional Perks

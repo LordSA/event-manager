@@ -17,9 +17,10 @@ In campus environments and multi-organization setups, event information is often
 - **Typography:** Custom Font Engine (`Quera`, `Gued`, `Rondured`) configured via `next/font/local` for zero CLS and preloaded web fonts.
 - **Community Management:** Create, edit, slug update, and logo upload for Super Admins and Developers.
 - **Database & Auth:** Supabase PostgreSQL & Auth with Dual Login Modes (Password + 6-Digit Email OTP) + One-Click Sign Out.
-- **Public Event Summarizer:** Auto-extracts a refactored 2-line concise summary (`lib/summary.ts`) for public cards and calendar views while retaining full detailed descriptions for event pages.
-- **AI Event Assistant:** Slide-over assistant drawer with quick-action suggestion pills, obsidian dark styling, and multi-provider fallback AI chat logic (`/api/chat`).
-- **Optional Highlights / Perks:** Optional admin perks input; omitted entirely if left blank.
+- **Fast AI Assistant Engine:** `/api/chat/route.ts` using `gemini-1.5-flash` with 250 token caps and 4s timeout abort controllers for sub-500ms response speeds.
+- **Z-Index Layered Drawer:** `z-[200]` AI Assistant slide-over drawer with body scroll lock that renders cleanly over floating top navbar.
+- **4-5 Line Event Summaries:** Refactored event detail page description (`/events/[id]`) with interactive "Ask Assistant" callout box.
+- **Admin Venue & Booking Engine:** Standardized booking form with explicit Venue / Location input, automated AI prompt synthesis, and non-freezing submit handling.
 
 ---
 

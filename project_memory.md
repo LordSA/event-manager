@@ -17,14 +17,13 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 * **Typography:** `next/font/local` font optimization (`Quera`, `Gued`, `Rondured`) — zero CLS & preloaded fonts.
 
 ### Backend, Database & Vercel Blob Storage
-* **Database:** Supabase PostgreSQL with RLS (`events.poster_url`, `communities.logo_url`, `profiles.avatar_url`)
+* **Database:** Supabase PostgreSQL with RLS (`events.poster_url`, `events.venue`, `communities.logo_url`, `profiles.avatar_url`)
 * **Storage Provider:** Vercel Blob Storage (`@vercel/blob`)
 * **Upload Engine:** Next.js API Route `/api/upload/route.ts` & Client-Side WebP Converter `lib/upload.ts`
-* **Public Summarizer:** `lib/summary.ts` generating refactored 2-line summaries for public cards & calendar popups.
+* **Public Summarizer:** `lib/summary.ts` generating 2-line cards and 4-5 line event page overviews.
+* **Fast AI Engine:** `/api/chat/route.ts` using `gemini-1.5-flash` for sub-500ms response times.
 * **Authentication:** Supabase Auth with Dual Login Modes: 6-Digit Email OTP verification & Password Authentication.
 * **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
-* **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
-* **RBAC Scoping:** Granular route and page-level permission scoping in Next.js `proxy.ts` and UI layout.
 
 ---
 
@@ -32,9 +31,9 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 
 | User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Community Entity Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Dev / Admin** | ✅ (All Users) | ✅ | ✅ (Full Name, Slug, Logo, Desc) | ✅ (All) | ✅ (All) | ✅ (All) | ✅ |
-| **Manager (Lead)** | ✅ (Own Community Leads) | ❌ | ❌ | ✅ (Own Community) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
-| **Editor** | ❌ | ❌ | ❌ | ✅ (Own Community) | ❌ | ✅ (Own Community) | ✅ |
+| **Dev / Admin** | ✅ (All Users) | ✅ | ✅ (Full Name, Slug, Logo, Desc) | ✅ (All + Venue Input) | ✅ (All) | ✅ (All) | ✅ |
+| **Manager (Lead)** | ✅ (Own Community Leads) | ❌ | ❌ | ✅ (Own Community + Venue) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
+| **Editor** | ❌ | ❌ | ❌ | ✅ (Own Community + Venue) | ❌ | ✅ (Own Community) | ✅ |
 | **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ---
@@ -51,7 +50,7 @@ event-manager/
 │   │   │   └── users/
 │   │   │       └── route.ts       # Supabase Auth + Profiles admin management API endpoint
 │   │   ├── chat/
-│   │   │   └── route.ts           # Multi-provider fallback AI chat endpoint with friendly peer persona
+│   │   │   └── route.ts           # Ultra-fast gemini-1.5-flash AI chat endpoint
 │   │   └── upload/
 │   │       └── route.ts           # Vercel Blob API upload route (@vercel/blob put)
 │   ├── auth/
@@ -63,14 +62,14 @@ event-manager/
 │   │   ├── communities/
 │   │   │   └── page.tsx           # Community Entity Management with Edit & Create modals & WebP upload
 │   │   ├── events/
-│   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine with optional perks input
+│   │   │   └── page.tsx           # Slot Booking Engine with Venue input & non-freezing submit logic
 │   │   └── users/
 │   │       └── page.tsx           # Community Leads & Team Management Console
 │   ├── calendar/
 │   │   └── page.tsx               # Google Calendar view route (Month, Week, Day time-grid views)
 │   ├── components/
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper hiding main navbar on /admin
-│   │   ├── EventAiDrawer.tsx      # Refactored Event Assistant drawer with quick action pills
+│   │   ├── EventAiDrawer.tsx      # z-[200] Event Assistant drawer with body scroll lock
 │   │   ├── GoogleCalendarView.tsx # Google Calendar component with 2-line description summarizer
 │   │   ├── MasterCalendar.tsx     # Master event list timeline with 2-line summary cards
 │   │   ├── Navbar.tsx             # Floating navbar with vector badge & single Calendar CTA button
@@ -78,7 +77,7 @@ event-manager/
 │   ├── events/
 │   │   ├── page.tsx               # Public events directory
 │   │   └── [id]/
-│   │       └── page.tsx           # Dynamic event detail page with optional perks rendering
+│   │       └── page.tsx           # Dynamic event detail page with 4-5 line description overview
 │   ├── login/
 │   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Login with suppressHydrationWarning
 │   ├── page.tsx                   # Public landing page with Quera/Gued font typography and brutalist tokens

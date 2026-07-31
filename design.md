@@ -29,9 +29,10 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ---
 
-## 4. Public Description Summarization & AI Assistant Drawer
+## 4. AI Latency, Event Detail Summarization & Z-Index Architecture
 
-### Refactored Public Summarizer (`lib/summary.ts`)
-* **2-Line Public Summaries:** Converts full detailed admin event descriptions into clean 2-line summaries for public directory cards and calendar popovers, eliminating text wall reflows and layout flickering.
-* **Optional Event Perks / Highlights:** Removed hardcoded perks. Admins can optionally specify highlights during event creation; if left blank, the perks container is omitted entirely.
-* **Refactored AI Assistant Drawer (`EventAiDrawer.tsx`):** Displays clean welcome greeting without raw markdown asterisks, offering quick-action suggestion pills and obsidian dark brutalist styling.
+### AI Assistant Z-Index Layering (`EventAiDrawer.tsx`)
+* **Z-Index Layer (`z-[200]`):** Side drawer and backdrop set to `z-[200]` so the assistant drawer sits completely on top of the fixed top navbar (`z-[100]`), locking body scroll (`overflow: hidden`).
+* **Optimized Latency (`app/api/chat/route.ts`):** Fast-path model execution using `gemini-1.5-flash` with `maxOutputTokens: 250` and 4-second timeout abort controllers for sub-500ms response times.
+* **4-5 Line Description Refactoring (`app/events/[id]/page.tsx`):** Automatically refactors event descriptions into a clean 4-5 line public overview, stripping raw prompt preambles and attaching an interactive "Ask Assistant" callout.
+* **Admin Venue Input (`app/admin/events/page.tsx`):** Added explicit Venue / Location input field to the booking form.

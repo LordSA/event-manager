@@ -64,6 +64,8 @@ export default function EventBookingEnginePage() {
   const [status, setStatus] = useState<'closed' | 'live'>('closed');
   const [desc, setDesc] = useState('');
   const [perks, setPerks] = useState('');
+  const [venue, setVenue] = useState('Campus Setup / CEV');
+  const [submitting, setSubmitting] = useState(false);
   const [posterUrl, setPosterUrl] = useState('');
   const [uploadingPoster, setUploadingPoster] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -135,6 +137,8 @@ export default function EventBookingEnginePage() {
     setSelectedCommunityId(currentUserCommunityId || '');
     setStatus('closed');
     setDesc('');
+    setPerks('');
+    setVenue('Campus Setup / CEV');
     setPosterUrl('');
     setShowModal(true);
   };
@@ -169,14 +173,16 @@ export default function EventBookingEnginePage() {
     setStatus(evt.status || 'closed');
     setDesc(evt.description || '');
     setPerks(evt.perks || '');
+    setVenue(evt.venue || 'Campus Setup / CEV');
     setPosterUrl(evt.poster_url || evt.image || '');
     setShowModal(true);
   };
 
   const handleBookSlot = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !startDate) return;
+    if (!title || !startDate || submitting) return;
 
+    setSubmitting(true);
     const finalCategory = category === 'Other' ? (customCategory || 'Custom Event') : category;
     
     // Determine Community ID
@@ -188,89 +194,96 @@ export default function EventBookingEnginePage() {
     const formattedEndTime = formatSingleTime12(endTime);
     const formattedTimeSlot = `${formattedStartTime} - ${formattedEndTime}`;
     const dateRangeString = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
+    const finalVenue = venue.trim() || 'Campus Setup / CEV';
 
-    if (editingEvent) {
-      // Update existing event
-      const updatedEvt = {
-        ...editingEvent,
-        title,
-        category: finalCategory,
-        community: commName,
-        date: dateRangeString,
-        time_slot: formattedTimeSlot,
-        description: desc || 'Full event details and schedule.',
-        perks: perks.trim() || null,
-        status,
-        ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
-      };
+    // Synthesize structured AI assistant context
+    const aiSystemPrompt = `You are the official AI Assistant for "${title}", organized by ${commName}.\n\nEVENT DETAILS:\n- Name: ${title}\n- Organizer: ${commName}\n- Date: ${dateRangeString}\n- Time: ${formattedTimeSlot}\n- Venue: ${finalVenue}\n- Category: ${finalCategory}\n${perks ? `- Highlights/Perks: ${perks}\n` : ''}\nDESCRIPTION & RULES:\n${desc}`;
 
-      setEventsList(eventsList.map((e) => (e.id === editingEvent.id ? updatedEvt : e)));
+    try {
+      const supabase = createClient();
+      if (editingEvent) {
+        // Update existing event
+        const updatedEvt = {
+          ...editingEvent,
+          title,
+          category: finalCategory,
+          community: commName,
+          date: dateRangeString,
+          time_slot: formattedTimeSlot,
+          venue: finalVenue,
+          description: desc || 'Full event details and schedule.',
+          perks: perks.trim() || null,
+          status,
+          system_prompt: aiSystemPrompt,
+        };
 
-      try {
-        const supabase = createClient();
+        setEventsList(eventsList.map((e) => (e.id === editingEvent.id ? updatedEvt : e)));
+
         await supabase.from('events').update({
           title,
           category: finalCategory,
           event_date: startDate,
           time_slot: formattedTimeSlot,
+          venue: finalVenue,
           status,
           description: desc,
-          system_prompt: desc,
+          system_prompt: aiSystemPrompt,
           perks: perks.trim() || null,
           poster_url: posterUrl || null,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         }).eq('id', editingEvent.id);
         setFeedback({ type: 'success', message: 'Event slot updated successfully!' });
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      // Create new event slot
-      const newEvt = {
-        id: Date.now().toString(),
-        title,
-        category: finalCategory,
-        community: commName,
-        date: dateRangeString,
-        time_slot: formattedTimeSlot,
-        poster_url: posterUrl || '/images/bit.jpg',
-        image: posterUrl || '/images/bit.jpg',
-        description: desc || 'Full event details and schedule.',
-        perks: perks.trim() || null,
-        status,
-        ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
-      };
+      } else {
+        // Create new event slot
+        const newEvt = {
+          id: Date.now().toString(),
+          title,
+          category: finalCategory,
+          community: commName,
+          date: dateRangeString,
+          time_slot: formattedTimeSlot,
+          venue: finalVenue,
+          poster_url: posterUrl || '/images/bit.jpg',
+          image: posterUrl || '/images/bit.jpg',
+          description: desc || 'Full event details and schedule.',
+          perks: perks.trim() || null,
+          status,
+          system_prompt: aiSystemPrompt,
+        };
 
-      setEventsList([newEvt, ...eventsList]);
+        setEventsList([newEvt, ...eventsList]);
 
-      try {
-        const supabase = createClient();
         await supabase.from('events').insert({
           title,
           category: finalCategory,
           event_date: startDate,
           time_slot: formattedTimeSlot,
+          venue: finalVenue,
           status,
           description: desc,
-          system_prompt: desc,
+          system_prompt: aiSystemPrompt,
           perks: perks.trim() || null,
           poster_url: posterUrl || null,
           slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         });
         setFeedback({ type: 'success', message: 'Slot booked and event details saved successfully!' });
-      } catch (err) {
-        console.error(err);
       }
-    }
 
-    setEditingEvent(null);
-    setTitle('');
-    setDesc('');
-    setPerks('');
-    setCustomCategory('');
-    setShowModal(false);
-    setTimeout(() => setFeedback(null), 4000);
+      setEditingEvent(null);
+      setTitle('');
+      setDesc('');
+      setPerks('');
+      setVenue('Campus Setup / CEV');
+      setCustomCategory('');
+      setShowModal(false);
+    } catch (err) {
+      console.error(err);
+      setFeedback({ type: 'error', message: 'An error occurred while saving event slot.' });
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setFeedback(null), 4000);
+    }
   };
 
   const handleToggleStatus = async (id: string, currentStatus: 'closed' | 'live', evtCommunity: string) => {
@@ -556,19 +569,35 @@ export default function EventBookingEnginePage() {
             </h3>
             
             <form onSubmit={handleBookSlot} className="space-y-4">
-              {/* Event Name */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Event Name
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. BitBurst Hackathon 2.0"
-                  required
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-                />
+              {/* Event Name & Venue */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Event Name
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g. BitBurst Hackathon 2.0"
+                    required
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Venue / Location
+                  </label>
+                  <input
+                    type="text"
+                    value={venue}
+                    onChange={(e) => setVenue(e.target.value)}
+                    placeholder="e.g. Main Auditorium / CEV"
+                    required
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                  />
+                </div>
               </div>
 
               {/* Start Date & End Date */}
