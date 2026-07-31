@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users, Layers, ShieldCheck } from 'lucide-react';
 import EventAiDrawer from '@/app/components/EventAiDrawer';
 import { createClient } from '@/lib/supabase/client';
 
@@ -228,8 +228,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            {/* Event Poster Image / Fallback Container */}
-            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-gradient-to-br from-[#161a29] via-[#0f121d] to-[#1e1b4b] flex flex-col justify-between p-6 shadow-xl">
+            {/* Event Poster Image / High-Design Artwork Card */}
+            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-[#0f121d] flex flex-col justify-between p-8 shadow-2xl">
               {hasValidPoster ? (
                 <img
                   src={posterSrc}
@@ -238,31 +238,40 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                   onError={() => setImgError(true)}
                 />
               ) : (
-                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
+                <div className="relative z-10 flex flex-col justify-between h-full text-center space-y-6">
+                  {/* Top Branding Badge */}
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#6366f1] text-white border border-[#4f46e5]">
-                      {eventData.category || 'EVENT SESSION'}
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#161a29] text-[#6366f1] border border-[#1e2436] flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#6366f1]" />
+                      CEV Verified Event
                     </span>
-                    <div className="p-2 rounded-lg bg-[#161a29] border border-[#1e2436] text-[#6366f1]">
-                      <ImageIcon className="w-5 h-5" />
+                    <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-bold">
+                      Media Desk
+                    </span>
+                  </div>
+
+                  {/* Centered Graphic Emblem */}
+                  <div className="my-auto space-y-4 flex flex-col items-center">
+                    <div className="p-5 rounded-2xl bg-[#161a29] border-2 border-[#1e2436] text-[#6366f1] shadow-lg shadow-[#6366f1]/10">
+                      <Layers className="w-10 h-10 animate-pulse text-[#6366f1]" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-base font-bold text-white font-display">Campus Event Hub</h3>
+                      <p className="text-xs text-[#94a3b8] max-w-[220px] mx-auto">
+                        Official session schedule & community details active.
+                      </p>
                     </div>
                   </div>
 
-                  <div className="space-y-3 my-auto">
-                    <div className="text-xs text-[#94a3b8] uppercase font-bold tracking-wider">{communityName}</div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white font-display leading-tight line-clamp-3">
-                      {cleanTitle}
-                    </h2>
-                  </div>
-
-                  <div className="pt-4 border-t border-[#1e2436] flex items-center justify-between text-xs text-[#94a3b8]">
-                    <span className="flex items-center gap-1.5 font-semibold">
-                      <Calendar className="w-3.5 h-3.5 text-[#6366f1]" />
-                      {eventData.event_date || eventData.date}
-                    </span>
-                    <span className="text-cyan-400 font-mono text-[11px]">
-                      {formatTimeSlotTo12Hr(eventData.time_slot)}
-                    </span>
+                  {/* Bottom Action Note */}
+                  <div className="pt-4 border-t border-[#1e2436] flex items-center justify-center">
+                    <button
+                      onClick={() => setAiDrawerOpen(true)}
+                      className="text-xs font-bold text-[#6366f1] hover:text-white flex items-center gap-1.5 transition-colors uppercase tracking-wider"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Chat with Event Assistant</span>
+                    </button>
                   </div>
                 </div>
               )}

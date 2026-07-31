@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.39.0] - 2026-07-31
+
+### 🎨 Non-Repetitive Campus Media Artwork Card
+- **Sleek Fallback Redesign ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Replaced the redundant text fallback card (which duplicated title, category, community, date, and venue) with a sleek, non-repetitive Campus Media Artwork Card. Features a "CEV Verified Event" seal, pulse emblem, and direct Assistant action prompt when custom posters are unassigned.
+
+---
+
 ## [0.38.0] - 2026-07-31
 
 ### 🔍 Dynamic Event Fetching & Multi-Property Poster Image Resolution
