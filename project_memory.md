@@ -71,14 +71,14 @@ event-manager/
 │   │   ├── EventAiDrawer.tsx      # Event Assistant slide-over drawer
 │   │   ├── GoogleCalendarView.tsx # Google Calendar component (Month/Week/Day time-grid views)
 │   │   ├── MasterCalendar.tsx     # Master event list timeline
-│   │   ├── Navbar.tsx             # Floating glass pill navbar with logo.png & GSAP entrance animations
+│   │   ├── Navbar.tsx             # TownVibes navbar with logo loading fallback & body scroll lock
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
 │   │   ├── page.tsx               # Public events directory
 │   │   └── [id]/
 │   │       └── page.tsx           # Dynamic event detail page with SEO JSON-LD schema
 │   ├── login/
-│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Authentication page
+│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Authentication page with navbar clearance
 │   ├── page.tsx                   # Public landing page with Quera/Gued font typography and brutalist tokens
 │   └── layout.tsx                 # Root layout with next/font/local (Quera, Gued, Rondured)
 ├── fonts/                         # Custom font binaries (.otf, .ttf)

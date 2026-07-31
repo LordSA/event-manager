@@ -4,6 +4,17 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.23.0] - 2026-07-31
+
+### 🛠️ Comprehensive Site Audit, Navbar Polish & Google Calendar Overhaul
+- **Navbar Logo & Text Alignment ([app/components/Navbar.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/components/Navbar.tsx)):** Removed hardcoded fixed width box around logo image (`w-32`) to eliminate left-side whitespace gaps if `/logo.png` is absent; added stateful fallback error handler (`setLogoFailed`).
+- **Body Scroll Locking:** Implemented body scroll lock (`document.body.style.overflow = "hidden"`) when the full-screen mobile menu drawer is open.
+- **Admin Dashboard Layout Clearance ([app/admin/layout.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/layout.tsx)):** Added safe padding (`pt-4`), custom scrollbar hide (`.scrollbar-hide`), and font tokens to mobile sub-navigation header.
+- **Google Calendar Theme Alignment ([app/components/GoogleCalendarView.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/components/GoogleCalendarView.tsx)):** Aligned Month, Week, and Day views with obsidian dark palette (`#08090d`, `#0f121d`, `#161a29`), `.brutalist-card` modal popovers, and `Quera`/`Gued` typography headers.
+- **Login Container Padding ([app/login/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/login/page.tsx)):** Added top clearance padding (`pt-28 md:pt-32`) to prevent floating header collision.
+
+---
+
 ## [0.22.0] - 2026-07-31
 
 ### 🎨 Design System, Font Compatibility & Spacing Engine Fixes

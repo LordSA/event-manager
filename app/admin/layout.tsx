@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col md:flex-row font-sans">
       {/* Desktop Sidebar Navigation */}
       <aside className="hidden md:flex w-64 bg-[#0f121d] border-r border-[#1e2436] p-6 flex-col justify-between shrink-0">
         <div className="space-y-6">
@@ -55,13 +55,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <div>
               <h2 className="font-bold text-base text-white font-display">Whats @CEV</h2>
-              <span className="text-[10px] uppercase font-bold text-white bg-[#6366f1] px-2 py-0.5 rounded border border-[#4f46e5]">
+              <span className="text-[10px] uppercase font-bold text-white bg-[#6366f1] px-2 py-0.5 rounded border border-[#4f46e5] font-mono">
                 {currentRole} Access
               </span>
             </div>
           </div>
 
-          <nav className="space-y-1 pt-4">
+          <nav className="space-y-1.5 pt-4">
             {navItems.map((item) => {
               if (!item.roleRequired.includes(currentRole)) return null;
               const isActive = pathname === item.href;
@@ -77,7 +77,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
+                  <span className="font-heading">{item.label}</span>
                 </Link>
               );
             })}
@@ -87,7 +87,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="pt-6 border-t border-[#1e2436]">
           <Link
             href="/"
-            className="flex items-center justify-between text-xs text-[#94a3b8] hover:text-white transition-colors"
+            className="flex items-center justify-between text-xs text-[#94a3b8] hover:text-white transition-colors py-2 px-1 font-semibold"
           >
             <span>Public Front-End</span>
             <LogOut className="w-3.5 h-3.5" />
@@ -95,8 +95,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Mobile Sub-Navigation */}
-      <div className="flex md:hidden overflow-x-auto p-3 gap-2 border-b border-[#1e2436] bg-[#0f121d] no-scrollbar">
+      {/* Mobile Sub-Navigation Header */}
+      <div className="flex md:hidden overflow-x-auto pt-4 pb-3 px-4 gap-2 border-b border-[#1e2436] bg-[#0f121d] scrollbar-hide shrink-0">
         {navItems.map((item) => {
           if (!item.roleRequired.includes(currentRole)) return null;
           const isActive = pathname === item.href;
@@ -105,20 +105,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 border ${
+              className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold shrink-0 border ${
                 isActive
                   ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[2px_2px_0px_0px_#312e81]'
                   : 'bg-[#161a29] text-[#94a3b8] border-[#1e2436]'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
-              <span>{item.label}</span>
+              <span className="font-heading">{item.label}</span>
             </Link>
           );
         })}
       </div>
 
-      {/* Main Admin Content */}
+      {/* Main Admin Content Container */}
       <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
         {children}
       </main>
