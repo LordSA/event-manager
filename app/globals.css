@@ -5,8 +5,7 @@
    ------------------------------------------------------------------------- */
 @font-face {
   font-family: 'Quera';
-  src: url('/fonts/Quera.woff2') format('woff2'),
-       url('/fonts/Quera.ttf') format('truetype');
+  src: url('../fonts/quera.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -14,8 +13,7 @@
 
 @font-face {
   font-family: 'Gued';
-  src: url('/fonts/Gued.woff2') format('woff2'),
-       url('/fonts/Gued.ttf') format('truetype');
+  src: url('../fonts/gued.otf') format('opentype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -23,8 +21,7 @@
 
 @font-face {
   font-family: 'Rondured';
-  src: url('/fonts/Rondured.woff2') format('woff2'),
-       url('/fonts/Rondured.ttf') format('truetype');
+  src: url('../fonts/roundered.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -118,6 +115,7 @@ body {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
