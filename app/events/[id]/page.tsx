@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users, ImageIcon } from 'lucide-react';
 import EventAiDrawer from '@/app/components/EventAiDrawer';
 import { createClient } from '@/lib/supabase/client';
 
@@ -65,16 +65,25 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [eventData, setEventData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
+      setImgError(false);
       try {
         const supabase = createClient();
-        const { data, error } = await supabase
+        let query = supabase
           .from('events')
-          .select('*, community:communities(name, logo_url)')
-          .eq('id', eventId)
-          .single();
+          .select('*, community:communities(name, logo_url)');
+
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(eventId);
+        if (isUuid) {
+          query = query.eq('id', eventId);
+        } else {
+          query = query.or(`id.eq.${eventId},slug.eq.${eventId}`);
+        }
+
+        const { data, error } = await query.maybeSingle();
 
         if (!error && data) {
           setEventData(data);
@@ -111,6 +120,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const communityName = eventData.community?.name || 'Campus Community';
   const cleanTitle = eventData.title ? eventData.title.replace(/\*\*/g, '').trim() : 'Event Session';
   const publicDescription = refactorDescription4To5Lines(eventData.description);
+
+  const posterSrc = eventData.poster_url || eventData.image || eventData.image_url;
+  const hasValidPoster = Boolean(posterSrc && posterSrc.trim() !== '' && !imgError);
 
   return (
     <div className="min-h-screen bg-[#08090d] text-[#f8fafc] pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 font-sans relative">
@@ -216,13 +228,44 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-[#161a29]">
-              <img
-                src={eventData.poster_url || '/images/bit.jpg'}
-                alt={cleanTitle}
-                className="w-full h-full object-cover"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-              />
+            {/* Event Poster Image / Fallback Container */}
+            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-gradient-to-br from-[#161a29] via-[#0f121d] to-[#1e1b4b] flex flex-col justify-between p-6 shadow-xl">
+              {hasValidPoster ? (
+                <img
+                  src={posterSrc}
+                  alt={cleanTitle}
+                  className="w-full h-full object-cover absolute inset-0 z-10"
+                  onError={() => setImgError(true)}
+                />
+              ) : (
+                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#6366f1] text-white border border-[#4f46e5]">
+                      {eventData.category || 'EVENT SESSION'}
+                    </span>
+                    <div className="p-2 rounded-lg bg-[#161a29] border border-[#1e2436] text-[#6366f1]">
+                      <ImageIcon className="w-5 h-5" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 my-auto">
+                    <div className="text-xs text-[#94a3b8] uppercase font-bold tracking-wider">{communityName}</div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white font-display leading-tight line-clamp-3">
+                      {cleanTitle}
+                    </h2>
+                  </div>
+
+                  <div className="pt-4 border-t border-[#1e2436] flex items-center justify-between text-xs text-[#94a3b8]">
+                    <span className="flex items-center gap-1.5 font-semibold">
+                      <Calendar className="w-3.5 h-3.5 text-[#6366f1]" />
+                      {eventData.event_date || eventData.date}
+                    </span>
+                    <span className="text-cyan-400 font-mono text-[11px]">
+                      {formatTimeSlotTo12Hr(eventData.time_slot)}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -803,6 +803,17 @@ export default function EventBookingEnginePage() {
                       className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#6366f1] transition-colors"
                     />
                   </div>
+
+                  {posterUrl && posterUrl.trim() !== '' && (
+                    <div className="mt-2 relative w-full h-24 rounded-xl overflow-hidden border border-[#1e2436] bg-[#161a29]">
+                      <img
+                        src={posterUrl}
+                        alt="Poster Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

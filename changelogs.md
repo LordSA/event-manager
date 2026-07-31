@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.37.0] - 2026-07-31
+
+### 🖼️ Poster Fallback Card & Admin Live Preview Component
+- **Poster Fallback UI ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Replaced 404 image errors and blank black boxes with an intelligent poster fallback card. When no poster is uploaded or an image fails to load, a stylized gradient poster card renders with category badge, title, community name, date, and venue details.
+- **Admin Modal Poster Preview ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Added live poster preview thumbnail box in the event creation/edit modal so organizers can verify uploaded Vercel Blob images or pasted URLs in real time.
+
+---
+
 ## [0.36.0] - 2026-07-31
 
 ### 🖼️ Event Poster URL DB Fetching & Realtime Sync Fix
