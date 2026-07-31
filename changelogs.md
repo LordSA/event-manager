@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.46.0] - 2026-07-31
+
+### 🛠️ Description Parser Algorithm Upgrade
+- **Robust Text Splitting ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Fixed regex parsing bug where description text without trailing period punctuation or with markdown formatting failed to return. Implemented lookbehind splitting (`/(?<=[.!?])\s+|\n+/`), markdown tag cleaning (`**`, `#`), and guaranteed 3-sentence sentence/paragraph extraction for all input text types.
+
+---
+
 ## [0.45.0] - 2026-07-31
 
 ### 📝 3-Line Description Overview & Assistant Bar Refactor

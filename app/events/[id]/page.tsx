@@ -36,12 +36,16 @@ function formatTimeSlotTo12Hr(slot?: string): string {
 }
 
 function refactorDescription3Lines(text: string | null | undefined): string {
-  if (!text) return 'Discover event details, workshop modules, and interactive sessions organized for campus students.';
+  if (!text || text.trim() === '') {
+    return 'Discover event details, workshop modules, and interactive sessions organized for campus students.';
+  }
 
   let cleaned = text
     .replace(/You are the official AI Assistant[\s\S]*/gi, '')
     .replace(/EVENT DETAILS:[\s\S]*/gi, '')
     .replace(/TONE INSTRUCTIONS:[\s\S]*/gi, '')
+    .replace(/\*{1,3}/g, '')
+    .replace(/#{1,6}\s*/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -49,13 +53,17 @@ function refactorDescription3Lines(text: string | null | undefined): string {
     return 'Discover event details, workshop modules, and interactive sessions organized for campus students.';
   }
 
-  const sentences = cleaned.match(/[^.!?]+[.!?]+/g);
-  if (sentences && sentences.length >= 3) {
-    const threeSentences = sentences.slice(0, 3).map(s => s.trim()).join(' ');
-    return threeSentences.length > 250 ? threeSentences.slice(0, 247) + '...' : threeSentences;
+  const parts = cleaned
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (parts.length === 0) {
+    return cleaned.length > 250 ? cleaned.slice(0, 247) + '...' : cleaned;
   }
 
-  return cleaned.length > 220 ? cleaned.slice(0, 217) + '...' : cleaned;
+  const selected = parts.slice(0, 3).join(' ');
+  return selected.length > 280 ? selected.slice(0, 277) + '...' : selected;
 }
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
