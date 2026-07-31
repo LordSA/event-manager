@@ -55,11 +55,12 @@ export function useRealtimeEvents() {
           time_slot: formatTimeSlotTo12Hr(item.time_slot),
           description: item.description || '',
           status: item.status as 'closed' | 'live',
-          image: item.poster_url || '/images/bit.jpg',
-          poster_url: item.poster_url || '/images/bit.jpg',
+          image: item.poster_url || '/images/poster.webp',
+          poster_url: item.poster_url || '/images/poster.webp',
           venue: item.venue || 'Campus Setup / CEV',
           perks: item.perks || null,
           system_prompt: item.system_prompt || null,
+          slug: item.slug || item.id,
         }));
         setEventsList(mapped);
       }

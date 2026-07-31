@@ -19,6 +19,7 @@ export interface EventItemData {
   system_prompt?: string | null;
   description?: string;
   status?: 'closed' | 'live';
+  slug?: string;
 }
 
 function formatSingleTime12(t: string): string {
@@ -191,7 +192,7 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
                   </span>
 
                   <Link
-                    href={`/events/${evt.id}`}
+                    href={`/events/${evt.slug || evt.id}`}
                     className="text-xs font-semibold text-white hover:underline flex items-center space-x-1"
                   >
                     <span>Details</span>

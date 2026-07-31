@@ -227,6 +227,8 @@ export default function EventBookingEnginePage() {
     try {
       const supabase = createClient();
       if (editingEvent) {
+        const generatedSlug = title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
         const updatedEvt = {
           ...editingEvent,
           title,
@@ -240,7 +242,8 @@ export default function EventBookingEnginePage() {
           status,
           system_prompt: aiSystemPrompt,
           poster_url: posterUrl || null,
-          image: posterUrl || '/images/bit.jpg',
+          image: posterUrl || '/images/poster.webp',
+          slug: generatedSlug,
         };
 
         setEventsList(eventsList.map((e) => (e.id === editingEvent.id ? updatedEvt : e)));
@@ -255,6 +258,7 @@ export default function EventBookingEnginePage() {
           description: desc,
           system_prompt: aiSystemPrompt,
           poster_url: posterUrl || null,
+          slug: generatedSlug,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         };
 
@@ -272,7 +276,9 @@ export default function EventBookingEnginePage() {
 
         setFeedback({ type: 'success', message: 'Event slot updated successfully!' });
       } else {
-        const newEvt = {
+        const generatedSlug = title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+        const newEvt: any = {
           id: Date.now().toString(),
           title,
           category: finalCategory,
@@ -286,6 +292,7 @@ export default function EventBookingEnginePage() {
           perks: perks.trim() || null,
           status,
           system_prompt: aiSystemPrompt,
+          slug: generatedSlug,
         };
 
         const insertPayload: any = {
@@ -298,7 +305,7 @@ export default function EventBookingEnginePage() {
           description: desc,
           system_prompt: aiSystemPrompt,
           poster_url: posterUrl || null,
-          slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
+          slug: generatedSlug,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         };
 

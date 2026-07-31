@@ -70,15 +70,16 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
     const fetchEvent = async () => {
       try {
         const supabase = createClient();
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(eventId);
+
         let query = supabase
           .from('events')
           .select('*, community:communities(name, logo_url)');
 
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(eventId);
         if (isUuid) {
           query = query.eq('id', eventId);
         } else {
-          query = query.or(`id.eq.${eventId},slug.eq.${eventId}`);
+          query = query.or(`slug.eq.${eventId},id.eq.${eventId}`);
         }
 
         const { data, error } = await query.maybeSingle();
@@ -226,8 +227,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            {/* Event Poster Image Container */}
-            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-[#161a29]">
+            {/* Event Poster Image Container - 3:4 Aspect Ratio (1080:1440 portrait) */}
+            <div className="lg:col-span-5 relative w-full aspect-[3/4] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-[#161a29] shadow-2xl">
               <img
                 src={posterSrc}
                 alt={cleanTitle}

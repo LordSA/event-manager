@@ -4,6 +4,18 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.42.0] - 2026-07-31
+
+### 📐 3:4 Poster Frame Aspect Ratio & Title-Based Slug Routing
+- **3:4 Frame Aspect Ratio ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Updated the event detail poster container to use `aspect-[3/4]` (1080x1440 portrait aspect ratio).
+- **Title-Based Slug Routing:**
+  - `generateSlug` helper converts event titles into URL slugs (`codesprint-2026`).
+  - Saved `slug` in Supabase `events` table during creation and updates.
+  - Detail page lookup searches `slug` first, with fallback to `id`.
+  - All navigation links across `MasterCalendar`, `GoogleCalendarView`, and directory cards now navigate to `/events/${evt.slug || evt.id}`.
+
+---
+
 ## [0.41.0] - 2026-07-31
 
 ### 🛠️ Supabase Schema Cache Missing Column Retry Fix

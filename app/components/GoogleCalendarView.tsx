@@ -14,6 +14,7 @@ export interface CalendarEvent {
   time_slot?: string;
   description?: string;
   status?: 'closed' | 'live';
+  slug?: string;
 }
 
 export interface CommunityOption {
@@ -364,7 +365,7 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
 
             <div className="pt-2 flex justify-end">
               <Link
-                href={`/events/${activeModalEvent.id}`}
+                href={`/events/${activeModalEvent.slug || activeModalEvent.id}`}
                 className="brutalist-btn-primary px-4 py-2 text-xs rounded-lg flex items-center space-x-1.5"
               >
                 <span>View Full Page</span>
