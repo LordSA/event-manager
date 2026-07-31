@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Calendar as CalendarIcon, ListFilter, Users, ArrowUpRight, Lock, CheckCircle2, Clock } from 'lucide-react';
 import Link from 'next/link';
+import { generate2LineSummary } from '@/lib/summary';
 
 export interface EventItemData {
   id: string;
@@ -168,7 +169,7 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
                   </h3>
                   {evt.description && (
                     <p className="text-xs text-neutral-400 mt-1 line-clamp-2 leading-relaxed">
-                      {evt.description}
+                      {generate2LineSummary(evt.description)}
                     </p>
                   )}
                 </div>

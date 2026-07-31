@@ -4,6 +4,15 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.29.0] - 2026-07-31
+
+### 🤖 2-Line Public Summarizer, AI Assistant Overhaul & Optional Perks
+- **Public 2-Line Summarizer ([lib/summary.ts](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/lib/summary.ts)):** Built a text summarizer utility that extracts a clean 2-line overview for public cards, calendar popovers, and directory listings, preventing raw system prompt leaks and card height reflow flickering.
+- **Event Assistant Redesign ([app/components/EventAiDrawer.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/components/EventAiDrawer.tsx)):** Refactored the AI assistant opening message into a clean greeting without raw markdown syntax (`**title**`), added 4 quick-action suggestion pills, and applied obsidian dark brutalist styling.
+- **Optional Perks Control ([app/admin/events/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/events/page.tsx) & [app/events/[id]/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/events/[id]/page.tsx)):** Removed hardcoded perks. Admins can optionally input event highlights; if left blank, the perks block is omitted on the event detail page.
+
+---
+
 ## [0.28.0] - 2026-07-31
 
 ### 🖼️ Vercel Blob Storage Remote Patterns & Profile Avatar Fallback

@@ -20,6 +20,7 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 * **Database:** Supabase PostgreSQL with RLS (`events.poster_url`, `communities.logo_url`, `profiles.avatar_url`)
 * **Storage Provider:** Vercel Blob Storage (`@vercel/blob`)
 * **Upload Engine:** Next.js API Route `/api/upload/route.ts` & Client-Side WebP Converter `lib/upload.ts`
+* **Public Summarizer:** `lib/summary.ts` generating refactored 2-line summaries for public cards & calendar popups.
 * **Authentication:** Supabase Auth with Dual Login Modes: 6-Digit Email OTP verification & Password Authentication.
 * **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
 * **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
@@ -62,22 +63,22 @@ event-manager/
 │   │   ├── communities/
 │   │   │   └── page.tsx           # Community Entity Management with Edit & Create modals & WebP upload
 │   │   ├── events/
-│   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine with poster WebP upload
+│   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine with optional perks input
 │   │   └── users/
 │   │       └── page.tsx           # Community Leads & Team Management Console
 │   ├── calendar/
 │   │   └── page.tsx               # Google Calendar view route (Month, Week, Day time-grid views)
 │   ├── components/
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper hiding main navbar on /admin
-│   │   ├── EventAiDrawer.tsx      # Event Assistant slide-over drawer
-│   │   ├── GoogleCalendarView.tsx # Google Calendar component (Month/Week/Day time-grid views)
-│   │   ├── MasterCalendar.tsx     # Master event list timeline
+│   │   ├── EventAiDrawer.tsx      # Refactored Event Assistant drawer with quick action pills
+│   │   ├── GoogleCalendarView.tsx # Google Calendar component with 2-line description summarizer
+│   │   ├── MasterCalendar.tsx     # Master event list timeline with 2-line summary cards
 │   │   ├── Navbar.tsx             # Floating navbar with vector badge & single Calendar CTA button
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
 │   │   ├── page.tsx               # Public events directory
 │   │   └── [id]/
-│   │       └── page.tsx           # Dynamic event detail page with SEO JSON-LD schema
+│   │       └── page.tsx           # Dynamic event detail page with optional perks rendering
 │   ├── login/
 │   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Login with suppressHydrationWarning
 │   ├── page.tsx                   # Public landing page with Quera/Gued font typography and brutalist tokens
@@ -92,6 +93,7 @@ event-manager/
 │   │   ├── useCommunities.ts      # Real-time Supabase hook for communities
 │   │   ├── useProfiles.ts         # Real-time Supabase hook for user profiles
 │   │   └── useRealtimeEvents.ts   # Real-time Supabase hook for events
+│   ├── summary.ts                 # Refactored 2-line public summary generator
 │   ├── supabase/
 │   │   ├── client.ts              # Browser Supabase client creator
 │   │   ├── middleware.ts          # Edge cookie session updater & protected route proxy

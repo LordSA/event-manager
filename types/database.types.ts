@@ -40,6 +40,7 @@ export interface EventItem {
   status: EventStatus;
   system_prompt: string | null;
   description: string | null;
+  perks?: string | null;
   created_at: string;
   updated_at: string;
   community?: Community;

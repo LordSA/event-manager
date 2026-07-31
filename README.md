@@ -17,7 +17,9 @@ In campus environments and multi-organization setups, event information is often
 - **Typography:** Custom Font Engine (`Quera`, `Gued`, `Rondured`) configured via `next/font/local` for zero CLS and preloaded web fonts.
 - **Community Management:** Create, edit, slug update, and logo upload for Super Admins and Developers.
 - **Database & Auth:** Supabase PostgreSQL & Auth with Dual Login Modes (Password + 6-Digit Email OTP) + One-Click Sign Out.
-- **Storage Engine:** Vercel Blob Storage (`@vercel/blob`) with client-side WebP auto-compression and `remotePatterns` configured in `next.config.ts`.
+- **Public Event Summarizer:** Auto-extracts a refactored 2-line concise summary (`lib/summary.ts`) for public cards and calendar views while retaining full detailed descriptions for event pages.
+- **AI Event Assistant:** Slide-over assistant drawer with quick-action suggestion pills, obsidian dark styling, and multi-provider fallback AI chat logic (`/api/chat`).
+- **Optional Highlights / Perks:** Optional admin perks input; omitted entirely if left blank.
 
 ---
 

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, X, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import { generate2LineSummary } from '@/lib/summary';
 
 export interface CalendarEvent {
   id: string;
@@ -355,8 +356,8 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
             </div>
 
             {activeModalEvent.description && (
-              <p className="text-xs text-[#94a3b8] leading-relaxed border-t border-b border-[#1e2436] py-3">
-                {activeModalEvent.description}
+              <p className="text-xs text-[#94a3b8] leading-relaxed border-t border-b border-[#1e2436] py-3 line-clamp-2">
+                {generate2LineSummary(activeModalEvent.description)}
               </p>
             )}
 

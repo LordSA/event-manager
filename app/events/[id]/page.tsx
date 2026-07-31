@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Shield, Users } from 'lucide-react';
 import EventAiDrawer from '@/app/components/EventAiDrawer';
 import { createClient } from '@/lib/supabase/client';
-import { Calendar, MapPin, ExternalLink, MessageSquare, ArrowLeft, Clock, Award, Users } from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-
-interface PageParams {
-  id: string;
-}
 
 function formatSingleTime12(t: string): string {
   if (!t) return '';
@@ -40,38 +35,26 @@ function formatTimeSlotTo12Hr(slot?: string): string {
   return formatSingleTime12(slot);
 }
 
-export default function DynamicEventPage({ params }: { params: Promise<PageParams> }) {
+export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const eventId = resolvedParams.id;
 
-  const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
-  const [eventData, setEventData] = useState<any>(null);
+  const [eventData, setEventData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
 
   useEffect(() => {
-    const fetchEventDetail = async () => {
+    const fetchEvent = async () => {
       try {
         const supabase = createClient();
         const { data, error } = await supabase
           .from('events')
-          .select('*, community:communities(name)')
-          .or(`id.eq.${eventId},slug.eq.${eventId}`)
+          .select('*, community:communities(name, logo_url)')
+          .eq('id', eventId)
           .single();
 
         if (!error && data) {
           setEventData(data);
-        } else {
-          setEventData({
-            id: eventId,
-            title: 'Campus Event Session',
-            category: 'workshop',
-            community: { name: 'CEV Community' },
-            event_date: '2025-10-15',
-            description: 'Join us for a technical hands-on workshop.',
-            poster_url: '/images/bit.jpg',
-            system_prompt: 'Campus technical session context.',
-            redirect_url: 'https://forms.google.com',
-          });
         }
       } catch {
         // Fallback
@@ -80,156 +63,147 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
       }
     };
 
-    fetchEventDetail();
+    fetchEvent();
   }, [eventId]);
 
-  if (loading || !eventData) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-[#05070E] text-white flex items-center justify-center p-8 text-sm">
+      <div className="min-h-screen bg-[#08090d] flex items-center justify-center text-[#94a3b8] text-xs">
         Loading event details...
       </div>
     );
   }
 
-  const communityName = eventData.community?.name || eventData.community || 'CEV Community';
+  if (!eventData) {
+    return (
+      <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col items-center justify-center p-6 space-y-4">
+        <h1 className="text-2xl font-bold font-display text-white">Event Not Found</h1>
+        <p className="text-xs text-[#94a3b8]">The requested event slot may have been removed or updated.</p>
+        <Link href="/events" className="brutalist-btn-primary px-4 py-2 rounded-lg text-xs">
+          &larr; Return to Event Directory
+        </Link>
+      </div>
+    );
+  }
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Event',
-    name: eventData.title,
-    startDate: eventData.event_date || eventData.date,
-    eventStatus: 'https://schema.org/EventScheduled',
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    location: {
-      '@type': 'Place',
-      name: 'College of Engineering Vadakara (CEV)',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'Vadakara',
-        addressRegion: 'Kerala',
-        addressCountry: 'IN',
-      },
-    },
-    organizer: {
-      '@type': 'Organization',
-      name: communityName,
-    },
-    description: eventData.description,
-  };
+  const communityName = eventData.community?.name || 'Campus Community';
+  const cleanTitle = eventData.title ? eventData.title.replace(/\*\*/g, '').trim() : 'Event Session';
 
   return (
-    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col pt-28 md:pt-32 relative">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 pb-12 space-y-8">
+    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Top Back Link */}
         <Link
           href="/events"
-          className="inline-flex items-center space-x-2 text-sm text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center space-x-2 text-xs font-semibold text-[#94a3b8] hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to All Events</span>
         </Link>
 
-        {/* Hero Card */}
-        <div className="relative rounded-3xl bg-slate-900/60 border border-slate-800 p-6 sm:p-10 overflow-hidden shadow-2xl space-y-8">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
+        {/* Event Detail Container */}
+        <div className="brutalist-card p-6 sm:p-10 rounded-2xl space-y-8 relative overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-7 space-y-6">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-800 text-cyan-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-[#6366f1] text-white border border-[#4f46e5]">
                   {eventData.category || 'Workshop'}
                 </span>
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800 text-slate-300 flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5 text-blue-400" />
+                <span className="text-xs font-semibold px-2.5 py-1 rounded bg-[#161a29] border border-[#1e2436] text-[#94a3b8] flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-[#6366f1]" />
                   {communityName}
                 </span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                {eventData.title}
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-display leading-tight">
+                {cleanTitle}
               </h1>
 
-              <p className="text-base text-slate-300 leading-relaxed">
+              {/* Event Description (Full Admin Version) */}
+              <div className="text-sm text-[#94a3b8] leading-relaxed space-y-3 whitespace-pre-wrap border-t border-b border-[#1e2436] py-4">
                 {eventData.description}
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-sm text-slate-300">
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-blue-400" />
-                  <div>
-                    <div className="text-xs text-slate-500 font-medium">Date</div>
-                    <div className="font-bold">{eventData.event_date || eventData.date}</div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center space-x-3">
-                  <Clock className="w-5 h-5 text-purple-400" />
-                  <div>
-                    <div className="text-xs text-slate-500 font-medium">Time Slot</div>
-                    <div className="font-bold">{formatTimeSlotTo12Hr(eventData.time_slot)}</div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center space-x-3">
-                  <MapPin className="w-5 h-5 text-emerald-400" />
-                  <div>
-                    <div className="text-xs text-slate-500 font-medium">Venue</div>
-                    <div className="font-bold">{eventData.venue || 'Seminar Hall / CEV'}</div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center space-x-3">
-                  <Award className="w-5 h-5 text-amber-400" />
-                  <div>
-                    <div className="text-xs text-slate-500 font-medium">Perks</div>
-                    <div className="font-bold">KTU Points & Certificates</div>
-                  </div>
-                </div>
               </div>
 
+              {/* Event Metadata Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-[#94a3b8]">
+                <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">
+                  <Calendar className="w-5 h-5 text-[#6366f1]" />
+                  <div>
+                    <div className="text-[10px] text-[#94a3b8] font-bold uppercase">Date</div>
+                    <div className="font-bold text-white text-sm">{eventData.event_date || eventData.date}</div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">
+                  <Clock className="w-5 h-5 text-purple-400" />
+                  <div>
+                    <div className="text-[10px] text-[#94a3b8] font-bold uppercase">Time Slot</div>
+                    <div className="font-bold text-white text-sm">{formatTimeSlotTo12Hr(eventData.time_slot)}</div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-emerald-400" />
+                  <div>
+                    <div className="text-[10px] text-[#94a3b8] font-bold uppercase">Venue</div>
+                    <div className="font-bold text-white text-sm">{eventData.venue || 'Campus Setup / CEV'}</div>
+                  </div>
+                </div>
+
+                {/* Optional Perks / Highlights - ONLY shown if explicitly provided by admin */}
+                {eventData.perks && eventData.perks.trim() !== '' && (
+                  <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">
+                    <Award className="w-5 h-5 text-amber-400" />
+                    <div>
+                      <div className="text-[10px] text-[#94a3b8] font-bold uppercase">Highlights / Perks</div>
+                      <div className="font-bold text-white text-sm">{eventData.perks}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
                 <a
                   href={eventData.redirect_url || 'https://forms.google.com'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-95 text-white font-bold text-base shadow-xl shadow-blue-500/25 flex items-center justify-center space-x-2 transition-all"
+                  className="flex-1 brutalist-btn-primary py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 text-center"
                 >
-                  <span>Register for Event</span>
+                  <span>Register Now</span>
                   <ExternalLink className="w-4 h-4" />
                 </a>
 
                 <button
                   onClick={() => setAiDrawerOpen(true)}
-                  className="flex-1 py-4 px-6 rounded-2xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-base border border-slate-800 flex items-center justify-center space-x-2 transition-all group"
+                  className="flex-1 py-3.5 px-6 rounded-xl bg-[#161a29] hover:bg-[#1e2436] text-white font-bold text-xs border border-[#1e2436] flex items-center justify-center space-x-2 transition-colors uppercase tracking-wider"
                 >
-                  <MessageSquare className="w-5 h-5 text-cyan-400" />
-                  <span>Event Assistant</span>
+                  <MessageSquare className="w-4 h-4 text-[#6366f1]" />
+                  <span>Ask Assistant</span>
                 </button>
               </div>
             </div>
 
-            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
-              <Image
-                src={eventData.poster_url || eventData.image || '/images/bit.jpg'}
-                alt={eventData.title}
-                fill
-                className="object-cover"
+            {/* Event Poster Image */}
+            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-[#161a29]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={eventData.poster_url || '/images/bit.jpg'}
+                alt={cleanTitle}
+                className="w-full h-full object-cover"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
+      {/* AI Assistant Slide-over Drawer */}
       <EventAiDrawer
         isOpen={aiDrawerOpen}
         onClose={() => setAiDrawerOpen(false)}
-        eventTitle={eventData.title}
-        systemPrompt={eventData.system_prompt || eventData.ai_context || `Event: ${eventData.title}\nCommunity: ${communityName}`}
+        eventTitle={cleanTitle}
+        systemPrompt={eventData.system_prompt || `You are the event assistant for ${cleanTitle}.`}
       />
     </div>
   );

@@ -29,8 +29,9 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ---
 
-## 4. Next.js Image Optimization & Remote Domains
+## 4. Public Description Summarization & AI Assistant Drawer
 
-### Remote Patterns (`next.config.ts`)
-* **Vercel Blob Storage Authorization:** Configured `remotePatterns` in `next.config.ts` to allow Vercel Blob Storage domains (`*.public.blob.vercel-storage.com`, `*.blob.vercel-storage.com`), Supabase storage (`**.supabase.co`), and external asset URLs.
-* **Resilient Image Fallback:** Avatar and logo rendering components feature client-side image error boundaries (`onError`) so broken image links fallback gracefully without unhandled runtime exceptions.
+### Refactored Public Summarizer (`lib/summary.ts`)
+* **2-Line Public Summaries:** Converts full detailed admin event descriptions into clean 2-line summaries for public directory cards and calendar popovers, eliminating text wall reflows and layout flickering.
+* **Optional Event Perks / Highlights:** Removed hardcoded perks. Admins can optionally specify highlights during event creation; if left blank, the perks container is omitted entirely.
+* **Refactored AI Assistant Drawer (`EventAiDrawer.tsx`):** Displays clean welcome greeting without raw markdown asterisks, offering quick-action suggestion pills and obsidian dark brutalist styling.

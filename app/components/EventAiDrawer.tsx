@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Send, X, HelpCircle } from 'lucide-react';
+import { MessageSquare, Send, X, HelpCircle, Sparkles, Clock, MapPin, CheckCircle, FileText } from 'lucide-react';
 
 interface EventAiDrawerProps {
   isOpen: boolean;
@@ -25,30 +25,37 @@ export default function EventAiDrawer({
   eventTitle,
   systemPrompt,
 }: EventAiDrawerProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      sender: 'ai',
-      text: `Hey! 👋 Ask me anything about **${eventTitle}**! Venue, timings, prerequisites, or KTU points — I've got you covered!`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    },
-  ]);
+  const cleanTitle = eventTitle ? eventTitle.replace(/\*\*/g, '').trim() : 'this event';
+
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto scroll to bottom when messages or loading state changes
+  // Initialize initial message on open or title change
+  useEffect(() => {
+    if (isOpen) {
+      setMessages([
+        {
+          id: '1',
+          sender: 'ai',
+          text: `Welcome to the official event desk for "${cleanTitle}". I'm your AI assistant for this session. Feel free to ask about the schedule, venue, prerequisites, or registration guidance!`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+    }
+  }, [isOpen, cleanTitle]);
+
+  // Auto scroll to bottom
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, loading, isOpen]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputMessage.trim() || loading) return;
+  const sendQueryText = async (userText: string) => {
+    if (!userText.trim() || loading) return;
 
-    const userText = inputMessage.trim();
     const userMsg: Message = {
       id: Date.now().toString(),
       sender: 'user',
@@ -86,7 +93,7 @@ export default function EventAiDrawer({
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
-        text: "Hey, sorry! I ran into a quick glitch looking up that detail. Mind asking me one more time?",
+        text: "I ran into a quick glitch looking up that detail. Mind asking me one more time?",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -94,6 +101,18 @@ export default function EventAiDrawer({
       setLoading(false);
     }
   };
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendQueryText(inputMessage);
+  };
+
+  const quickPills = [
+    { label: "What's the schedule & timings?", icon: Clock },
+    { label: 'Where is the venue located?', icon: MapPin },
+    { label: 'Are there any prerequisites?', icon: CheckCircle },
+    { label: 'How do I register?', icon: FileText },
+  ];
 
   return (
     <AnimatePresence>
@@ -105,7 +124,7 @@ export default function EventAiDrawer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
           />
 
           {/* Side Drawer */}
@@ -114,33 +133,35 @@ export default function EventAiDrawer({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-            className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-slate-950/95 border-l border-slate-800 z-50 flex flex-col shadow-2xl"
+            className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-[#08090d] border-l border-[#1e2436] z-50 flex flex-col shadow-2xl text-[#f8fafc] font-sans"
           >
             {/* Header */}
-            <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+            <div className="p-4 sm:p-6 border-b border-[#1e2436] flex items-center justify-between bg-[#0f121d]">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-xl text-white shadow-lg shadow-blue-500/20">
+                <div className="p-2.5 bg-[#6366f1] border border-[#4f46e5] rounded-xl text-white shadow-[2px_2px_0px_0px_#312e81]">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-1.5">
+                  <h3 className="text-base font-bold text-white flex items-center gap-1.5 font-display">
                     Event Assistant
-                    <HelpCircle className="w-4 h-4 text-cyan-400" />
+                    <Sparkles className="w-4 h-4 text-[#6366f1]" />
                   </h3>
-                  <p className="text-xs text-slate-400 truncate max-w-[240px]">
-                    {eventTitle}
+                  <p className="text-xs text-[#94a3b8] truncate max-w-[220px]">
+                    {cleanTitle}
                   </p>
                 </div>
               </div>
+
               <button
                 onClick={onClose}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/80 transition-colors"
+                className="p-2 text-[#94a3b8] hover:text-white rounded-lg hover:bg-[#161a29] transition-colors"
+                aria-label="Close Assistant"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Chat Body (data-lenis-prevent prevents background page scrolling) */}
+            {/* Chat Body */}
             <div data-lenis-prevent className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
               {messages.map((msg) => (
                 <motion.div
@@ -152,24 +173,46 @@ export default function EventAiDrawer({
                   }`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl p-4 text-sm leading-relaxed ${
+                    className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
                       msg.sender === 'user'
-                        ? 'bg-blue-600 text-white rounded-br-none shadow-md shadow-blue-600/20'
-                        : 'bg-slate-900/90 text-slate-200 border border-slate-800 rounded-bl-none shadow-md'
+                        ? 'bg-[#6366f1] text-white border border-[#4f46e5] rounded-br-none shadow-[3px_3px_0px_0px_#312e81]'
+                        : 'bg-[#0f121d] text-slate-200 border border-[#1e2436] rounded-bl-none shadow-md'
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.text}</p>
-                    <div className="mt-2 text-[10px] opacity-70 text-right">
+                    <div className="mt-2 text-[10px] opacity-70 text-right font-mono">
                       {msg.timestamp}
                     </div>
                   </div>
                 </motion.div>
               ))}
 
+              {/* Quick Action Suggestion Pills (Shown after initial welcome message) */}
+              {messages.length === 1 && !loading && (
+                <div className="pt-2 space-y-2">
+                  <p className="text-[10px] font-bold text-[#94a3b8] uppercase tracking-wider">Suggested Questions</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {quickPills.map((pill) => {
+                      const Icon = pill.icon;
+                      return (
+                        <button
+                          key={pill.label}
+                          onClick={() => sendQueryText(pill.label)}
+                          className="flex items-center space-x-2 p-2.5 rounded-lg bg-[#0f121d] border border-[#1e2436] hover:border-[#6366f1] text-left text-xs text-[#94a3b8] hover:text-white transition-colors group"
+                        >
+                          <Icon className="w-3.5 h-3.5 text-[#6366f1] shrink-0" />
+                          <span className="truncate">{pill.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {loading && (
-                <div className="flex items-center space-x-2 text-slate-400 text-xs bg-slate-900/60 p-3 rounded-xl border border-slate-800 w-fit">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                  <span>Looking that up for you...</span>
+                <div className="flex items-center space-x-2 text-[#94a3b8] text-xs bg-[#0f121d] p-3 rounded-xl border border-[#1e2436] w-fit">
+                  <div className="w-2 h-2 rounded-full bg-[#6366f1] animate-ping" />
+                  <span>Checking event records...</span>
                 </div>
               )}
 
@@ -178,19 +221,19 @@ export default function EventAiDrawer({
             </div>
 
             {/* Input Bar */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-800 bg-slate-900/40">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-[#1e2436] bg-[#0f121d]">
               <div className="relative flex items-center">
                 <input
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   placeholder="Ask about schedule, venue, prerequisites..."
-                  className="w-full bg-slate-900 text-white placeholder-slate-500 rounded-xl px-4 py-3 text-sm border border-slate-800 focus:outline-none focus:border-blue-500 transition-colors pr-12"
+                  className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-xl px-4 py-3 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1] transition-colors pr-12"
                 />
                 <button
                   type="submit"
                   disabled={!inputMessage.trim() || loading}
-                  className="absolute right-2 p-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-lg disabled:opacity-40 hover:opacity-90 transition-opacity"
+                  className="absolute right-2 p-2 bg-[#6366f1] hover:bg-[#4f46e5] text-white rounded-lg disabled:opacity-40 transition-colors"
                 >
                   <Send className="w-4 h-4" />
                 </button>

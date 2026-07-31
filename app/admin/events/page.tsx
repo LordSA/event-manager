@@ -63,6 +63,7 @@ export default function EventBookingEnginePage() {
   const [selectedCommunityId, setSelectedCommunityId] = useState('');
   const [status, setStatus] = useState<'closed' | 'live'>('closed');
   const [desc, setDesc] = useState('');
+  const [perks, setPerks] = useState('');
   const [posterUrl, setPosterUrl] = useState('');
   const [uploadingPoster, setUploadingPoster] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -167,6 +168,7 @@ export default function EventBookingEnginePage() {
     setSelectedCommunityId(matchedComm ? matchedComm.id : (currentUserCommunityId || ''));
     setStatus(evt.status || 'closed');
     setDesc(evt.description || '');
+    setPerks(evt.perks || '');
     setPosterUrl(evt.poster_url || evt.image || '');
     setShowModal(true);
   };
@@ -197,6 +199,7 @@ export default function EventBookingEnginePage() {
         date: dateRangeString,
         time_slot: formattedTimeSlot,
         description: desc || 'Full event details and schedule.',
+        perks: perks.trim() || null,
         status,
         ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
       };
@@ -213,6 +216,7 @@ export default function EventBookingEnginePage() {
           status,
           description: desc,
           system_prompt: desc,
+          perks: perks.trim() || null,
           poster_url: posterUrl || null,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         }).eq('id', editingEvent.id);
@@ -232,6 +236,7 @@ export default function EventBookingEnginePage() {
         poster_url: posterUrl || '/images/bit.jpg',
         image: posterUrl || '/images/bit.jpg',
         description: desc || 'Full event details and schedule.',
+        perks: perks.trim() || null,
         status,
         ai_context: `Event: ${title}\nCategory: ${finalCategory}\nOrganizer: ${commName}\nDates: ${dateRangeString}\nTime: ${formattedTimeSlot}\nFull Description:\n${desc}`,
       };
@@ -248,6 +253,7 @@ export default function EventBookingEnginePage() {
           status,
           description: desc,
           system_prompt: desc,
+          perks: perks.trim() || null,
           poster_url: posterUrl || null,
           slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
@@ -261,6 +267,7 @@ export default function EventBookingEnginePage() {
     setEditingEvent(null);
     setTitle('');
     setDesc('');
+    setPerks('');
     setCustomCategory('');
     setShowModal(false);
     setTimeout(() => setFeedback(null), 4000);
@@ -759,6 +766,21 @@ export default function EventBookingEnginePage() {
                   required
                   className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 h-28"
                 />
+              </div>
+
+              {/* Optional Perks / Highlights */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Optional Highlights / Perks (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={perks}
+                  onChange={(e) => setPerks(e.target.value)}
+                  placeholder="e.g. KTU Activity Points, Certificates, Free Refreshments"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-white placeholder-slate-500"
+                />
+                <p className="text-[10px] text-slate-500 mt-1">Leave blank if no special perks apply.</p>
               </div>
 
               <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
