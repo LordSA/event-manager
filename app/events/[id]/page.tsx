@@ -35,8 +35,8 @@ function formatTimeSlotTo12Hr(slot?: string): string {
   return formatSingleTime12(slot);
 }
 
-function refactorDescription4To5Lines(text: string | null | undefined): string {
-  if (!text) return 'Join us for an interactive technical session with campus community leads and organizers.';
+function refactorDescription3Lines(text: string | null | undefined): string {
+  if (!text) return 'Discover event details, workshop modules, and interactive sessions organized for campus students.';
 
   let cleaned = text
     .replace(/You are the official AI Assistant[\s\S]*/gi, '')
@@ -50,12 +50,12 @@ function refactorDescription4To5Lines(text: string | null | undefined): string {
   }
 
   const sentences = cleaned.match(/[^.!?]+[.!?]+/g);
-  if (sentences && sentences.length >= 4) {
-    const fourToFiveSentences = sentences.slice(0, 5).map(s => s.trim()).join(' ');
-    return fourToFiveSentences.length > 380 ? fourToFiveSentences.slice(0, 377) + '...' : fourToFiveSentences;
+  if (sentences && sentences.length >= 3) {
+    const threeSentences = sentences.slice(0, 3).map(s => s.trim()).join(' ');
+    return threeSentences.length > 250 ? threeSentences.slice(0, 247) + '...' : threeSentences;
   }
 
-  return cleaned.length > 350 ? cleaned.slice(0, 347) + '...' : cleaned;
+  return cleaned.length > 220 ? cleaned.slice(0, 217) + '...' : cleaned;
 }
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -134,7 +134,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
   const communityName = eventData.community?.name || 'Campus Community';
   const cleanTitle = eventData.title ? eventData.title.replace(/\*\*/g, '').trim() : 'Event Session';
-  const publicDescription = refactorDescription4To5Lines(eventData.description);
+  const publicDescription = refactorDescription3Lines(eventData.description);
   const posterSrc = (eventData.poster_url && eventData.poster_url.trim() !== '')
     ? eventData.poster_url
     : ((eventData.image && eventData.image.trim() !== '') ? eventData.image : '/images/poster.webp');
@@ -168,7 +168,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </h1>
 
               <div className="space-y-4 border-t border-b border-[#1e2436] py-5">
-                <p className="text-sm text-[#94a3b8] leading-relaxed">
+                <p className="text-sm text-[#94a3b8] leading-relaxed line-clamp-3">
                   {publicDescription}
                 </p>
 

@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.45.0] - 2026-07-31
+
+### 📝 3-Line Description Overview & Assistant Bar Refactor
+- **Description Refactor ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Refactored the event description overview to display exactly 3 concise sentences with `line-clamp-3`, directly followed by the interactive "Need full guidelines, timeline, or FAQs? Ask Assistant" drawer prompt bar.
+
+---
+
 ## [0.44.0] - 2026-07-31
 
 ### 🛠️ Postgres UUID Syntax Error Fix on Slug Routing
