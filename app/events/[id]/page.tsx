@@ -35,14 +35,9 @@ function formatTimeSlotTo12Hr(slot?: string): string {
   return formatSingleTime12(slot);
 }
 
-/**
- * Refactors detailed event description into a clean 4-5 line public overview,
- * filtering out raw AI system prompts if accidentally included in description.
- */
 function refactorDescription4To5Lines(text: string | null | undefined): string {
   if (!text) return 'Join us for an interactive technical session with campus community leads and organizers.';
 
-  // Strip system prompt preamble if present
   let cleaned = text
     .replace(/You are the official AI Assistant[\s\S]*/gi, '')
     .replace(/EVENT DETAILS:[\s\S]*/gi, '')
@@ -54,7 +49,6 @@ function refactorDescription4To5Lines(text: string | null | undefined): string {
     return 'Discover event details, workshop modules, and interactive sessions organized for campus students.';
   }
 
-  // Extract up to 4-5 sentences
   const sentences = cleaned.match(/[^.!?]+[.!?]+/g);
   if (sentences && sentences.length >= 4) {
     const fourToFiveSentences = sentences.slice(0, 5).map(s => s.trim()).join(' ');
@@ -86,7 +80,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           setEventData(data);
         }
       } catch {
-        // Fallback
       } finally {
         setLoading(false);
       }
@@ -122,7 +115,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="min-h-screen bg-[#08090d] text-[#f8fafc] pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 font-sans relative">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Top Back Link */}
         <Link
           href="/events"
           className="inline-flex items-center space-x-2 text-xs font-semibold text-[#94a3b8] hover:text-white transition-colors"
@@ -131,7 +123,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           <span>Back to All Events</span>
         </Link>
 
-        {/* Event Detail Container */}
         <div className="brutalist-card p-6 sm:p-10 rounded-2xl space-y-8 relative overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-7 space-y-6">
@@ -149,13 +140,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 {cleanTitle}
               </h1>
 
-              {/* 4-5 Line Refactored Public Description */}
               <div className="space-y-4 border-t border-b border-[#1e2436] py-5">
                 <p className="text-sm text-[#94a3b8] leading-relaxed">
                   {publicDescription}
                 </p>
 
-                {/* Callout box encouraging user to ask Assistant */}
                 <div className="p-3.5 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center justify-between gap-3 text-xs text-[#94a3b8]">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-[#6366f1] shrink-0" />
@@ -170,7 +159,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
               </div>
 
-              {/* Event Metadata Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-[#94a3b8]">
                 <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">
                   <Calendar className="w-5 h-5 text-[#6366f1]" />
@@ -196,7 +184,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                   </div>
                 </div>
 
-                {/* Optional Perks / Highlights - ONLY shown if explicitly provided by admin */}
                 {eventData.perks && eventData.perks.trim() !== '' && (
                   <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">
                     <Award className="w-5 h-5 text-amber-400" />
@@ -208,7 +195,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 )}
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
                 <a
                   href={eventData.redirect_url || 'https://forms.google.com'}
@@ -230,9 +216,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            {/* Event Poster Image */}
             <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-[#161a29]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={eventData.poster_url || '/images/bit.jpg'}
                 alt={cleanTitle}
@@ -244,7 +228,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      {/* AI Assistant Slide-over Drawer */}
       <EventAiDrawer
         isOpen={aiDrawerOpen}
         onClose={() => setAiDrawerOpen(false)}

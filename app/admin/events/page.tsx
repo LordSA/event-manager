@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, Radio, AlertCircle, Clock, Upload, Image as ImageIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, AlertCircle, Clock, Upload } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
@@ -71,12 +71,10 @@ export default function EventBookingEnginePage() {
 
   const loading = eventsLoading || communitiesLoading;
 
-  // Active User Profile Info
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>('editor');
   const [currentUserCommunityId, setCurrentUserCommunityId] = useState<string | null>(null);
   const [currentUserCommunityName, setCurrentUserCommunityName] = useState<string>('');
 
-  // Modal & Form State
   const [showModal, setShowModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<any | null>(null);
 
@@ -144,7 +142,6 @@ export default function EventBookingEnginePage() {
           }
         }
       } catch {
-        // Fallback
       }
     };
 
@@ -176,8 +173,7 @@ export default function EventBookingEnginePage() {
     setTitle(evt.title || '');
     setStartDate(evt.event_date || new Date().toISOString().split('T')[0]);
     setEndDate(evt.event_date || new Date().toISOString().split('T')[0]);
-    
-    // Parse time slot into valid 24-hr format (HH:mm) for HTML5 time inputs
+
     if (evt.time_slot && evt.time_slot.includes('-')) {
       const parts = evt.time_slot.split('-');
       setStartTime(parseTimeTo24Hr(parts[0]));
@@ -215,8 +211,7 @@ export default function EventBookingEnginePage() {
 
     setSubmitting(true);
     const finalCategory = category === 'Other' ? (customCategory || 'Custom Event') : category;
-    
-    // Determine Community ID
+
     const targetCommunityId = isSuperAdmin ? (selectedCommunityId || currentUserCommunityId) : currentUserCommunityId;
     const matchedComm = communities.find((c) => c.id === targetCommunityId || c.name === targetCommunityId);
     const commName = matchedComm ? matchedComm.name : (currentUserCommunityName || 'CEV Community');
@@ -227,13 +222,11 @@ export default function EventBookingEnginePage() {
     const dateRangeString = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
     const finalVenue = venue.trim() || 'Campus Setup / CEV';
 
-    // Synthesize structured AI assistant context
     const aiSystemPrompt = `You are the official AI Assistant for "${title}", organized by ${commName}.\n\nEVENT DETAILS:\n- Name: ${title}\n- Organizer: ${commName}\n- Date: ${dateRangeString}\n- Time: ${formattedTimeSlot}\n- Venue: ${finalVenue}\n- Category: ${finalCategory}\n${perks ? `- Highlights/Perks: ${perks}\n` : ''}\nDESCRIPTION & RULES:\n${desc}`;
 
     try {
       const supabase = createClient();
       if (editingEvent) {
-        // Update existing event
         const updatedEvt = {
           ...editingEvent,
           title,
@@ -265,7 +258,6 @@ export default function EventBookingEnginePage() {
         }).eq('id', editingEvent.id);
         setFeedback({ type: 'success', message: 'Event slot updated successfully!' });
       } else {
-        // Create new event slot
         const newEvt = {
           id: Date.now().toString(),
           title,
@@ -381,7 +373,7 @@ export default function EventBookingEnginePage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
             <CalendarIcon className="w-8 h-8 text-blue-500" />
-            Slot Booking & Publishing Engine
+            Event Slot Booking
           </h1>
           <p className="text-sm text-slate-400 mt-1">
             Reserve dates in <span className="text-amber-400 font-semibold">closed</span> draft state to avoid conflicts across communities, then toggle to <span className="text-emerald-400 font-semibold">live</span> for public release.
@@ -389,42 +381,35 @@ export default function EventBookingEnginePage() {
         </div>
 
         <div className="flex items-center space-x-3">
-          <div className="hidden sm:flex items-center space-x-2 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-emerald-400 font-semibold">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
-            <span>Realtime Sync Active</span>
-          </div>
-
           <button
             onClick={openAddModal}
-            className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/25"
+            className="flex items-center space-x-2 px-4 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/25"
           >
             <Plus className="w-4 h-4" />
-            <span>Book Date / Time Slot</span>
+            <span>Book Slot</span>
           </button>
         </div>
       </div>
 
       {feedback && (
-        <div className={`p-4 rounded-xl text-xs font-semibold flex items-center gap-2 border ${
-          feedback.type === 'success' ? 'bg-emerald-950/80 border-emerald-800 text-emerald-300' : 'bg-red-950/80 border-red-800 text-red-300'
-        }`}>
+        <div className={`p-4 rounded-xl text-xs font-semibold flex items-center gap-2 border ${feedback.type === 'success' ? 'bg-emerald-950/80 border-emerald-800 text-emerald-300' : 'bg-red-950/80 border-red-800 text-red-300'
+          }`}>
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{feedback.message}</span>
         </div>
       )}
 
-      {/* Master Event List */}
       <div className="space-y-4">
-        <h3 className="text-lg font-bold text-white">Master Schedule & Conflict Matrix</h3>
+        <h3 className="text-lg font-bold text-white">Schedules</h3>
         {loading ? (
           <div className="p-8 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
-            Synchronizing realtime slots from database...
+            Syncing......
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {eventsList.length === 0 ? (
               <div className="col-span-full p-8 text-center text-slate-500 text-xs italic bg-slate-900/40 border border-slate-800 rounded-2xl">
-                No events or reserved slots found in database. Click &quot;Book Date / Time Slot&quot; to reserve your first event.
+                No events or reserved slots found. Click &quot;Book Date / Time Slot&quot; to reserve your first event.
               </div>
             ) : (
               eventsList.map((evt) => {
@@ -434,7 +419,6 @@ export default function EventBookingEnginePage() {
                 );
                 const isClosed = evt.status === 'closed';
 
-                // CASE 1: Other community's closed (draft) slot -> Show ONLY Date & Time slot booked, hide details (Unless Super Admin!)
                 if (!isOwnCommunity && isClosed) {
                   return (
                     <div
@@ -473,7 +457,6 @@ export default function EventBookingEnginePage() {
                   );
                 }
 
-                // CASE 2: Other community's live event -> Show basic info, read-only with Start to End Time
                 if (!isOwnCommunity && !isClosed) {
                   return (
                     <div
@@ -514,13 +497,11 @@ export default function EventBookingEnginePage() {
                   );
                 }
 
-                // CASE 3: Own community OR Super Admin (dev/admin) -> Full visibility, Start/End Time badge, editing & deletion controls
                 return (
                   <div
                     key={evt.id}
-                    className={`p-6 rounded-2xl bg-slate-900/60 border ${
-                      isClosed ? 'border-amber-800/60' : 'border-slate-800'
-                    } space-y-4 flex flex-col justify-between`}
+                    className={`p-6 rounded-2xl bg-slate-900/60 border ${isClosed ? 'border-amber-800/60' : 'border-slate-800'
+                      } space-y-4 flex flex-col justify-between`}
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
@@ -529,11 +510,10 @@ export default function EventBookingEnginePage() {
                         </span>
                         <button
                           onClick={() => handleToggleStatus(evt.id, evt.status || 'live', evt.community)}
-                          className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
-                            isClosed
-                              ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
-                              : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
-                          }`}
+                          className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5 transition-all ${isClosed
+                            ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
+                            : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
+                            }`}
                         >
                           {isClosed ? (
                             <>
@@ -591,7 +571,6 @@ export default function EventBookingEnginePage() {
         )}
       </div>
 
-      {/* Booking / Editing Modal */}
       {showModal && (
         <div
           data-lenis-prevent
@@ -616,9 +595,8 @@ export default function EventBookingEnginePage() {
                 ✕ Close
               </button>
             </div>
-            
+
             <form onSubmit={handleBookSlot} className="space-y-5">
-              {/* Row 1: Event Name & Venue */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -649,7 +627,6 @@ export default function EventBookingEnginePage() {
                 </div>
               </div>
 
-              {/* Row 2: Category & Organizing Community */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -708,7 +685,6 @@ export default function EventBookingEnginePage() {
                 </div>
               </div>
 
-              {/* Row 3: Start Date & End Date */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
@@ -737,7 +713,6 @@ export default function EventBookingEnginePage() {
                 </div>
               </div>
 
-              {/* Row 4: Start Time & End Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
@@ -766,7 +741,6 @@ export default function EventBookingEnginePage() {
                 </div>
               </div>
 
-              {/* Row 5: Publishing Status & Poster Upload */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -776,22 +750,20 @@ export default function EventBookingEnginePage() {
                     <button
                       type="button"
                       onClick={() => setStatus('closed')}
-                      className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
-                        status === 'closed'
-                          ? 'bg-amber-950/80 border-amber-500 text-amber-300'
-                          : 'bg-[#161a29] border-[#1e2436] text-slate-400'
-                      }`}
+                      className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${status === 'closed'
+                        ? 'bg-amber-950/80 border-amber-500 text-amber-300'
+                        : 'bg-[#161a29] border-[#1e2436] text-slate-400'
+                        }`}
                     >
                       <Lock className="w-3.5 h-3.5" /> Closed (Draft)
                     </button>
                     <button
                       type="button"
                       onClick={() => setStatus('live')}
-                      className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
-                        status === 'live'
-                          ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300'
-                          : 'bg-[#161a29] border-[#1e2436] text-slate-400'
-                      }`}
+                      className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${status === 'live'
+                        ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300'
+                        : 'bg-[#161a29] border-[#1e2436] text-slate-400'
+                        }`}
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" /> Live (Publish)
                     </button>
@@ -832,7 +804,6 @@ export default function EventBookingEnginePage() {
                 </div>
               </div>
 
-              {/* Row 6: Detailed Description */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
                   Full Detailed Description of Event *
@@ -846,7 +817,6 @@ export default function EventBookingEnginePage() {
                 />
               </div>
 
-              {/* Row 7: Optional Highlights / Perks */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
                   Optional Highlights / Perks (Optional)
@@ -861,7 +831,6 @@ export default function EventBookingEnginePage() {
                 <p className="text-[10px] text-[#94a3b8] mt-1">Leave blank if no special perks apply.</p>
               </div>
 
-              {/* Modal Action Footer */}
               <div className="flex items-center justify-end space-x-3 pt-4 border-t border-[#1e2436]">
                 <button
                   type="button"

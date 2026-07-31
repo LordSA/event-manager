@@ -12,20 +12,17 @@ export default function LandingHomePage() {
 
   return (
     <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col pt-28 md:pt-32">
-      {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16 space-y-20">
-        {/* Hero Section */}
         <section className="text-center space-y-6 max-w-3xl mx-auto pt-4">
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display leading-tight">
-            The central event hub for CEV campus
+            The Central Event Hub for CE Vadakara
           </h1>
 
           <p className="text-sm sm:text-base text-[#94a3b8] max-w-xl mx-auto leading-relaxed font-sans">
-            Discover technical sessions, hackathons, and workshops organized by IEEE, IEDC, TinkerHub, FOSS Club, and MuLearn.
+            Discover technical sessions, hackathons, and workshops organized by Our College Communities and Clubs.
           </p>
 
-          {/* Header Action Section: Primary Buttons */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
             <Link
               href="/events"
@@ -43,7 +40,6 @@ export default function LandingHomePage() {
           </div>
         </section>
 
-        {/* Feature Grid */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="brutalist-card p-6 rounded-xl space-y-3">
             <div className="p-2.5 w-fit rounded-lg bg-[#161a29] text-white border border-[#1e2436]">
@@ -76,7 +72,6 @@ export default function LandingHomePage() {
           </div>
         </section>
 
-        {/* Participating Communities */}
         <section className="space-y-6">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-white font-display">Participating Communities</h2>
@@ -95,7 +90,6 @@ export default function LandingHomePage() {
                   className="brutalist-card p-5 rounded-xl flex flex-col space-y-2"
                 >
                   {c.logo_url ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={c.logo_url}
                       alt={c.name}
@@ -115,7 +109,6 @@ export default function LandingHomePage() {
           )}
         </section>
 
-        {/* Featured Live Events */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl sm:text-3xl font-bold text-white font-display">Featured Events</h2>
@@ -156,7 +149,6 @@ export default function LandingHomePage() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-[#1e2436] bg-[#0f121d] py-6 text-center text-xs text-[#94a3b8]">
         <p>Whats @CEV - Campus Event Management Platform</p>
       </footer>

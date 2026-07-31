@@ -32,7 +32,6 @@ export default function EventAiDrawer({
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Lock body scroll when drawer is open so navbar and page don't stick or scroll behind
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -44,7 +43,6 @@ export default function EventAiDrawer({
     };
   }, [isOpen]);
 
-  // Initialize welcome message
   useEffect(() => {
     if (isOpen) {
       setMessages([
@@ -58,7 +56,6 @@ export default function EventAiDrawer({
     }
   }, [isOpen, cleanTitle]);
 
-  // Auto scroll to bottom
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -130,7 +127,6 @@ export default function EventAiDrawer({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop (z-[200] above fixed navbar z-[100]) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -139,7 +135,6 @@ export default function EventAiDrawer({
             className="fixed inset-0 bg-black/75 backdrop-blur-md z-[200]"
           />
 
-          {/* Side Drawer (z-[200] above fixed navbar z-[100]) */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -147,7 +142,6 @@ export default function EventAiDrawer({
             transition={{ type: 'spring', damping: 25, stiffness: 250 }}
             className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-[#08090d] border-l-2 border-[#1e2436] z-[200] flex flex-col shadow-2xl text-[#f8fafc] font-sans"
           >
-            {/* Header */}
             <div className="p-4 sm:p-6 border-b border-[#1e2436] flex items-center justify-between bg-[#0f121d]">
               <div className="flex items-center space-x-3">
                 <div className="p-2.5 bg-[#6366f1] border border-[#4f46e5] rounded-xl text-white shadow-[2px_2px_0px_0px_#312e81]">
@@ -173,7 +167,6 @@ export default function EventAiDrawer({
               </button>
             </div>
 
-            {/* Chat Body */}
             <div data-lenis-prevent className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
               {messages.map((msg) => (
                 <motion.div
@@ -199,7 +192,6 @@ export default function EventAiDrawer({
                 </motion.div>
               ))}
 
-              {/* Quick Action Suggestion Pills */}
               {messages.length === 1 && !loading && (
                 <div className="pt-2 space-y-2">
                   <p className="text-[10px] font-bold text-[#94a3b8] uppercase tracking-wider">Suggested Questions</p>
@@ -228,11 +220,9 @@ export default function EventAiDrawer({
                 </div>
               )}
 
-              {/* Scroll End Anchor */}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Bar */}
             <form onSubmit={handleSendMessage} className="p-4 border-t border-[#1e2436] bg-[#0f121d]">
               <div className="relative flex items-center">
                 <input

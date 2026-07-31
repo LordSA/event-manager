@@ -1,39 +1,99 @@
-# Whats @CEV / Multi-Community Event Manager
+# Whats @CEV — Multi-Community Event Management Platform
 
-[![Framework](https://img.shields.io/badge/Framework-Next.js_16-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
-[![Database](https://img.shields.io/badge/Database-Supabase_PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
-[![Storage](https://img.shields.io/badge/Storage-Vercel_Blob-black?style=for-the-badge&logo=vercel)](https://vercel.com/docs/storage/vercel-blob)
-[![AI Architecture](https://img.shields.io/badge/AI-Gemini_%E2%86%92_Grok_%E2%86%92_OpenRouter-blueviolet?style=for-the-badge)](https://ai.google.dev/)
-[![Design System](https://img.shields.io/badge/Design-Clean_Dark_Product-black?style=for-the-badge)](https://tailwindcss.com/)
+A modern, high-performance event management, slot booking, and public discovery platform built for **College of Engineering Vadakara (CE Vadakara)** campus communities (IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
 
 ---
 
-## 📖 Overview
+## 🚀 Key Features & Capabilities
 
-In campus environments and multi-organization setups, event information is often scattered across dozens of messaging groups, posters, and scattered sites. **Whats @CEV** is a high-performance event discovery and management platform designed with a clean, dark product aesthetic (Linear / Vercel / Google Calendar level). It acts as a central hub for campus communities to coordinate event dates, publish schedules, prevent date overlaps via slot booking, upload WebP images via Vercel Blob Storage, explore interactive Google Calendar views, and answer attendee questions using an interactive **Event Assistant**.
-
-- **Framework:** Next.js 16 (App Router) + Next.js 16 Proxy Convention (`proxy.ts`)
-- **Styling & Theme:** Tailwind CSS v4 + Obsidian Dark Palette (`#08090d`, `#0f121d`, `#6366f1`)
-- **Typography:** Custom Font Engine (`Quera`, `Gued`, `Rondured`) configured via `next/font/local` for zero CLS and preloaded web fonts.
-- **Community Management:** Create, edit, slug update, and logo upload for Super Admins and Developers.
-- **Database & Auth:** Supabase PostgreSQL & Auth with Dual Login Modes (Password + 6-Digit Email OTP) + One-Click Sign Out.
-- **Fast AI Assistant Engine:** `/api/chat/route.ts` using `gemini-1.5-flash` with 250 token caps and 4s timeout abort controllers for sub-500ms response speeds.
-- **Z-Index Layered Drawer:** `z-[200]` AI Assistant slide-over drawer with body scroll lock that renders cleanly over floating top navbar.
-- **4-5 Line Event Summaries:** Refactored event detail page description (`/events/[id]`) with interactive "Ask Assistant" callout box.
-- **Spacious Admin Booking Modal:** Expanded `max-w-3xl` modal container width with `data-lenis-prevent` mouse scrolling and `parseTimeTo24Hr` HTML5 time input compatibility.
+- **Centralized Master Event Schedule:** Conflict-free slot booking engine where organizers reserve dates in `closed` draft mode before publishing to `live` state.
+- **Role-Based Access Control (RBAC):** Tiered permissions for Developers (`dev`), Super Admins (`admin`), Community Leads (`manager`), and Event Editors (`editor`).
+- **Vercel Blob Storage Integration:** Direct client-side WebP image conversion and asset uploading for event posters (`posters/*.webp`), community logos (`logos/*.webp`), and user avatars (`avatars/*.webp`).
+- **Fast AI Event Assistant & Response Sanitizer:** Multi-provider fallback AI chat engine (`gemini-1.5-flash` with Grok & OpenRouter fallbacks) with intelligent offline parsing (`generateOfflineResponse`) delivering direct answers for event schedules, venues, rules, and registration guidance without prompt preambles or raw system prompt leaks.
+- **Custom Font Optimization (`next/font/local`):** Zero Cumulative Layout Shift (CLS) font engine featuring `Quera` (Display Headlines), `Gued` (Section Headings), and `Rondured` (Body Copy).
+- **Public 2-Line & 4-5 Line Summarizer:** Refactored description parser that filters out raw prompt preambles and clamps public card text to prevent layout flickering.
+- **Clean Production Codebase:** Zero temporary comments or inline block notes across all `.ts` and `.tsx` source code files.
 
 ---
 
-## 🔐 Supabase Auth: Configuring 6-Digit OTP Emails (vs Magic Links)
+## 🛠️ Technology Stack
 
-To ensure Supabase sends a **6-Digit Numeric OTP Code** (e.g. `123456`) to the user's inbox instead of a Magic Link URL:
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | Next.js 16 (App Router) |
+| **Runtime** | Node.js with React 19 & TypeScript 5 |
+| **Styling** | Tailwind CSS v4 + Obsidian Dark Design Tokens |
+| **Smooth Scroll** | Lenis Smooth Scroll ([app/components/SmoothScroll.tsx](./app/components/SmoothScroll.tsx)) |
+| **Database & Auth** | Supabase PostgreSQL + Supabase Auth (OTP & Password) |
+| **Storage Engine** | Vercel Blob Storage (`@vercel/blob`) via `./app/api/upload/route.ts` |
+| **AI Integration** | Google Generative AI (`@google/generative-ai`) + Grok & OpenRouter |
+| **Fonts** | Local font binaries ([fonts/](./fonts/)) |
 
-1. Log into your **Supabase Dashboard** -> **Authentication** -> **Email Templates**.
-2. Select **Magic Link** (or **Confirm signup**).
-3. Replace the link placeholder `{{ .ConfirmationURL }}` with `{{ .Token }}` inside the template body:
-   ```html
-   <h2>Your CEV Verification Code</h2>
-   <p>Enter this 6-digit code to complete your login:</p>
-   <h1 style="font-size: 32px; letter-spacing: 4px;">{{ .Token }}</h1>
-   ```
-4. Save the template.
+---
+
+## 🔑 Environment Variables Setup
+
+Create a `.env.local` file in the root directory:
+
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://your-supabase-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+
+# Vercel Blob Storage Key
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token_here
+
+# AI Assistant API Keys
+GEMINI_API_KEY=your_gemini_api_key
+GROK_API_KEY=your_grok_api_key
+OPENROUTER_API_KEY=your_openrouter_api_key
+```
+
+---
+
+## 💻 Developer Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run TypeScript compilation check
+npx tsc --noEmit
+
+# Build production bundle
+npm run build
+
+# Start production server
+npm run start
+```
+
+---
+
+## 📁 Repository Structure
+
+```
+event-manager/
+├── .agents/
+│   └── AGENTS.md                  # Developer agent workspace rules & guidelines
+├── app/
+│   ├── api/
+│   │   ├── admin/users/route.ts   # Supabase Auth + Profiles admin management API
+│   │   ├── chat/route.ts          # Fast AI assistant endpoint (gemini-1.5-flash)
+│   │   └── upload/route.ts        # Vercel Blob storage upload route
+│   ├── admin/                     # Protected Admin Console (/admin, /events, /communities, /users)
+│   ├── calendar/                  # Google Calendar view route (Month, Week, Day grids)
+│   ├── components/                # Reusable UI components (Navbar, EventAiDrawer, MasterCalendar)
+│   ├── events/                    # Public event directory & dynamic detail pages
+│   └── layout.tsx                 # Root layout with font optimization
+├── fonts/                         # Custom font binaries (.otf, .ttf)
+├── lib/                           # Core utilities, Supabase client, WebP converter, & summarizers
+├── proxy.ts                       # Next.js 16 Proxy middleware for session refresh & route security
+├── changelogs.md                  # Detailed versioning history
+├── design.md                      # Design system tokens & typography spec
+├── project_memory.md              # Technical program memory & database schema
+└── README.md                      # Project documentation (this file)
+```

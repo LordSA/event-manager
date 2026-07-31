@@ -64,7 +64,6 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
 
   return (
     <div className="space-y-6">
-      {/* View Controls */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
         <div>
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -76,7 +75,6 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
           </p>
         </div>
 
-        {/* Tab Switcher */}
         <div className="flex items-center space-x-1 p-1 rounded-lg bg-neutral-900 border border-neutral-800">
           <button
             onClick={() => setActiveTab('list')}
@@ -104,7 +102,6 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
         </div>
       </div>
 
-      {/* Community Filter Pills */}
       {activeTab === 'community' && (
         <div className="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-hide">
           <button
@@ -133,7 +130,6 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
         </div>
       )}
 
-      {/* Events List Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredEvents.length === 0 ? (
           <div className="col-span-full p-12 text-center text-neutral-500 text-xs bg-[#121212] border border-neutral-800 rounded-xl space-y-1">
@@ -175,7 +171,6 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
                 </div>
               </div>
 
-              {/* Time Slot & Date Badge */}
               <div className="pt-3 border-t border-neutral-800 space-y-2">
                 <div className="flex items-center justify-between text-xs text-neutral-400">
                   <span className="font-medium text-neutral-300">{evt.community}</span>

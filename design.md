@@ -7,13 +7,14 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ## 2. Color System & Palette
 
-### Base Dark Palette
+### Base Dark Obsidian Palette
 * **Background Primary:** `#08090d` (Deep Navy Charcoal)
 * **Surface Background:** `#0f121d` (Elevated Panel Dark)
 * **Elevated Container:** `#161a29` (Card Surface)
 * **Border Colors:** `#1e2436` (Subtle 1px/2px Border) / `#2a334c` (Strong Border)
 * **Primary Accent:** `#6366f1` (Electric Indigo) with `#4f46e5` border & `#312e81` shadow
 * **Secondary Accent:** `#10b981` (Vibrant Emerald)
+* **Warning Accent:** `#f59e0b` (Amber Orange) for closed draft slots
 * **Text Primary:** `#f8fafc` (High-contrast Slate White)
 * **Text Muted:** `#94a3b8` (Slate Neutral Muted)
 
@@ -22,16 +23,32 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 ## 3. Typography Hierarchy & Custom Fonts
 
 ### Font Optimization (`next/font/local`)
-* **Display / Hero Headlines (`font-display`):** `Quera` (`src/fonts/quera.otf`, `--font-quera`)
-* **Section Headings & Titles (`font-heading`):** `Gued` (`src/fonts/gued.otf`, `--font-gued`)
-* **Body Copy & UI Labels (`font-sans`):** `Rondured` (`src/fonts/roundered.ttf`, `--font-roundered`)
+* **Display / Hero Headlines (`font-display`):** `Quera` (`./fonts/quera.otf`, `--font-quera`)
+* **Section Headings & Titles (`font-heading`):** `Gued` (`./fonts/gued.otf`, `--font-gued`)
+* **Body Copy & UI Labels (`font-sans`):** `Rondured` (`./fonts/roundered.ttf`, `--font-roundered`)
 * **System Fallbacks:** `system-ui, -apple-system, sans-serif` (Inter is strictly forbidden).
 
 ---
 
-## 4. Modal Window Sizing, HTML5 Time Parsing & Scroll Rules
+## 4. Component Rules & Layout Specifications
 
-### Admin Event Booking Modal Layout (`app/admin/events/page.tsx`)
-* **Spacious 2-Column Layout (`max-w-3xl`):** Extended modal container width to `768px` (`max-w-3xl`) with responsive 2-column grid layout for event details, date ranges, venue, and publishing controls.
-* **HTML5 Time Parser (`parseTimeTo24Hr`):** Automatically converts 12-hour database strings (e.g. `01:00 PM - 04:00 PM`) into strict 24-hour `HH:mm` format (`13:00` / `16:00`), ensuring HTML `<input type="time" />` elements display start/end times during editing.
-* **Lenis Mouse Scroll Interception (`data-lenis-prevent`):** Restores native mouse wheel and trackpad scrolling inside modal overlays without smooth-scroll locks.
+### Brutalist Cards & Containers
+* Class: `.brutalist-card`
+* Background: `#0f121d`
+* Border: `2px solid #1e2436`
+* Border Radius: `1rem` (16px / `rounded-2xl`)
+* Hover State: Border transitions to `#6366f1` with subtle 2px offset box-shadow.
+
+### Brutalist Action Buttons
+* Primary CTA: `.brutalist-btn-primary` (`bg-[#6366f1] text-white border border-[#4f46e5] shadow-[3px_3px_0px_0px_#312e81]`)
+* Secondary CTA: `.brutalist-btn-secondary` (`bg-[#161a29] text-white border border-[#1e2436]`)
+
+---
+
+## 5. Modal Window Sizing, Production Code & Clean Standards
+
+### Clean Production Code Rules ([.agents/AGENTS.md](./.agents/AGENTS.md))
+* **Zero Temporary Comments Across All Pages:** All source code files ([app/page.tsx](./app/page.tsx), [app/admin/events/page.tsx](./app/admin/events/page.tsx), [app/events/[id]/page.tsx](./app/events/[id]/page.tsx), [app/components/EventAiDrawer.tsx](./app/components/EventAiDrawer.tsx), [app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx), [app/components/MasterCalendar.tsx](./app/components/MasterCalendar.tsx), [lib/summary.ts](./lib/summary.ts), [lib/upload.ts](./lib/upload.ts)) maintain clean, production-ready code with zero inline temporary notes or comment indicators.
+* **HTML5 Time Parser (`parseTimeTo24Hr`):** Converts 12-hour database strings into 24-hour `HH:mm` format for time inputs.
+* **Spacious 2-Column Layout (`max-w-3xl`):** Extended modal container width to `768px` (`max-w-3xl`) with `data-lenis-prevent` for mouse wheel scrolling inside Lenis smooth scroll overlays.
+* **Z-Index Layering:** Main Navbar (`z-[100]`), Modal Windows (`z-[150]`), AI Assistant Drawer (`z-[200]`).

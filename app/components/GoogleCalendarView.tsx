@@ -116,7 +116,7 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
   };
 
   const weekDays = getWeekDays(currentDate);
-  const hours = Array.from({ length: 13 }, (_, i) => i + 8); // 8 AM to 8 PM
+  const hours = Array.from({ length: 13 }, (_, i) => i + 8);
 
   const isEventOnDate = (evt: CalendarEvent, dateObj: Date) => {
     if (!evt.date) return false;
@@ -130,7 +130,6 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
 
   return (
     <div className="brutalist-card rounded-2xl overflow-hidden flex flex-col font-sans">
-      {/* Calendar Header & View Selector */}
       <div className="p-4 border-b border-[#1e2436] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[#161a29]">
         <div className="flex items-center space-x-3">
           <button
@@ -159,7 +158,6 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Community Filter Dropdown */}
           <select
             value={selectedCommunity}
             onChange={(e) => setSelectedCommunity(e.target.value)}
@@ -173,7 +171,6 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
             ))}
           </select>
 
-          {/* View Toggles */}
           <div className="flex items-center bg-[#0f121d] border border-[#1e2436] rounded-lg p-1">
             {(['month', 'week', 'day'] as const).map((mode) => (
               <button
@@ -192,17 +189,14 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
         </div>
       </div>
 
-      {/* View Engine */}
       {viewMode === 'month' && (
         <div className="flex-1 flex flex-col min-h-[600px]">
-          {/* Day Headers */}
           <div className="grid grid-cols-7 border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2.5 uppercase tracking-wider">
             {daysOfWeek.map((day) => (
               <div key={day}>{day}</div>
             ))}
           </div>
 
-          {/* Month Grid Cells */}
           <div className="grid grid-cols-7 flex-1 auto-rows-fr bg-[#08090d]">
             {Array.from({ length: startDay }).map((_, idx) => (
               <div key={`empty-${idx}`} className="border-r border-b border-[#1e2436]/60 bg-[#0f121d]/40 min-h-[110px]" />
@@ -259,10 +253,8 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
         </div>
       )}
 
-      {/* Week & Day Views (Google Calendar Time Blocks) */}
       {(viewMode === 'week' || viewMode === 'day') && (
         <div className="flex-1 flex flex-col min-h-[650px] bg-[#08090d]">
-          {/* Header Row */}
           <div className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2.5`}>
             <div className="w-16 text-center text-[#94a3b8] font-mono text-[11px]">Time</div>
             {(viewMode === 'week' ? weekDays : [currentDate]).map((d) => (
@@ -275,7 +267,6 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
             ))}
           </div>
 
-          {/* Time Slot Body */}
           <div className="flex-1 overflow-y-auto max-h-[600px] relative scrollbar-hide">
             {hours.map((hour) => (
               <div
@@ -336,7 +327,6 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
         </div>
       )}
 
-      {/* Event Details Popover Modal */}
       {activeModalEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="brutalist-card p-6 max-w-md w-full space-y-4 rounded-xl relative text-white">

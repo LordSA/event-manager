@@ -114,7 +114,7 @@ export default function AdminDashboardPage() {
           <div className="space-y-2">
             <h3 className="text-base font-bold text-white flex items-center gap-2 font-display">
               <Calendar className="w-4 h-4 text-[#6366f1]" />
-              Slot Booking Engine
+              Slot Booking
             </h3>
             <p className="text-xs text-[#94a3b8] leading-relaxed">
               Reserve dates and time slots for community events to prevent scheduling overlaps.
@@ -122,7 +122,7 @@ export default function AdminDashboardPage() {
           </div>
           <Link
             href="/admin/events"
-            className="brutalist-btn-primary px-3.5 py-2 rounded-lg text-xs inline-flex items-center space-x-1.5 w-fit"
+            className="brutalist-btn-primary px-3.5 py-2 rounded-full text-xs inline-flex items-center space-x-1.5 w-fit"
           >
             <span>Manage Events</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -142,7 +142,7 @@ export default function AdminDashboardPage() {
             </div>
             <Link
               href="/admin/my-community"
-              className="brutalist-btn-secondary px-3.5 py-2 rounded-lg text-xs inline-flex items-center space-x-1.5 w-fit"
+              className="brutalist-btn-secondary px-3.5 py-2 rounded-full text-xs inline-flex items-center space-x-1.5 w-fit"
             >
               <span>Community Details</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
           </div>
           <Link
             href="/admin/profile"
-            className="brutalist-btn-secondary px-3.5 py-2 rounded-lg text-xs inline-flex items-center space-x-1.5 w-fit"
+            className="brutalist-btn-secondary px-3.5 py-2 rounded-full text-xs inline-flex items-center space-x-1.5 w-fit"
           >
             <span>Edit Profile</span>
             <ArrowUpRight className="w-3.5 h-3.5" />

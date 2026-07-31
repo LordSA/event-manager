@@ -1,9 +1,4 @@
-/**
- * Client-side WebP image conversion and Vercel Blob API upload helper.
- */
-
 export async function convertToWebP(file: File, quality = 0.82): Promise<File> {
-  // If already WebP, return original
   if (file.type === 'image/webp') return file;
 
   return new Promise((resolve, reject) => {
@@ -17,7 +12,7 @@ export async function convertToWebP(file: File, quality = 0.82): Promise<File> {
 
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          return resolve(file); // Fallback to original if canvas context unavailable
+          return resolve(file);
         }
 
         ctx.drawImage(img, 0, 0);
@@ -48,15 +43,12 @@ export async function uploadImageFile(
   file: File,
   category: 'posters' | 'logos' | 'avatars' = 'posters'
 ): Promise<string> {
-  // 1. Convert to WebP format in browser
   const webpFile = await convertToWebP(file);
 
-  // 2. Prepare FormData
   const formData = new FormData();
   formData.append('file', webpFile);
   formData.append('category', category);
 
-  // 3. Post to /api/upload endpoint
   const res = await fetch('/api/upload', {
     method: 'POST',
     body: formData,
