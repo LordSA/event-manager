@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.43.0] - 2026-07-31
+
+### 🔗 Main Landing Page & Community Detail Page Slug Routing
+- **Main Home Page ([app/page.tsx](./app/page.tsx)):** Updated live events list cards to navigate to `/events/${evt.slug || evt.id}` instead of raw UUID primary keys.
+- **Community Page ([app/community/[id]/page.tsx](./app/community/[id]/page.tsx)):** Updated community event cards to navigate using `event.slug || event.id`.
+
+---
+
 ## [0.42.0] - 2026-07-31
 
 ### 📐 3:4 Poster Frame Aspect Ratio & Title-Based Slug Routing

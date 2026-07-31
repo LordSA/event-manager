@@ -107,7 +107,7 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {communityEvents.length > 0 ? (
             communityEvents.map((event) => (
-              <Link key={event.id} href={`/events/${event.id}`} className="group block h-full">
+              <Link key={event.id} href={`/events/${event.slug || event.id}`} className="group block h-full">
                 <div className="bg-[#0A0A0A] border border-gray-800 rounded-3xl p-6 h-full hover:border-gray-600 transition-all flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <div className="flex justify-between items-start">

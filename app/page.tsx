@@ -138,7 +138,7 @@ export default function LandingHomePage() {
 
                   <div className="pt-3 border-t border-[#1e2436] flex items-center justify-between text-xs text-[#94a3b8]">
                     <span>{evt.community}</span>
-                    <Link href={`/events/${evt.id}`} className="text-[#6366f1] font-semibold hover:underline flex items-center gap-1">
+                    <Link href={`/events/${evt.slug || evt.id}`} className="text-[#6366f1] font-semibold hover:underline flex items-center gap-1">
                       Details &rarr;
                     </Link>
                   </div>
