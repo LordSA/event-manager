@@ -13,7 +13,7 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 * **Framework:** Next.js 16 (App Router)
 * **Runtime:** Node.js with React 19 & TypeScript 5
 * **Styling:** Tailwind CSS v4 with Dark Design System combining Restrained Glassmorphism & Light Brutalism
-* **Typography:** Custom font stack (`Quera`, `Gued`, `Rondured`) — Inter is completely removed.
+* **Typography:** `next/font/local` font optimization (`Quera`, `Gued`, `Rondured`) — zero CLS & preloaded fonts.
 
 ### Backend, Database & Vercel Blob Storage
 * **Database:** Supabase PostgreSQL with RLS (`events.poster_url`, `communities.logo_url`, `profiles.avatar_url`)
@@ -74,13 +74,14 @@ event-manager/
 │   │   ├── Navbar.tsx             # Floating glass pill navbar with logo.png & GSAP entrance animations
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
-│   │   ├── page.tsx               # Public events discovery directory
+│   │   ├── page.tsx               # Public events directory
 │   │   └── [id]/
 │   │       └── page.tsx           # Dynamic event detail page with SEO JSON-LD schema
 │   ├── login/
 │   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Authentication page
-│   ├── page.tsx                   # Public landing page with two CTA buttons (Explore Events, Explore Calendar)
-│   └── layout.tsx                 # Root layout with Lenis & Navbar
+│   ├── page.tsx                   # Public landing page with Quera/Gued font typography and brutalist tokens
+│   └── layout.tsx                 # Root layout with next/font/local (Quera, Gued, Rondured)
+├── fonts/                         # Custom font binaries (.otf, .ttf)
 ├── lib/
 │   ├── auth/
 │   │   └── rbac.ts                # Dynamic RBAC matrix permission rules
@@ -94,7 +95,8 @@ event-manager/
 │   │   ├── server.ts              # Server Supabase client creator
 │   │   └── storage.ts             # Storage adapter delegating to lib/upload.ts
 │   └── upload.ts                  # Client-side WebP image converter & Vercel Blob API uploader
-├── public/                        # Static assets, logo.png, posters, images
+├── public/
+│   └── fonts/                     # Public font binaries for fallback web loading
 ├── proxy.ts                       # Next.js 16 Edge proxy middleware entry point
 ├── changelogs.md                  # Versioning history & release notes
 ├── design.md                      # Design system & motion specification

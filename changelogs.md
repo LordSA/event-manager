@@ -4,6 +4,16 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.22.0] - 2026-07-31
+
+### 🎨 Design System, Font Compatibility & Spacing Engine Fixes
+- **Next.js Local Font Optimization (`next/font/local`):** Configured `app/layout.tsx` to load custom `.otf` and `.ttf` fonts (`Quera`, `Gued`, `Rondured`) with `font-display: swap` and CSS variables (`--font-quera`, `--font-gued`, `--font-roundered`).
+- **Web & Local Font Dual Fallback:** Created `public/fonts/` directory containing all font binaries for static fallback support and zero layout shifts.
+- **Typography Line Heights & Tracking (`app/globals.css`):** Normalized font line heights and baseline alignments (`.font-display`, `.font-heading`, `.font-sans`) to prevent ascender/descender clipping on custom typography.
+- **Landing Page Design System Overhaul (`app/page.tsx`):** Applied `.brutalist-card`, `.brutalist-btn-primary`, `#08090d` obsidian dark palette, and custom font headings across hero, feature grid, community badges, and event cards.
+
+---
+
 ## [0.21.0] - 2026-07-31
 
 ### ☁️ Vercel Blob Storage Integration & Browser WebP Conversion

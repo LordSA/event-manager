@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 /* -------------------------------------------------------------------------
-   Custom Font Declarations (Quera, Gued, Rondured)
+   Custom Font Fallback Declarations (Web & Local Font Variable Setup)
    ------------------------------------------------------------------------- */
 @font-face {
   font-family: 'Quera';
-  src: url('../fonts/quera.otf') format('opentype');
+  src: url('/fonts/quera.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -13,7 +13,7 @@
 
 @font-face {
   font-family: 'Gued';
-  src: url('../fonts/gued.otf') format('opentype');
+  src: url('/fonts/gued.otf') format('opentype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -21,7 +21,7 @@
 
 @font-face {
   font-family: 'Rondured';
-  src: url('../fonts/roundered.ttf') format('truetype');
+  src: url('/fonts/roundered.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -41,23 +41,37 @@
   --text-primary: #f8fafc;
   --text-muted: #94a3b8;
 
-  --font-display: 'Quera', 'Gued', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Gued', 'Quera', system-ui, -apple-system, sans-serif;
-  --font-sans: 'Rondured', system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-quera), 'Quera', system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-gued), 'Gued', system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-roundered), 'Rondured', system-ui, -apple-system, sans-serif;
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* -------------------------------------------------------------------------
+   Typography Hierarchy & Utility Classes
+   ------------------------------------------------------------------------- */
 .font-display {
   font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .font-heading {
   font-family: var(--font-heading);
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+  line-height: 1.5;
 }
 
 /* -------------------------------------------------------------------------
@@ -67,7 +81,7 @@ body {
   background-color: #0f121d;
   border: 2px solid #1e2436;
   box-shadow: 4px 4px 0px 0px rgba(30, 36, 54, 0.9);
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brutalist-card:hover {
@@ -79,6 +93,7 @@ body {
 .brutalist-btn-primary {
   background-color: #6366f1;
   color: #ffffff;
+  font-family: var(--font-heading);
   font-weight: 700;
   border: 2px solid #4f46e5;
   box-shadow: 3px 3px 0px 0px #312e81;
@@ -93,6 +108,7 @@ body {
 .brutalist-btn-secondary {
   background-color: #0f121d;
   color: #f8fafc;
+  font-family: var(--font-heading);
   font-weight: 600;
   border: 2px solid #1e2436;
   box-shadow: 3px 3px 0px 0px #161a29;

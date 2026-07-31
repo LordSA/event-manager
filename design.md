@@ -21,10 +21,10 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ## 3. Typography Hierarchy & Custom Fonts
 
-### Font Families
-* **Display / Hero Headlines:** `Quera` (Custom Display Sans)
-* **Section Headings & Titles:** `Gued` (Custom Geometric Display)
-* **Body Copy & UI Labels:** `Rondured` (Clean Custom UI Sans)
+### Font Optimization (`next/font/local`)
+* **Display / Hero Headlines (`font-display`):** `Quera` (`src/fonts/quera.otf`, `--font-quera`)
+* **Section Headings & Titles (`font-heading`):** `Gued` (`src/fonts/gued.otf`, `--font-gued`)
+* **Body Copy & UI Labels (`font-sans`):** `Rondured` (`src/fonts/roundered.ttf`, `--font-roundered`)
 * **System Fallbacks:** `system-ui, -apple-system, sans-serif` (Inter is strictly forbidden).
 
 ---

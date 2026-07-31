@@ -15,28 +15,28 @@ export default function LandingHomePage() {
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16 space-y-20">
         {/* Hero Section */}
-        <section className="text-center space-y-6 max-w-3xl mx-auto pt-8">
+        <section className="text-center space-y-6 max-w-3xl mx-auto pt-4">
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display leading-tight">
             The central event hub for CEV campus
           </h1>
 
-          <p className="text-base sm:text-lg text-neutral-400 max-w-xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-[#94a3b8] max-w-xl mx-auto leading-relaxed font-sans">
             Discover technical sessions, hackathons, and workshops organized by IEEE, IEDC, TinkerHub, FOSS Club, and MuLearn.
           </p>
 
-          {/* Header Action Section: Exactly Two Primary Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 pt-4">
+          {/* Header Action Section: Primary Buttons */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
             <Link
               href="/events"
-              className="w-full sm:w-auto py-3 px-6 rounded-lg bg-white text-black font-semibold text-sm hover:bg-neutral-200 transition-colors text-center"
+              className="w-full sm:w-auto brutalist-btn-primary py-3 px-8 rounded-lg text-xs font-bold text-center tracking-wider uppercase"
             >
               Explore Events
             </Link>
 
             <Link
               href="/calendar"
-              className="w-full sm:w-auto py-3 px-6 rounded-lg bg-neutral-900 border border-neutral-800 text-white font-semibold text-sm hover:bg-neutral-800 transition-colors text-center"
+              className="w-full sm:w-auto brutalist-btn-secondary py-3 px-8 rounded-lg text-xs font-semibold text-center tracking-wider uppercase"
             >
               Explore Calendar
             </Link>
@@ -45,32 +45,32 @@ export default function LandingHomePage() {
 
         {/* Feature Grid */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-xl bg-[#121212] border border-neutral-800 space-y-3">
-            <div className="p-2.5 w-fit rounded-lg bg-neutral-800 text-white border border-neutral-700">
-              <CalendarIcon className="w-5 h-5 text-neutral-300" />
+          <div className="brutalist-card p-6 rounded-xl space-y-3">
+            <div className="p-2.5 w-fit rounded-lg bg-[#161a29] text-white border border-[#1e2436]">
+              <CalendarIcon className="w-5 h-5 text-[#6366f1]" />
             </div>
-            <h3 className="text-lg font-bold text-white">Centralized Schedule</h3>
-            <p className="text-xs text-neutral-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-white font-heading">Centralized Schedule</h3>
+            <p className="text-xs text-[#94a3b8] leading-relaxed">
               Unified master schedule across all campus organizations with conflict-free slot booking.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-[#121212] border border-neutral-800 space-y-3">
-            <div className="p-2.5 w-fit rounded-lg bg-neutral-800 text-white border border-neutral-700">
-              <MessageSquare className="w-5 h-5 text-neutral-300" />
+          <div className="brutalist-card p-6 rounded-xl space-y-3">
+            <div className="p-2.5 w-fit rounded-lg bg-[#161a29] text-white border border-[#1e2436]">
+              <MessageSquare className="w-5 h-5 text-emerald-400" />
             </div>
-            <h3 className="text-lg font-bold text-white">Contextual Assistant</h3>
-            <p className="text-xs text-neutral-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-white font-heading">Contextual Assistant</h3>
+            <p className="text-xs text-[#94a3b8] leading-relaxed">
               Instant answers regarding venue locations, schedules, prerequisites, and registration links.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-[#121212] border border-neutral-800 space-y-3">
-            <div className="p-2.5 w-fit rounded-lg bg-neutral-800 text-white border border-neutral-700">
-              <Layers className="w-5 h-5 text-neutral-300" />
+          <div className="brutalist-card p-6 rounded-xl space-y-3">
+            <div className="p-2.5 w-fit rounded-lg bg-[#161a29] text-white border border-[#1e2436]">
+              <Layers className="w-5 h-5 text-cyan-400" />
             </div>
-            <h3 className="text-lg font-bold text-white">Multi-Community Network</h3>
-            <p className="text-xs text-neutral-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-white font-heading">Multi-Community Network</h3>
+            <p className="text-xs text-[#94a3b8] leading-relaxed">
               Browse initiatives, student achievements, and technical workshops by organization.
             </p>
           </div>
@@ -79,12 +79,12 @@ export default function LandingHomePage() {
         {/* Participating Communities */}
         <section className="space-y-6">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Participating Communities</h2>
-            <p className="text-neutral-400 text-xs mt-1">Student branches and technical chapters at CEV.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white font-display">Participating Communities</h2>
+            <p className="text-[#94a3b8] text-xs mt-1">Student branches and technical chapters at CEV.</p>
           </div>
 
           {communitiesLoading ? (
-            <div className="p-8 text-neutral-500 text-xs bg-[#121212] border border-neutral-800 rounded-xl text-center">
+            <div className="p-8 text-[#94a3b8] text-xs bg-[#0f121d] border border-[#1e2436] rounded-xl text-center">
               Loading communities...
             </div>
           ) : (
@@ -92,13 +92,23 @@ export default function LandingHomePage() {
               {communities.map((c) => (
                 <div
                   key={c.id}
-                  className="p-5 rounded-xl bg-[#121212] border border-neutral-800 flex flex-col space-y-2 hover:border-neutral-700 transition-colors"
+                  className="brutalist-card p-5 rounded-xl flex flex-col space-y-2"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-neutral-800 border border-neutral-700 flex items-center justify-center text-white font-bold text-sm">
-                    {c.initials || c.name.slice(0, 2).toUpperCase()}
-                  </div>
-                  <h3 className="font-semibold text-white text-sm mt-1">{c.name}</h3>
-                  <p className="text-xs text-neutral-400 line-clamp-2">{c.description || 'Campus community.'}</p>
+                  {c.logo_url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={c.logo_url}
+                      alt={c.name}
+                      className="w-10 h-10 rounded-lg object-cover border border-[#1e2436]"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-lg bg-[#161a29] border border-[#1e2436] flex items-center justify-center text-white font-bold text-sm font-display">
+                      {c.initials || c.name.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                  <h3 className="font-bold text-white text-sm mt-1 font-heading">{c.name}</h3>
+                  <p className="text-xs text-[#94a3b8] line-clamp-2">{c.description || 'Campus community.'}</p>
                 </div>
               ))}
             </div>
@@ -108,14 +118,14 @@ export default function LandingHomePage() {
         {/* Featured Live Events */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white tracking-tight">Featured Events</h2>
-            <Link href="/events" className="text-xs text-neutral-300 hover:text-white font-medium flex items-center gap-1">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white font-display">Featured Events</h2>
+            <Link href="/events" className="text-xs text-[#6366f1] hover:underline font-semibold flex items-center gap-1">
               View All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           {eventsLoading ? (
-            <div className="p-8 text-neutral-500 text-xs bg-[#121212] border border-neutral-800 rounded-xl text-center">
+            <div className="p-8 text-[#94a3b8] text-xs bg-[#0f121d] border border-[#1e2436] rounded-xl text-center">
               Loading live events...
             </div>
           ) : (
@@ -123,19 +133,19 @@ export default function LandingHomePage() {
               {eventsList.slice(0, 3).map((evt) => (
                 <div
                   key={evt.id}
-                  className="p-5 rounded-xl bg-[#121212] border border-neutral-800 flex flex-col justify-between space-y-4 hover:border-neutral-700 transition-colors"
+                  className="brutalist-card p-5 rounded-xl flex flex-col justify-between space-y-4"
                 >
                   <div className="space-y-2">
-                    <span className="text-[10px] font-mono uppercase font-semibold text-neutral-300 bg-neutral-800 px-2 py-0.5 rounded border border-neutral-700">
+                    <span className="text-[10px] font-mono uppercase font-bold text-[#6366f1] bg-[#161a29] px-2 py-0.5 rounded border border-[#1e2436]">
                       {evt.category}
                     </span>
-                    <h3 className="text-base font-bold text-white mt-1">{evt.title}</h3>
-                    <p className="text-xs text-neutral-400 line-clamp-2">{evt.description}</p>
+                    <h3 className="text-lg font-bold text-white mt-1 font-heading">{evt.title}</h3>
+                    <p className="text-xs text-[#94a3b8] line-clamp-2">{evt.description}</p>
                   </div>
 
-                  <div className="pt-3 border-t border-neutral-800 flex items-center justify-between text-xs text-neutral-400">
+                  <div className="pt-3 border-t border-[#1e2436] flex items-center justify-between text-xs text-[#94a3b8]">
                     <span>{evt.community}</span>
-                    <Link href={`/events/${evt.id}`} className="text-white font-medium hover:underline flex items-center gap-1">
+                    <Link href={`/events/${evt.id}`} className="text-[#6366f1] font-semibold hover:underline flex items-center gap-1">
                       Details &rarr;
                     </Link>
                   </div>
@@ -147,7 +157,7 @@ export default function LandingHomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-800 bg-[#0a0a0a] py-6 text-center text-xs text-neutral-500">
+      <footer className="border-t border-[#1e2436] bg-[#0f121d] py-6 text-center text-xs text-[#94a3b8]">
         <p>Whats @CEV - Campus Event Management Platform</p>
       </footer>
     </div>
