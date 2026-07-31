@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.27.0] - 2026-07-31
+
+### 🛠️ Community Editing for Admins & Browser Extension Hydration Guard
+- **Community Editing Engine ([app/admin/communities/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/communities/page.tsx)):** Built full editing modal for Super Admins and Developers to edit community names, URL slugs, descriptions, initials, and logos with Vercel Blob WebP upload.
+- **Hydration Guard ([app/login/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/login/page.tsx)):** Added `suppressHydrationWarning` on login forms, inputs, and buttons to neutralize browser extension autofill attribute injection (`fdprocessedid`).
+
+---
+
 ## [0.26.0] - 2026-07-31
 
 ### 🎯 Clean Public Header POV, Vector Brand Badge & Admin Navbar Isolation

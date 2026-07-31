@@ -1,122 +1,121 @@
 'use client';
 
 import React, { useState, Suspense } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { Mail, ArrowRight, Shield, CheckCircle2, KeyRound, Lock } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { Shield, KeyRound, Mail, ArrowRight, Lock, CheckCircle2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirectTo') || '/admin';
 
-  const [authMode, setAuthMode] = useState<'otp' | 'password'>('password');
+  const [authMode, setAuthMode] = useState<'password' | 'otp'>('password');
+  const [step, setStep] = useState<'email' | 'otp'>('email');
 
-  // OTP State
-  const [email, setEmail] = useState('');
-  const [otpToken, setOtpToken] = useState('');
-  const [step, setStep] = useState<'email' | 'verify'>('email');
-
-  // Password State
+  // Password mode state
   const [passwordEmail, setPasswordEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // OTP mode state
+  const [email, setEmail] = useState('');
+  const [otpToken, setOtpToken] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  // 1. Password Login Handler
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!passwordEmail || !password) return;
-
     setLoading(true);
     setError('');
     setSuccessMsg('');
 
     try {
       const supabase = createClient();
-      const { error: loginErr } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: passwordEmail,
-        password,
+        password: password,
       });
 
-      if (loginErr) throw loginErr;
+      if (signInError) {
+        setError(signInError.message || 'Invalid email or password credentials.');
+        return;
+      }
 
-      router.push(redirectTo);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Invalid credentials. Please try again.';
-      setError(msg);
+      if (data.session) {
+        setSuccessMsg('Authentication successful! Redirecting to Dashboard...');
+        setTimeout(() => {
+          window.location.href = redirectTo;
+        }, 500);
+      }
+    } catch {
+      setError('An unexpected error occurred during password authentication.');
     } finally {
       setLoading(false);
     }
   };
 
+  // 2. Send 6-Digit Email OTP Handler
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-
     setLoading(true);
     setError('');
     setSuccessMsg('');
 
     try {
       const supabase = createClient();
-      const { error: otpErr } = await supabase.auth.signInWithOtp({
+      const { error: otpError } = await supabase.auth.signInWithOtp({
         email,
-        options: { shouldCreateUser: false },
+        options: {
+          shouldCreateUser: false,
+        },
       });
 
-      if (otpErr) {
-        if (otpErr.message.includes('FetchError') || otpErr.message.includes('placeholder')) {
-          setStep('verify');
-          setSuccessMsg(`Development mode active for ${email}. Enter code 123456 to continue.`);
-        } else {
-          throw otpErr;
-        }
-      } else {
-        setStep('verify');
-        setSuccessMsg(`A 6-digit OTP code has been sent to ${email}. Check your inbox!`);
+      if (otpError) {
+        setError(otpError.message || 'Failed to send OTP code. Ensure email is registered.');
+        return;
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to send OTP code';
-      setError(msg);
+
+      setSuccessMsg(`A 6-digit verification code has been dispatched to ${email}.`);
+      setStep('otp');
+    } catch {
+      setError('Failed to request verification code.');
     } finally {
       setLoading(false);
     }
   };
 
+  // 3. Verify 6-Digit Email OTP Handler
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otpToken) return;
-
     setLoading(true);
     setError('');
+    setSuccessMsg('');
 
     try {
       const supabase = createClient();
-      const { error: verifyErr } = await supabase.auth.verifyOtp({
+      const { data, error: verifyError } = await supabase.auth.verifyOtp({
         email,
-        token: otpToken,
+        token: otpToken.trim(),
         type: 'email',
       });
 
-      if (verifyErr) {
-        if (otpToken === '123456') {
-          router.push(redirectTo);
-          return;
-        }
-        throw verifyErr;
-      }
-
-      router.push(redirectTo);
-    } catch (err: unknown) {
-      if (otpToken === '123456') {
-        router.push(redirectTo);
+      if (verifyError) {
+        setError(verifyError.message || 'Invalid 6-digit code. Check code and try again.');
         return;
       }
-      const msg = err instanceof Error ? err.message : 'Invalid 6-digit OTP code';
-      setError(msg);
+
+      if (data.session) {
+        setSuccessMsg('OTP verified! Accessing dashboard...');
+        setTimeout(() => {
+          window.location.href = redirectTo;
+        }, 500);
+      }
+    } catch {
+      setError('Verification failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -139,6 +138,7 @@ function LoginForm() {
         <div className="grid grid-cols-2 gap-2 bg-[#161a29] p-1 rounded-lg border border-[#1e2436]">
           <button
             type="button"
+            suppressHydrationWarning
             onClick={() => { setAuthMode('password'); setError(''); setSuccessMsg(''); }}
             className={`py-2 text-xs font-semibold rounded-md transition-all ${
               authMode === 'password'
@@ -151,6 +151,7 @@ function LoginForm() {
 
           <button
             type="button"
+            suppressHydrationWarning
             onClick={() => { setAuthMode('otp'); setError(''); setSuccessMsg(''); }}
             className={`py-2 text-xs font-semibold rounded-md transition-all ${
               authMode === 'otp'
@@ -177,7 +178,7 @@ function LoginForm() {
 
         {/* Mode A: Password Login Form */}
         {authMode === 'password' && (
-          <form onSubmit={handlePasswordLogin} className="space-y-4">
+          <form onSubmit={handlePasswordLogin} suppressHydrationWarning className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">
                 Email Address
@@ -185,6 +186,7 @@ function LoginForm() {
               <div className="relative">
                 <input
                   type="email"
+                  suppressHydrationWarning
                   value={passwordEmail}
                   onChange={(e) => setPasswordEmail(e.target.value)}
                   placeholder="manager@cev.ac.in"
@@ -202,6 +204,7 @@ function LoginForm() {
               <div className="relative">
                 <input
                   type="password"
+                  suppressHydrationWarning
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -214,6 +217,7 @@ function LoginForm() {
 
             <button
               type="submit"
+              suppressHydrationWarning
               disabled={loading}
               className="w-full brutalist-btn-primary py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 disabled:opacity-50"
             >
@@ -227,7 +231,7 @@ function LoginForm() {
         {authMode === 'otp' && (
           <>
             {step === 'email' ? (
-              <form onSubmit={handleSendOtp} className="space-y-4">
+              <form onSubmit={handleSendOtp} suppressHydrationWarning className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">
                     Manager Email Address
@@ -235,6 +239,7 @@ function LoginForm() {
                   <div className="relative">
                     <input
                       type="email"
+                      suppressHydrationWarning
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="manager@cev.ac.in"
@@ -247,6 +252,7 @@ function LoginForm() {
 
                 <button
                   type="submit"
+                  suppressHydrationWarning
                   disabled={loading}
                   className="w-full brutalist-btn-primary py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
@@ -255,7 +261,7 @@ function LoginForm() {
                 </button>
               </form>
             ) : (
-              <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <form onSubmit={handleVerifyOtp} suppressHydrationWarning className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">
                     Enter 6-Digit Verification Code
@@ -263,6 +269,7 @@ function LoginForm() {
                   <div className="relative">
                     <input
                       type="text"
+                      suppressHydrationWarning
                       value={otpToken}
                       onChange={(e) => setOtpToken(e.target.value)}
                       placeholder="123456"
@@ -276,6 +283,7 @@ function LoginForm() {
 
                 <button
                   type="submit"
+                  suppressHydrationWarning
                   disabled={loading || otpToken.length < 6}
                   className="w-full brutalist-btn-primary py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
@@ -285,6 +293,7 @@ function LoginForm() {
 
                 <button
                   type="button"
+                  suppressHydrationWarning
                   onClick={() => setStep('email')}
                   className="w-full py-1 text-xs text-[#94a3b8] hover:text-white transition-colors"
                 >

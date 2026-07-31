@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${quera.variable} ${gued.variable} ${roundered.variable}`}>
+    <html lang="en" className={`${quera.variable} ${gued.variable}`}>
       <body className="bg-[#08090d] text-[#f8fafc] antialiased overflow-y-auto overflow-x-hidden selection:bg-[#6366f1] selection:text-white font-sans">
         <SmoothScroll />
         <ConditionalNavbar />

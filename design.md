@@ -29,21 +29,8 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ---
 
-## 4. Light Brutalism & Glassmorphism Tokens
+## 4. Community Management & Form Hydration
 
-* **Brutalist Cards (`.brutalist-card`):**
-  - Background `#0f121d`, 2px `#1e2436` border, offset shadow `shadow-[4px_4px_0px_0px_rgba(30,36,54,0.9)]`. Hover: border `#6366f1` and shadow `#6366f1`.
-* **Brutalist Primary Buttons (`.brutalist-btn-primary`):**
-  - Background `#6366f1`, border 2px `#4f46e5`, offset shadow `shadow-[3px_3px_0px_0px_#312e81]`.
-* **Restrained Glass Panels (`.glass-panel`):**
-  - Translucent background `rgba(15, 18, 29, 0.85)` with `backdrop-filter: blur(16px)`.
-
----
-
-## 5. Header Navigation & Admin Scoping
-
-### Public User POV Header Navigation (`app/components/Navbar.tsx`)
-* **Single CTA Button Architecture:** Public navigation links are strictly `Home`, `Events`, `Communities`. `Calendar` is exclusively rendered as the primary right-side CTA pill button (`Calendar ->`).
-* **Zero Header Clutter:** Removed top header `Log In` text link completely.
-* **Vector Brand Badge:** Replaced broken image icon fallback with a crisp vector shield badge with electric indigo gradient (`#6366f1`).
-* **Admin Layout Isolation (`app/components/ConNav.tsx`):** Main public navbar is completely hidden on `/admin` and `/login` routes. On admin pages, only the Admin layout sidebar (`app/admin/layout.tsx`) is rendered.
+### Community Entity Editing (`app/admin/communities/page.tsx`)
+* **Admin & Dev Modal Editing:** Super Admins and Developers can modify existing community names, URL slugs, descriptions, initial badges, and logo URLs with Vercel Blob WebP uploads.
+* **Form Hydration Mismatch Guard:** Added `suppressHydrationWarning` to form inputs, buttons, and form tags in `app/login/page.tsx` to neutralize browser password manager extensions (`fdprocessedid`).

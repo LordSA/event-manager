@@ -1,16 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Building, Plus, Trash2, ShieldAlert, Image as ImageIcon, Link2, Upload } from 'lucide-react';
+import { Building, Plus, Trash2, Edit2, ShieldAlert, Image as ImageIcon, Link2, Upload, X } from 'lucide-react';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
-import { UserRole } from '@/types/database.types';
+import { UserRole, Community } from '@/types/database.types';
 import { uploadImageFile } from '@/lib/upload';
 
 export default function CommunitiesManagementPage() {
   const { communities, setCommunities, loading } = useCommunities();
   const [userRole, setUserRole] = useState<UserRole>('editor');
-  const [showModal, setShowModal] = useState(false);
+
+  // Modal States
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingCommunity, setEditingCommunity] = useState<Community | null>(null);
+
+  // Form Fields
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [desc, setDesc] = useState('');
@@ -18,22 +23,7 @@ export default function CommunitiesManagementPage() {
   const [initials, setInitials] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [uploading, setUploading] = useState(false);
-
-  const handleLogoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const file = files[0];
-
-    setUploading(true);
-    try {
-      const publicUrl = await uploadImageFile(file, 'logos');
-      setLogoUrl(publicUrl);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setUploading(false);
-    }
-  };
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -59,23 +49,47 @@ export default function CommunitiesManagementPage() {
     fetchUserRole();
   }, []);
 
-  if (userRole === 'manager' || userRole === 'editor') {
-    return (
-      <div className="p-8 rounded-xl bg-[#0f121d] border-2 border-[#1e2436] text-center space-y-4 max-w-2xl mx-auto my-12">
-        <div className="p-3 rounded-lg bg-amber-950/80 border border-amber-800 text-amber-300 w-fit mx-auto">
-          <ShieldAlert className="w-6 h-6" />
-        </div>
-        <h2 className="text-xl font-bold text-white font-display">Access Restricted</h2>
-        <p className="text-xs text-[#94a3b8] leading-relaxed">
-          Community Management is restricted to Super Admins and Developers. Community Managers and Editors do not have permission to add, edit, or delete campus community entities.
-        </p>
-      </div>
-    );
-  }
+  const resetForm = () => {
+    setName('');
+    setSlug('');
+    setDesc('');
+    setColor('from-blue-600 to-cyan-400');
+    setInitials('');
+    setLogoUrl('');
+    setEditingCommunity(null);
+    setShowAddModal(false);
+  };
+
+  const handleOpenEdit = (c: Community) => {
+    setEditingCommunity(c);
+    setName(c.name || '');
+    setSlug(c.slug || '');
+    setDesc(c.description || '');
+    setColor(c.color || 'from-blue-600 to-cyan-400');
+    setInitials(c.initials || '');
+    setLogoUrl(c.logo_url || '');
+  };
+
+  const handleLogoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    setUploading(true);
+    try {
+      const publicUrl = await uploadImageFile(file, 'logos');
+      setLogoUrl(publicUrl);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return;
+    setSaving(true);
 
     const finalSlug = slug.trim() ? slug.toLowerCase().replace(/\s+/g, '-') : name.toLowerCase().replace(/\s+/g, '-');
     const newComm = {
@@ -90,30 +104,73 @@ export default function CommunitiesManagementPage() {
       updated_at: new Date().toISOString(),
     };
 
-    setCommunities([...communities, newComm]);
-
     try {
       const supabase = createClient();
-      await supabase.from('communities').insert({
+      const { data, error } = await supabase.from('communities').insert({
         name,
         slug: finalSlug,
         description: desc,
         color,
         initials: initials || name.slice(0, 2).toUpperCase(),
         logo_url: logoUrl || null,
-      });
+      }).select().single();
+
+      if (data) {
+        setCommunities([...communities, data]);
+      } else {
+        setCommunities([...communities, newComm]);
+      }
     } catch (err) {
       console.error(err);
+    } finally {
+      setSaving(false);
+      resetForm();
     }
+  };
 
-    setName('');
-    setSlug('');
-    setDesc('');
-    setLogoUrl('');
-    setShowModal(false);
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCommunity || !name) return;
+    setSaving(true);
+
+    const finalSlug = slug.trim() ? slug.toLowerCase().replace(/\s+/g, '-') : name.toLowerCase().replace(/\s+/g, '-');
+    const updatedComm: Community = {
+      ...editingCommunity,
+      name,
+      slug: finalSlug,
+      description: desc,
+      color,
+      initials: initials || name.slice(0, 2).toUpperCase(),
+      logo_url: logoUrl || null,
+      updated_at: new Date().toISOString(),
+    };
+
+    setCommunities(communities.map((c) => (c.id === editingCommunity.id ? updatedComm : c)));
+
+    try {
+      const supabase = createClient();
+      await supabase
+        .from('communities')
+        .update({
+          name,
+          slug: finalSlug,
+          description: desc,
+          color,
+          initials: initials || name.slice(0, 2).toUpperCase(),
+          logo_url: logoUrl || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', editingCommunity.id);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+      resetForm();
+    }
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this community entity?')) return;
     setCommunities(communities.filter((c) => c.id !== id));
     try {
       const supabase = createClient();
@@ -122,6 +179,20 @@ export default function CommunitiesManagementPage() {
       console.error(err);
     }
   };
+
+  if (userRole === 'manager' || userRole === 'editor') {
+    return (
+      <div className="p-8 rounded-xl bg-[#0f121d] border-2 border-[#1e2436] text-center space-y-4 max-w-2xl mx-auto my-12">
+        <div className="p-3 rounded-lg bg-amber-950/80 border border-amber-800 text-amber-300 w-fit mx-auto">
+          <ShieldAlert className="w-6 h-6" />
+        </div>
+        <h2 className="text-xl font-bold text-white font-display">Access Restricted</h2>
+        <p className="text-xs text-[#94a3b8] leading-relaxed">
+          Community Management is restricted to Super Admins and Developers. Community Managers and Editors do not have permission to add, edit, or delete campus community entities.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -132,12 +203,12 @@ export default function CommunitiesManagementPage() {
             Community Management
           </h1>
           <p className="text-xs text-[#94a3b8] mt-0.5">
-            Dev & Admins can manage campus community entities, slugs, and branding logos.
+            Dev & Admins can create, edit, update slugs, and delete campus community entities.
           </p>
         </div>
 
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => { resetForm(); setShowAddModal(true); }}
           className="brutalist-btn-primary px-4 py-2 rounded-lg text-xs flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
@@ -152,7 +223,7 @@ export default function CommunitiesManagementPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {communities.map((c) => (
-            <div key={c.id} className="brutalist-card p-5 rounded-xl space-y-4 flex flex-col justify-between">
+            <div key={c.id} className="brutalist-card p-5 rounded-xl space-y-4 flex flex-col justify-between relative group">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -172,12 +243,23 @@ export default function CommunitiesManagementPage() {
                     <h3 className="text-base font-bold text-white">{c.name}</h3>
                   </div>
 
-                  <button
-                    onClick={() => handleDelete(c.id)}
-                    className="p-1.5 text-neutral-400 hover:text-red-400 rounded-md hover:bg-[#161a29] transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => handleOpenEdit(c)}
+                      className="p-1.5 text-neutral-400 hover:text-[#6366f1] rounded-md hover:bg-[#161a29] transition-colors"
+                      title="Edit Community Entity"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(c.id)}
+                      className="p-1.5 text-neutral-400 hover:text-red-400 rounded-md hover:bg-[#161a29] transition-colors"
+                      title="Delete Community Entity"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 <p className="text-xs text-[#94a3b8] line-clamp-2">{c.description}</p>
@@ -197,11 +279,17 @@ export default function CommunitiesManagementPage() {
         </div>
       )}
 
-      {/* Modal for Dev/Admin Creation */}
-      {showModal && (
+      {/* Modal for Creating Community */}
+      {showAddModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0f121d] border-2 border-[#1e2436] rounded-xl p-6 w-full max-w-md space-y-4 text-white shadow-2xl">
-            <h3 className="text-lg font-bold font-display">Create Community Entity</h3>
+          <div className="bg-[#0f121d] border-2 border-[#1e2436] rounded-xl p-6 w-full max-w-md space-y-4 text-white shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-[#1e2436] pb-3">
+              <h3 className="text-lg font-bold font-display">Create Community Entity</h3>
+              <button onClick={resetForm} className="text-[#94a3b8] hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">Community Name</label>
@@ -230,7 +318,7 @@ export default function CommunitiesManagementPage() {
 
               <div>
                 <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
-                  Community Logo (File Upload or URL)
+                  Community Logo (WebP Compressed Vercel Blob Upload)
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
                   <div>
@@ -239,11 +327,11 @@ export default function CommunitiesManagementPage() {
                       accept="image/*"
                       onChange={handleLogoFileUpload}
                       disabled={uploading}
-                      id="comm-logo-modal-upload"
+                      id="comm-logo-add-upload"
                       className="hidden"
                     />
                     <label
-                      htmlFor="comm-logo-modal-upload"
+                      htmlFor="comm-logo-add-upload"
                       className="w-full bg-[#161a29] hover:bg-[#1e2436] text-[#94a3b8] hover:text-white rounded-lg px-3 py-2 text-xs border border-[#1e2436] flex items-center justify-center space-x-1.5 cursor-pointer transition-colors"
                     >
                       <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
@@ -256,7 +344,7 @@ export default function CommunitiesManagementPage() {
                       type="url"
                       value={logoUrl}
                       onChange={(e) => setLogoUrl(e.target.value)}
-                      placeholder="Or enter Image URL"
+                      placeholder="Or Image URL"
                       className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg pl-8 pr-2.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
                     />
                     <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
@@ -288,16 +376,134 @@ export default function CommunitiesManagementPage() {
               <div className="flex items-center justify-end space-x-3 pt-4 border-t border-[#1e2436]">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={resetForm}
                   className="px-3 py-1.5 text-xs text-[#94a3b8] hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="brutalist-btn-primary px-4 py-2 rounded-lg text-xs"
+                  disabled={saving || uploading}
+                  className="brutalist-btn-primary px-4 py-2 rounded-lg text-xs disabled:opacity-50"
                 >
-                  Create Community
+                  {saving ? 'Creating...' : 'Create Community'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for Editing Community (Dev/Admin) */}
+      {editingCommunity && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0f121d] border-2 border-[#1e2436] rounded-xl p-6 w-full max-w-md space-y-4 text-white shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-[#1e2436] pb-3">
+              <h3 className="text-lg font-bold font-display flex items-center gap-2">
+                <Edit2 className="w-4 h-4 text-[#6366f1]" /> Edit Community Entity
+              </h3>
+              <button onClick={resetForm} className="text-[#94a3b8] hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">Community Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. IEEE SB CEV"
+                  required
+                  className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
+                  Custom URL Slug
+                </label>
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="e.g. ieee-sb-cev"
+                  className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
+                  Community Logo (WebP Compressed Vercel Blob Upload)
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoFileUpload}
+                      disabled={uploading}
+                      id="comm-logo-edit-upload"
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="comm-logo-edit-upload"
+                      className="w-full bg-[#161a29] hover:bg-[#1e2436] text-[#94a3b8] hover:text-white rounded-lg px-3 py-2 text-xs border border-[#1e2436] flex items-center justify-center space-x-1.5 cursor-pointer transition-colors"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
+                      <span>{uploading ? 'Uploading...' : 'Upload File'}</span>
+                    </label>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type="url"
+                      value={logoUrl}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      placeholder="Or Image URL"
+                      className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg pl-8 pr-2.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
+                    />
+                    <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">Initials Badge</label>
+                <input
+                  type="text"
+                  value={initials}
+                  onChange={(e) => setInitials(e.target.value)}
+                  placeholder="e.g. IE"
+                  className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">Description / Bio</label>
+                <textarea
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                  placeholder="Community mission..."
+                  className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1] h-20"
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-[#1e2436]">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-3 py-1.5 text-xs text-[#94a3b8] hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving || uploading}
+                  className="brutalist-btn-primary px-4 py-2 rounded-lg text-xs disabled:opacity-50"
+                >
+                  {saving ? 'Saving...' : 'Save Community Changes'}
                 </button>
               </div>
             </form>

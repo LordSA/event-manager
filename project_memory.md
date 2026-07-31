@@ -29,9 +29,9 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 
 ## 3. Role-Based Access Control (RBAC) Matrix
 
-| User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Community Page Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
+| User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Community Entity Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Dev / Admin** | ✅ (All Users) | ✅ | ✅ (All + Slug Edit) | ✅ (All) | ✅ (All) | ✅ (All) | ✅ |
+| **Dev / Admin** | ✅ (All Users) | ✅ | ✅ (Full Name, Slug, Logo, Desc) | ✅ (All) | ✅ (All) | ✅ (All) | ✅ |
 | **Manager (Lead)** | ✅ (Own Community Leads) | ❌ | ❌ | ✅ (Own Community) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
 | **Editor** | ❌ | ❌ | ❌ | ✅ (Own Community) | ❌ | ✅ (Own Community) | ✅ |
 | **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
@@ -60,7 +60,7 @@ event-manager/
 │   │   ├── layout.tsx             # Protected Admin layout with role-based navigation sidebar & sign-out
 │   │   ├── page.tsx               # Admin Dashboard overview metrics
 │   │   ├── communities/
-│   │   │   └── page.tsx           # Community Entity Management with logo WebP upload & slug editing
+│   │   │   └── page.tsx           # Community Entity Management with Edit & Create modals & WebP upload
 │   │   ├── events/
 │   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine with poster WebP upload
 │   │   └── users/
@@ -79,7 +79,7 @@ event-manager/
 │   │   └── [id]/
 │   │       └── page.tsx           # Dynamic event detail page with SEO JSON-LD schema
 │   ├── login/
-│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Authentication page
+│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Login with suppressHydrationWarning
 │   ├── page.tsx                   # Public landing page with Quera/Gued font typography and brutalist tokens
 │   └── layout.tsx                 # Root layout with next/font/local (Quera, Gued, Rondured)
 ├── proxy.ts                       # Next.js 16 Proxy file for session refresh & admin security
