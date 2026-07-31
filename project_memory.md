@@ -62,7 +62,7 @@ event-manager/
 │   │   ├── communities/
 │   │   │   └── page.tsx           # Community Entity Management with Edit & Create modals & WebP upload
 │   │   ├── events/
-│   │   │   └── page.tsx           # Slot Booking Engine with Venue input & non-freezing submit logic
+│   │   │   └── page.tsx           # Extended max-w-3xl booking modal with data-lenis-prevent mouse scroll
 │   │   └── users/
 │   │       └── page.tsx           # Community Leads & Team Management Console
 │   ├── calendar/

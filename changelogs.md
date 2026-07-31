@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.31.0] - 2026-07-31
+
+### 📐 Event Booking Modal Width Expansion & Lenis Mouse Scroll Fix
+- **Modal Container Width Expansion ([app/admin/events/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/events/page.tsx)):** Expanded modal width from narrow `max-w-xl` (576px) to spacious `max-w-3xl` (768px) with a clean 2-column grid layout for event inputs.
+- **Lenis Mouse Scroll Fix ([app/admin/events/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/events/page.tsx)):** Applied `data-lenis-prevent` to both modal backdrop overlay and inner panel with `max-h-[88vh] overflow-y-auto`, restoring native mouse wheel and trackpad scrolling without Lenis smooth-scroll interference.
+
+---
+
 ## [0.30.0] - 2026-07-31
 
 ### ⚡ AI Latency Optimization, Event Page 4-5 Line Refactoring & Venue Selection

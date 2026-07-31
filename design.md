@@ -29,10 +29,8 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ---
 
-## 4. AI Latency, Event Detail Summarization & Z-Index Architecture
+## 4. Modal Window Sizing & Lenis Mouse Scroll Prevention
 
-### AI Assistant Z-Index Layering (`EventAiDrawer.tsx`)
-* **Z-Index Layer (`z-[200]`):** Side drawer and backdrop set to `z-[200]` so the assistant drawer sits completely on top of the fixed top navbar (`z-[100]`), locking body scroll (`overflow: hidden`).
-* **Optimized Latency (`app/api/chat/route.ts`):** Fast-path model execution using `gemini-1.5-flash` with `maxOutputTokens: 250` and 4-second timeout abort controllers for sub-500ms response times.
-* **4-5 Line Description Refactoring (`app/events/[id]/page.tsx`):** Automatically refactors event descriptions into a clean 4-5 line public overview, stripping raw prompt preambles and attaching an interactive "Ask Assistant" callout.
-* **Admin Venue Input (`app/admin/events/page.tsx`):** Added explicit Venue / Location input field to the booking form.
+### Admin Event Booking Modal Layout (`app/admin/events/page.tsx`)
+* **Spacious 2-Column Layout (`max-w-3xl`):** Extended modal container width to `768px` (`max-w-3xl`) with responsive 2-column grid layout for event details, date ranges, venue, and publishing controls.
+* **Lenis Mouse Scroll Interception (`data-lenis-prevent`):** Added `data-lenis-prevent` to both modal backdrop and content panel with `max-h-[88vh] overflow-y-auto`, restoring native mouse wheel and trackpad scrolling inside modal overlays without smooth-scroll locks.

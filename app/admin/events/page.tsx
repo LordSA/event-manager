@@ -562,18 +562,36 @@ export default function EventBookingEnginePage() {
 
       {/* Booking / Editing Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 w-full max-w-xl space-y-5 text-white shadow-2xl my-8">
-            <h3 className="text-xl font-bold border-b border-slate-800 pb-3">
-              {editingEvent ? 'Modify Event / Reserved Slot' : 'Book Date / Time Slot'}
-            </h3>
+        <div
+          data-lenis-prevent
+          className="fixed inset-0 bg-black/80 backdrop-blur-md z-[150] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+        >
+          <div
+            data-lenis-prevent
+            className="brutalist-card p-6 sm:p-8 w-full max-w-3xl rounded-2xl text-white space-y-6 my-auto max-h-[88vh] overflow-y-auto relative shadow-2xl border-2 border-[#1e2436] bg-[#0f121d]"
+          >
+            <div className="flex items-center justify-between border-b border-[#1e2436] pb-4">
+              <h3 className="text-xl font-bold font-display text-white">
+                {editingEvent ? 'Modify Event / Reserved Slot' : 'Book Date / Time Slot'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingEvent(null);
+                }}
+                className="text-[#94a3b8] hover:text-white p-1 rounded-lg hover:bg-[#161a29] transition-colors text-xs font-bold"
+              >
+                ✕ Close
+              </button>
+            </div>
             
-            <form onSubmit={handleBookSlot} className="space-y-4">
-              {/* Event Name & Venue */}
+            <form onSubmit={handleBookSlot} className="space-y-5">
+              {/* Row 1: Event Name & Venue */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Event Name
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Event Name *
                   </label>
                   <input
                     type="text"
@@ -581,13 +599,13 @@ export default function EventBookingEnginePage() {
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. BitBurst Hackathon 2.0"
                     required
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Venue / Location
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Venue / Location *
                   </label>
                   <input
                     type="text"
@@ -595,211 +613,211 @@ export default function EventBookingEnginePage() {
                     onChange={(e) => setVenue(e.target.value)}
                     placeholder="e.g. Main Auditorium / CEV"
                     required
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                   />
                 </div>
               </div>
 
-              {/* Start Date & End Date */}
+              {/* Row 2: Category & Organizing Community */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> Start Date
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Category *
+                  </label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
+                  >
+                    <option value="Workshop">Workshop</option>
+                    <option value="Hackathon">Hackathon</option>
+                    <option value="Seminar">Seminar</option>
+                    <option value="Tech Fest">Tech Fest</option>
+                    <option value="Webinar">Webinar</option>
+                    <option value="Competition">Competition</option>
+                    <option value="Other">Other (Custom Category)</option>
+                  </select>
+
+                  {category === 'Other' && (
+                    <input
+                      type="text"
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      placeholder="Enter custom category name..."
+                      required
+                      className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] mt-2 transition-colors"
+                    />
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Organizing Community *
+                  </label>
+                  {isSuperAdmin ? (
+                    <select
+                      value={selectedCommunityId}
+                      onChange={(e) => setSelectedCommunityId(e.target.value)}
+                      required
+                      className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
+                    >
+                      <option value="">-- Select Organizing Community --</option>
+                      {communities.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="p-2.5 rounded-xl bg-[#161a29] border border-[#1e2436] text-xs text-slate-300 flex items-center justify-between h-[42px]">
+                      <span className="text-[#94a3b8]">Community:</span>
+                      <span className="font-bold text-[#6366f1]">{currentUserCommunityName || 'Assigned Community'}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Row 3: Start Date & End Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <CalendarIcon className="w-3.5 h-3.5 text-[#6366f1]" /> Start Date *
                   </label>
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                     required
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> End Date
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <CalendarIcon className="w-3.5 h-3.5 text-[#6366f1]" /> End Date *
                   </label>
                   <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     required
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                   />
                 </div>
               </div>
 
-              {/* Start Time & End Time */}
+              {/* Row 4: Start Time & End Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> Start Time (12-Hr Format)
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> Start Time (12-Hr Format) *
                   </label>
                   <input
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                     required
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> End Time (12-Hr Format)
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> End Time (12-Hr Format) *
                   </label>
                   <input
                     type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                     required
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                   />
                 </div>
               </div>
 
-              {/* Category Selection with 'Other' Custom Box */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Category
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-                >
-                  <option value="Workshop">Workshop</option>
-                  <option value="Hackathon">Hackathon</option>
-                  <option value="Seminar">Seminar</option>
-                  <option value="Tech Fest">Tech Fest</option>
-                  <option value="Webinar">Webinar</option>
-                  <option value="Competition">Competition</option>
-                  <option value="Other">Other (Custom Category)</option>
-                </select>
-
-                {category === 'Other' && (
-                  <input
-                    type="text"
-                    value={customCategory}
-                    onChange={(e) => setCustomCategory(e.target.value)}
-                    placeholder="Enter custom category name..."
-                    required
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 mt-2"
-                  />
-                )}
-              </div>
-
-              {/* Organizing Community Selection (Only visible for Admins and Devs) */}
-              {isSuperAdmin ? (
+              {/* Row 5: Publishing Status & Poster Upload */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Organizing Community
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Publishing Status *
                   </label>
-                  <select
-                    value={selectedCommunityId}
-                    onChange={(e) => setSelectedCommunityId(e.target.value)}
-                    required
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="">-- Select Organizing Community --</option>
-                    {communities.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
-                  <span className="text-slate-400">Organizing Community:</span>
-                  <span className="font-bold text-cyan-400">{currentUserCommunityName || 'Assigned Community'}</span>
-                </div>
-              )}
-
-              {/* Publishing Status */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Publishing Status
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setStatus('closed')}
-                    className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 ${
-                      status === 'closed'
-                        ? 'bg-amber-950 border-amber-500 text-amber-300'
-                        : 'bg-slate-900 border-slate-800 text-slate-400'
-                    }`}
-                  >
-                    <Lock className="w-3.5 h-3.5" /> Closed (Draft Slot)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setStatus('live')}
-                    className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 ${
-                      status === 'live'
-                        ? 'bg-emerald-950 border-emerald-500 text-emerald-300'
-                        : 'bg-slate-900 border-slate-800 text-slate-400'
-                    }`}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Live (Publish Now)
-                  </button>
-                </div>
-              </div>
-
-              {/* Event Poster WebP Upload Section */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                  Event Poster Image (WebP Auto-Compressed Vercel Blob Upload)
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePosterFileUpload}
-                      disabled={uploadingPoster}
-                      id="poster-file-upload"
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="poster-file-upload"
-                      className="w-full bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl px-4 py-2.5 text-xs border border-slate-800 flex items-center justify-center space-x-2 cursor-pointer transition-colors"
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setStatus('closed')}
+                      className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
+                        status === 'closed'
+                          ? 'bg-amber-950/80 border-amber-500 text-amber-300'
+                          : 'bg-[#161a29] border-[#1e2436] text-slate-400'
+                      }`}
                     >
-                      <Upload className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>{uploadingPoster ? 'Uploading Poster...' : 'Upload Poster File'}</span>
-                    </label>
+                      <Lock className="w-3.5 h-3.5" /> Closed (Draft)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStatus('live')}
+                      className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
+                        status === 'live'
+                          ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300'
+                          : 'bg-[#161a29] border-[#1e2436] text-slate-400'
+                      }`}
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Live (Publish)
+                    </button>
                   </div>
+                </div>
 
-                  <div className="relative">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Event Poster Image (WebP Vercel Blob)
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePosterFileUpload}
+                        disabled={uploadingPoster}
+                        id="poster-file-upload"
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="poster-file-upload"
+                        className="w-full bg-[#161a29] hover:bg-[#1e2436] text-slate-300 hover:text-white rounded-xl px-3 py-2.5 text-xs border border-[#1e2436] flex items-center justify-center space-x-1.5 cursor-pointer transition-colors"
+                      >
+                        <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
+                        <span className="truncate">{uploadingPoster ? 'Uploading...' : 'Upload File'}</span>
+                      </label>
+                    </div>
+
                     <input
                       type="url"
                       value={posterUrl}
                       onChange={(e) => setPosterUrl(e.target.value)}
-                      placeholder="Or enter Poster URL link"
-                      className="w-full bg-slate-900 border border-slate-800 text-white placeholder-slate-500 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500"
+                      placeholder="Or paste URL"
+                      className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#6366f1] transition-colors"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Full Explained Description of Event */}
+              {/* Row 6: Detailed Description */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Full Detailed Description of Event
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Full Detailed Description of Event *
                 </label>
                 <textarea
                   value={desc}
                   onChange={(e) => setDesc(e.target.value)}
                   placeholder="Explain event details, schedule, venue rules, food info, prize details..."
                   required
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 h-28"
+                  className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] h-24 transition-colors"
                 />
               </div>
 
-              {/* Optional Perks / Highlights */}
+              {/* Row 7: Optional Highlights / Perks */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
                   Optional Highlights / Perks (Optional)
                 </label>
                 <input
@@ -807,27 +825,29 @@ export default function EventBookingEnginePage() {
                   value={perks}
                   onChange={(e) => setPerks(e.target.value)}
                   placeholder="e.g. KTU Activity Points, Certificates, Free Refreshments"
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-white placeholder-slate-500"
+                  className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                 />
-                <p className="text-[10px] text-slate-500 mt-1">Leave blank if no special perks apply.</p>
+                <p className="text-[10px] text-[#94a3b8] mt-1">Leave blank if no special perks apply.</p>
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
+              {/* Modal Action Footer */}
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-[#1e2436]">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
                     setEditingEvent(null);
                   }}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-sm"
+                  className="px-4 py-2.5 rounded-xl text-[#94a3b8] hover:text-white text-xs font-bold hover:bg-[#161a29] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-blue-500/20"
+                  disabled={submitting}
+                  className="brutalist-btn-primary px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider disabled:opacity-50"
                 >
-                  {editingEvent ? 'Save Event Changes' : 'Reserve & Save Slot'}
+                  {submitting ? 'Saving Event...' : (editingEvent ? 'Save Changes' : 'Reserve & Save Slot')}
                 </button>
               </div>
             </form>
