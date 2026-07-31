@@ -17,7 +17,7 @@ In campus environments and multi-organization setups, event information is often
 - **Typography:** Custom Font Engine (`Quera`, `Gued`, `Rondured`) configured via `next/font/local` for zero CLS and preloaded web fonts.
 - **Community Management:** Create, edit, slug update, and logo upload for Super Admins and Developers.
 - **Database & Auth:** Supabase PostgreSQL & Auth with Dual Login Modes (Password + 6-Digit Email OTP) + One-Click Sign Out.
-- **Storage Engine:** Vercel Blob Storage (`@vercel/blob`) with client-side WebP auto-compression.
+- **Storage Engine:** Vercel Blob Storage (`@vercel/blob`) with client-side WebP auto-compression and `remotePatterns` configured in `next.config.ts`.
 
 ---
 

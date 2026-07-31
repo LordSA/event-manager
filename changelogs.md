@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.28.0] - 2026-07-31
+
+### 🖼️ Vercel Blob Storage Remote Patterns & Profile Avatar Fallback
+- **Next.js Remote Patterns ([next.config.ts](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/next.config.ts)):** Configured wildcard domain patterns in `images.remotePatterns` (`*.public.blob.vercel-storage.com`, `*.blob.vercel-storage.com`) to allow Vercel Blob Storage asset URLs across Next.js.
+- **Resilient Avatar Rendering ([app/admin/profile/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/profile/page.tsx)):** Implemented fallback avatar rendering with error handler (`onError`) for profile avatars.
+
+---
+
 ## [0.27.0] - 2026-07-31
 
 ### 🛠️ Community Editing for Admins & Browser Extension Hydration Guard

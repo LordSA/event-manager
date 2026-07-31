@@ -29,8 +29,8 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 
 ---
 
-## 4. Community Management & Form Hydration
+## 4. Next.js Image Optimization & Remote Domains
 
-### Community Entity Editing (`app/admin/communities/page.tsx`)
-* **Admin & Dev Modal Editing:** Super Admins and Developers can modify existing community names, URL slugs, descriptions, initial badges, and logo URLs with Vercel Blob WebP uploads.
-* **Form Hydration Mismatch Guard:** Added `suppressHydrationWarning` to form inputs, buttons, and form tags in `app/login/page.tsx` to neutralize browser password manager extensions (`fdprocessedid`).
+### Remote Patterns (`next.config.ts`)
+* **Vercel Blob Storage Authorization:** Configured `remotePatterns` in `next.config.ts` to allow Vercel Blob Storage domains (`*.public.blob.vercel-storage.com`, `*.blob.vercel-storage.com`), Supabase storage (`**.supabase.co`), and external asset URLs.
+* **Resilient Image Fallback:** Avatar and logo rendering components feature client-side image error boundaries (`onError`) so broken image links fallback gracefully without unhandled runtime exceptions.

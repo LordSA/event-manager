@@ -139,11 +139,12 @@ export default function MyProfilePage() {
         <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-[#1e2436]">
           <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#161a29] border-2 border-[#1e2436] shrink-0 flex items-center justify-center text-xl font-bold text-white shadow-md">
             {avatarUrl || profile?.avatar_url ? (
-              <Image
-                src={avatarUrl || profile?.avatar_url}
-                alt={fullName || profile?.email}
-                fill
-                className="object-cover"
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={avatarUrl || profile?.avatar_url || ''}
+                alt={fullName || profile?.email || 'Avatar'}
+                className="w-full h-full object-cover"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
               />
             ) : (
               <span>{(fullName || profile?.email || 'ME').substring(0, 2).toUpperCase()}</span>

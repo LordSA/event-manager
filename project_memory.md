@@ -10,7 +10,7 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 ## 2. Core Architecture & Tech Stack
 
 ### Framework & Runtime
-* **Framework:** Next.js 16 (App Router)
+* **Framework:** Next.js 16 (App Router) with `remotePatterns` configured in `next.config.ts`
 * **Runtime:** Node.js with React 19 & TypeScript 5
 * **Proxy Middleware:** `proxy.ts` (Next.js 16 proxy convention) updating Supabase cookies and enforcing role permissions for `/admin` paths.
 * **Styling:** Tailwind CSS v4 with Dark Design System combining Restrained Glassmorphism & Light Brutalism
@@ -82,6 +82,7 @@ event-manager/
 │   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Login with suppressHydrationWarning
 │   ├── page.tsx                   # Public landing page with Quera/Gued font typography and brutalist tokens
 │   └── layout.tsx                 # Root layout with next/font/local (Quera, Gued, Rondured)
+├── next.config.ts                 # Next.js configuration with remotePatterns for Vercel Blob Storage
 ├── proxy.ts                       # Next.js 16 Proxy file for session refresh & admin security
 ├── fonts/                         # Custom font binaries (.otf, .ttf)
 ├── lib/
