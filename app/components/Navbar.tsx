@@ -1,113 +1,233 @@
-'use client';
+"use client"
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import { UserRole } from '@/types/database.types';
+import { useState, useEffect, useRef } from "react"
+import Link from "next/link"
+import { X, ArrowRight } from "lucide-react"
+import Image from "next/image"
+import { usePathname } from "next/navigation"
+import gsap from "gsap"
+import { createClient } from "@/lib/supabase/client"
+import { Session } from "@supabase/supabase-js"
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const [user, setUser] = useState<{ email?: string } | null>(null);
-  const [role, setRole] = useState<UserRole | null>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
+  const pathname = usePathname()
+  const navRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   useEffect(() => {
     const supabase = createClient();
-
-    const getInitialSession = async () => {
+    const getSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          setUser(session.user);
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile) setRole(profile.role);
-        } else {
-          setUser(null);
-          setRole(null);
-        }
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        setSession(currentSession);
       } catch {
-        setUser(null);
-        setRole(null);
+        setSession(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    getInitialSession();
+    getSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        if (profile) setRole(profile.role);
-      } else {
-        setUser(null);
-        setRole(null);
-      }
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
     });
 
     return () => {
-      subscription.unsubscribe();
+      authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [])
+
+  useEffect(() => {
+    setIsOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".nav-item", {
+        y: -10,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power4.out",
+        delay: 0.2
+      })
+
+      gsap.from(".nav-logo", {
+        x: -10,
+        opacity: 0,
+        duration: 1,
+        ease: "power4.out"
+      })
+    })
+    return () => ctx.revert()
+  }, [])
 
   const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Calendar', href: '/calendar' },
-    { label: 'Events', href: '/events' },
-    { label: 'Communities', href: '/community' },
-  ];
+    { name: "Home", href: "/" },
+    { name: "Calendar", href: "/calendar" },
+    { name: "Events", href: "/events" },
+    { name: "Communities", href: "/community" },
+  ]
 
-  if (user && role) {
-    navLinks.push({ label: 'Dashboard', href: '/admin' });
+  if (session) {
+    navLinks.push({ name: "Dashboard", href: "/admin" })
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#1e2436] bg-[#0f121d]/85 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand Logo - Uses logo.png */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="Whats @CEV"
-            className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = 'none';
-            }}
-          />
-          <span className="font-extrabold text-base tracking-tight text-white font-display">
-            Whats @CEV
-          </span>
-        </Link>
+    <nav
+      ref={navRef}
+      className={`fixed top-0 inset-x-0 z-[100] transition-all duration-500 ease-in-out ${
+        scrolled ? "py-3 px-4 md:px-10" : "py-6 px-4 md:px-10"
+      }`}
+    >
+      <div
+        className={`max-w-7xl mx-auto transition-all duration-500 ease-in-out rounded-[2rem] ${
+          scrolled
+            ? "bg-[#0f121d]/85 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-[#1e2436] px-6"
+            : "bg-transparent px-0"
+        }`}
+      >
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link href="/" className="nav-logo flex items-center group relative overflow-hidden space-x-3">
+            <div className="relative h-9 w-32 transition-transform duration-500 group-hover:scale-105">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="Whats @CEV Logo"
+                className="h-9 w-auto object-contain"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.display = "none"
+                }}
+              />
+            </div>
+            <span className="font-bold text-white tracking-tight text-base font-display">
+              Whats @CEV
+            </span>
+          </Link>
 
-        {/* Dynamic Role-Aware Links */}
-        <nav className="flex items-center space-x-1 sm:space-x-4">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-2">
+            {navLinks.map((link) => (
               <Link
-                key={link.label}
+                key={link.name}
                 href={link.href}
-                className={`text-xs sm:text-sm font-semibold transition-all px-3 py-1.5 rounded-md border ${
-                  isActive
-                    ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[2px_2px_0px_0px_#312e81]'
-                    : 'text-[#94a3b8] hover:text-white hover:bg-[#161a29] border-transparent'
+                className={`nav-item relative px-5 py-2.5 text-sm font-medium tracking-wide transition-colors duration-300 group ${
+                  pathname === link.href ? "text-[#6366f1]" : "text-[#94a3b8] hover:text-white"
                 }`}
               >
-                {link.label}
+                <span className="relative z-10">{link.name}</span>
+
+                {/* Active Indicator */}
+                {pathname === link.href && (
+                  <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#6366f1] rounded-full shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                )}
+
+                {/* Hover Background - Premium Glassy Pill */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#6366f1]/10 to-[#6366f1]/20 rounded-full opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out -z-0 border border-[#6366f1]/20" />
               </Link>
-            );
-          })}
-        </nav>
+            ))}
+
+            {!loading && (
+              <div className="nav-item pl-4">
+                <Link
+                  href={session ? "/admin" : "/login"}
+                  className="group relative inline-flex items-center justify-center px-7 py-3 overflow-hidden font-medium text-white rounded-full bg-gradient-to-br from-[#6366f1] to-[#4f46e5] shadow-md hover:shadow-[0_10px_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#818cf8] to-[#6366f1] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* Glossy top reflection */}
+                  <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent rounded-t-full pointer-events-none" />
+
+                  <span className="relative flex items-center gap-2 text-xs tracking-widest uppercase z-10 font-bold">
+                    {session ? "Dashboard" : "Log In"} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="nav-item md:hidden w-12 h-12 flex flex-col items-center justify-center gap-1.5 rounded-full hover:bg-[#161a29] transition-colors group"
+            aria-label="Toggle Menu"
+          >
+            <div className={`w-6 h-0.5 bg-white transition-all duration-500 ${isOpen ? "rotate-45 translate-y-2" : ""}`} />
+            <div className={`w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? "opacity-0" : ""}`} />
+            <div className={`w-6 h-0.5 bg-white transition-all duration-500 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+          </button>
+        </div>
       </div>
-    </header>
-  );
+
+      {/* Full-screen Mobile Menu Overlay */}
+      <div
+        className={`fixed inset-0 bg-[#08090d] text-white z-[110] transition-all duration-700 ease-[0.85,0,0.15,1] overflow-y-auto ${
+          isOpen ? "translate-y-0 pointer-events-auto opacity-100" : "translate-y-full pointer-events-none opacity-0"
+        }`}
+      >
+        <div className="min-h-full flex flex-col justify-between py-20 px-8 md:px-20 relative">
+          {/* Close Button Inside Menu */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="absolute top-6 right-6 md:top-10 md:right-10 w-12 h-12 md:w-16 md:h-16 border border-[#1e2436] rounded-full flex items-center justify-center hover:bg-[#161a29] transition-colors"
+          >
+            <X className="h-6 w-6 md:h-8 md:w-8 text-white" />
+          </button>
+
+          <div className="space-y-12 mt-10 md:mt-0">
+            <p className="text-[#6366f1] text-xs md:text-sm font-bold tracking-[0.3em] uppercase">Navigation</p>
+            <div className="flex flex-col space-y-6 md:space-y-4">
+              {navLinks.map((link, i) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="group flex items-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className="text-[#94a3b8] text-lg md:text-2xl font-light mr-4 md:mr-6 font-mono">0{i + 1}</span>
+                  <span className="text-4xl md:text-6xl font-bold tracking-tight hover:text-[#6366f1] transform group-hover:translate-x-4 transition-all duration-500 font-display">
+                    {link.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-20 md:mt-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-12 md:gap-10 pb-10">
+            <div className="space-y-4">
+              <p className="text-[#94a3b8] text-[10px] md:text-xs font-bold tracking-widest uppercase text-left">Connectivity</p>
+              <div className="flex gap-8 text-lg md:text-xl font-medium">
+                <a href="https://instagram.com/iedc_cev" target="_blank" rel="noopener noreferrer" className="hover:text-[#6366f1] transition-colors">Instagram</a>
+                <a href="https://linkedin.com/company/iedc-cev" target="_blank" rel="noopener noreferrer" className="hover:text-[#6366f1] transition-colors">LinkedIn</a>
+              </div>
+            </div>
+
+            <Link
+              href={session ? "/admin" : "/login"}
+              onClick={() => setIsOpen(false)}
+              className="group flex flex-col text-left"
+            >
+              <p className="text-[#94a3b8] text-[10px] md:text-xs font-bold tracking-widest uppercase mb-4">CEV Event Manager</p>
+              <span className="text-3xl md:text-5xl font-bold flex items-center gap-4 md:gap-6 group-hover:text-[#6366f1] transition-colors font-display">
+                {session ? "Dashboard" : "Log In"} <ArrowRight className="h-8 w-8 md:h-10 md:w-10 group-hover:translate-x-4 transition-transform text-[#6366f1]" />
+              </span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
 }

@@ -51,7 +51,8 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 ## 5. Navigation & Brand Identity Architecture
 
 ### Header Navigation (`app/components/Navbar.tsx`)
-* Sticky top header (`sticky top-0 z-40`) with `logo.png` image rendering.
-* **Icon Removal:** Generic calendar icon logo removed.
-* **Control Clean-up:** Position indicator tag and logout button removed from public navbar.
-* **Exact Navigation Links:** `Logo | Home | Calendar | Events | Communities` (+ `Dashboard` link when authenticated).
+* **Floating Glass Pill Design:** Dynamic scroll detection (`window.scrollY > 20`) transitioning from `py-6 px-4` to `py-3 px-10` with a floating rounded pill backdrop (`rounded-[2rem] bg-[#0f121d]/85 backdrop-blur-xl border border-[#1e2436]`).
+* **GSAP Entrance Animations:** GSAP context animations for `.nav-logo` and `.nav-item` stagger entrance on component mount.
+* **Active Indicator:** Glowing Indigo dot (`bg-[#6366f1] shadow-[0_0_8px_rgba(99,102,241,0.8)]`) below active page links.
+* **Glossy CTA Pill:** Gradient action button (`from-[#6366f1] to-[#4f46e5]`) with top light reflection for Log In / Dashboard navigation.
+* **Full-Screen Mobile Overlay Menu:** Interactive fullscreen drawer (`bg-[#08090d] z-[110]`) with animated hamburger icon, numbered list items (`01`, `02`, `03`...), and social connectivity links.
