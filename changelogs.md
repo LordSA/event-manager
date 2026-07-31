@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.38.0] - 2026-07-31
+
+### 🔍 Dynamic Event Fetching & Multi-Property Poster Image Resolution
+- **ID & Slug Resolution ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Updated Supabase query logic to handle both UUID primary keys (`id`) and custom URL slugs (`slug`) dynamically using `maybeSingle()`.
+- **Multi-Property Poster Fallback:** Checks `eventData.poster_url`, `eventData.image`, and `eventData.image_url` properties to guarantee poster resolution across legacy and newly created events. Resets `imgError` state on route updates.
+
+---
+
 ## [0.37.0] - 2026-07-31
 
 ### 🖼️ Poster Fallback Card & Admin Live Preview Component
