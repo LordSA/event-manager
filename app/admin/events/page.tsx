@@ -245,7 +245,7 @@ export default function EventBookingEnginePage() {
 
         setEventsList(eventsList.map((e) => (e.id === editingEvent.id ? updatedEvt : e)));
 
-        await supabase.from('events').update({
+        const { error: updateErr } = await supabase.from('events').update({
           title,
           category: finalCategory,
           event_date: startDate,
@@ -258,6 +258,11 @@ export default function EventBookingEnginePage() {
           poster_url: posterUrl || null,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         }).eq('id', editingEvent.id);
+
+        if (updateErr) {
+          throw new Error(updateErr.message);
+        }
+
         setFeedback({ type: 'success', message: 'Event slot updated successfully!' });
       } else {
         const newEvt = {
@@ -268,17 +273,15 @@ export default function EventBookingEnginePage() {
           date: dateRangeString,
           time_slot: formattedTimeSlot,
           venue: finalVenue,
-          poster_url: posterUrl || '/images/bit.jpg',
-          image: posterUrl || '/images/bit.jpg',
+          poster_url: posterUrl || '/images/poster.webp',
+          image: posterUrl || '/images/poster.webp',
           description: desc || 'Full event details and schedule.',
           perks: perks.trim() || null,
           status,
           system_prompt: aiSystemPrompt,
         };
 
-        setEventsList([newEvt, ...eventsList]);
-
-        await supabase.from('events').insert({
+        const { data: insertedData, error: insertErr } = await supabase.from('events').insert({
           title,
           category: finalCategory,
           event_date: startDate,
@@ -291,7 +294,21 @@ export default function EventBookingEnginePage() {
           poster_url: posterUrl || null,
           slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
-        });
+        }).select();
+
+        if (insertErr) {
+          throw new Error(insertErr.message);
+        }
+
+        if (insertedData && insertedData[0]) {
+          newEvt.id = insertedData[0].id;
+          if (insertedData[0].poster_url) {
+            newEvt.poster_url = insertedData[0].poster_url;
+            newEvt.image = insertedData[0].poster_url;
+          }
+        }
+
+        setEventsList([newEvt, ...eventsList]);
         setFeedback({ type: 'success', message: 'Slot booked and event details saved successfully!' });
       }
 
@@ -301,10 +318,12 @@ export default function EventBookingEnginePage() {
       setPerks('');
       setVenue('Campus Setup / CEV');
       setCustomCategory('');
+      setPosterUrl('');
       setShowModal(false);
-    } catch (err) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'An error occurred while saving event slot.';
       console.error(err);
-      setFeedback({ type: 'error', message: 'An error occurred while saving event slot.' });
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setSubmitting(false);
       setTimeout(() => setFeedback(null), 4000);

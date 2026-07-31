@@ -4,6 +4,15 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.40.0] - 2026-07-31
+
+### 🖼️ Default Poster Image Fallback & Supabase Error Handling
+- **Default Poster Image ([public/images/poster.webp](./public/images/poster.webp)):** Generated high-resolution default WebP campus event poster image at `./public/images/poster.webp`.
+- **Pure Poster Renderer ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Updated detail page to render purely the poster image, falling back to `/images/poster.webp` when unassigned or on load failure.
+- **Supabase Insert & Update Verification ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Added explicit Supabase error verification (`if (insertErr) throw new Error(insertErr.message)`) to ensure uploaded Blob URLs save to the database and map inserted row IDs to local state.
+
+---
+
 ## [0.39.0] - 2026-07-31
 
 ### 🎨 Non-Repetitive Campus Media Artwork Card

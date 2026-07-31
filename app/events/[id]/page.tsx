@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users, Layers, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users } from 'lucide-react';
 import EventAiDrawer from '@/app/components/EventAiDrawer';
 import { createClient } from '@/lib/supabase/client';
 
@@ -65,11 +65,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [eventData, setEventData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
-  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
-      setImgError(false);
       try {
         const supabase = createClient();
         let query = supabase
@@ -120,9 +118,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const communityName = eventData.community?.name || 'Campus Community';
   const cleanTitle = eventData.title ? eventData.title.replace(/\*\*/g, '').trim() : 'Event Session';
   const publicDescription = refactorDescription4To5Lines(eventData.description);
-
-  const posterSrc = eventData.poster_url || eventData.image || eventData.image_url;
-  const hasValidPoster = Boolean(posterSrc && posterSrc.trim() !== '' && !imgError);
+  const posterSrc = (eventData.poster_url && eventData.poster_url.trim() !== '')
+    ? eventData.poster_url
+    : ((eventData.image && eventData.image.trim() !== '') ? eventData.image : '/images/poster.webp');
 
   return (
     <div className="min-h-screen bg-[#08090d] text-[#f8fafc] pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 font-sans relative">
@@ -228,53 +226,16 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            {/* Event Poster Image / High-Design Artwork Card */}
-            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-[#0f121d] flex flex-col justify-between p-8 shadow-2xl">
-              {hasValidPoster ? (
-                <img
-                  src={posterSrc}
-                  alt={cleanTitle}
-                  className="w-full h-full object-cover absolute inset-0 z-10"
-                  onError={() => setImgError(true)}
-                />
-              ) : (
-                <div className="relative z-10 flex flex-col justify-between h-full text-center space-y-6">
-                  {/* Top Branding Badge */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#161a29] text-[#6366f1] border border-[#1e2436] flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#6366f1]" />
-                      CEV Verified Event
-                    </span>
-                    <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-bold">
-                      Media Desk
-                    </span>
-                  </div>
-
-                  {/* Centered Graphic Emblem */}
-                  <div className="my-auto space-y-4 flex flex-col items-center">
-                    <div className="p-5 rounded-2xl bg-[#161a29] border-2 border-[#1e2436] text-[#6366f1] shadow-lg shadow-[#6366f1]/10">
-                      <Layers className="w-10 h-10 animate-pulse text-[#6366f1]" />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-base font-bold text-white font-display">Campus Event Hub</h3>
-                      <p className="text-xs text-[#94a3b8] max-w-[220px] mx-auto">
-                        Official session schedule & community details active.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Bottom Action Note */}
-                  <div className="pt-4 border-t border-[#1e2436] flex items-center justify-center">
-                    <button
-                      onClick={() => setAiDrawerOpen(true)}
-                      className="text-xs font-bold text-[#6366f1] hover:text-white flex items-center gap-1.5 transition-colors uppercase tracking-wider"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Chat with Event Assistant</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+            {/* Event Poster Image Container */}
+            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-xl overflow-hidden border-2 border-[#1e2436] bg-[#161a29]">
+              <img
+                src={posterSrc}
+                alt={cleanTitle}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/images/poster.webp';
+                }}
+              />
             </div>
           </div>
         </div>
