@@ -11,9 +11,9 @@ export default function LandingHomePage() {
   const { eventsList, loading: eventsLoading } = useRealtimeEvents();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#ededed] flex flex-col">
+    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col pt-28 md:pt-32">
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16 space-y-20">
         {/* Hero Section */}
         <section className="text-center space-y-6 max-w-3xl mx-auto pt-8">
 

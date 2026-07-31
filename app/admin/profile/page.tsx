@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Key, Image as ImageIcon, CheckCircle2, AlertCircle, Shield, Building, Link2 } from 'lucide-react';
+import { User, Mail, Key, Image as ImageIcon, CheckCircle2, AlertCircle, Shield, Building, Upload } from 'lucide-react';
 import Image from 'next/image';
+import { uploadImageToSupabase } from '@/lib/supabase/storage';
 
 export default function MyProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Form Fields
@@ -35,6 +37,32 @@ export default function MyProfilePage() {
 
     fetchMyProfile();
   }, []);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    // File size validation (Max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setToastMsg({ type: 'error', text: 'Image file size must be under 2MB.' });
+      return;
+    }
+
+    setUploading(true);
+    setToastMsg(null);
+
+    try {
+      const publicUrl = await uploadImageToSupabase(file, 'avatars', profile?.id || 'users');
+      setAvatarUrl(publicUrl);
+      setToastMsg({ type: 'success', text: 'Profile image uploaded successfully!' });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to upload image';
+      setToastMsg({ type: 'error', text: msg });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +114,7 @@ export default function MyProfilePage() {
           My Profile & Account Settings
         </h1>
         <p className="text-xs text-[#94a3b8] mt-0.5">
-          Manage your personal user profile, avatar picture, and login password.
+          Manage your personal profile details, upload avatar picture, and change password.
         </p>
       </div>
 
@@ -107,8 +135,8 @@ export default function MyProfilePage() {
         </div>
       )}
 
-      {/* Account Profile Card */}
-      <div className="p-6 rounded-xl bg-[#0f121d] border-2 border-[#1e2436] space-y-6">
+      {/* Profile Card */}
+      <div className="brutalist-card p-6 rounded-xl space-y-6">
         <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-[#1e2436]">
           <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#161a29] border-2 border-[#1e2436] shrink-0 flex items-center justify-center text-xl font-bold text-white shadow-md">
             {avatarUrl || profile?.avatar_url ? (
@@ -174,19 +202,40 @@ export default function MyProfilePage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
-              Profile Avatar Image URL
+          {/* Profile Picture Upload Section */}
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider">
+              Profile Avatar Picture (File Upload or URL)
             </label>
-            <div className="relative">
-              <input
-                type="url"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                placeholder="https://..."
-                className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-9 pr-3.5 py-2 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
-              />
-              <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="relative">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  disabled={uploading}
+                  id="avatar-file-upload"
+                  className="hidden"
+                />
+                <label
+                  htmlFor="avatar-file-upload"
+                  className="w-full bg-[#161a29] hover:bg-[#1e2436] text-[#94a3b8] hover:text-white rounded-lg px-4 py-2.5 text-xs border border-[#1e2436] flex items-center justify-center space-x-2 cursor-pointer transition-colors"
+                >
+                  <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
+                  <span>{uploading ? 'Uploading Image...' : 'Upload Image File'}</span>
+                </label>
+              </div>
+
+              <div className="relative">
+                <input
+                  type="url"
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  placeholder="Or enter Image URL"
+                  className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-9 pr-3 py-2.5 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
+                />
+                <ImageIcon className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-3" />
+              </div>
             </div>
           </div>
 
@@ -209,8 +258,8 @@ export default function MyProfilePage() {
           <div className="pt-4 border-t border-[#1e2436] flex justify-end">
             <button
               type="submit"
-              disabled={saving}
-              className="brutalist-btn-primary px-6 py-2 rounded-lg text-xs"
+              disabled={saving || uploading}
+              className="brutalist-btn-primary px-6 py-2 rounded-lg text-xs disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Profile Changes'}
             </button>

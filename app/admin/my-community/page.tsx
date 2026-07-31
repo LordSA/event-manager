@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Building, Edit2, CheckCircle2, AlertCircle, Eye, ShieldAlert, Image as ImageIcon, Link2 } from 'lucide-react';
+import { Building, Edit2, CheckCircle2, AlertCircle, Eye, ShieldAlert, Image as ImageIcon, Upload } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
+import { uploadImageToSupabase } from '@/lib/supabase/storage';
 
 export default function MyCommunityPage() {
   const [community, setCommunity] = useState<any>(null);
   const [role, setRole] = useState<UserRole>('editor');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Form Fields
@@ -47,6 +49,31 @@ export default function MyCommunityPage() {
     fetchCommunity();
   }, []);
 
+  const handleLogoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    if (file.size > 2 * 1024 * 1024) {
+      setToastMsg({ type: 'error', text: 'Logo image file size must be under 2MB.' });
+      return;
+    }
+
+    setUploading(true);
+    setToastMsg(null);
+
+    try {
+      const publicUrl = await uploadImageToSupabase(file, 'community-logos', community?.id || 'communities');
+      setLogoUrl(publicUrl);
+      setToastMsg({ type: 'success', text: 'Community logo uploaded successfully!' });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to upload logo';
+      setToastMsg({ type: 'error', text: msg });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleUpdateCommunity = async (e: React.FormEvent) => {
     e.preventDefault();
     if (role === 'editor') return;
@@ -64,7 +91,6 @@ export default function MyCommunityPage() {
         logo_url: logoUrl,
       };
 
-      // Only Dev and Admin can modify slug
       if (role === 'dev' || role === 'admin') {
         payload.slug = slug;
       }
@@ -151,8 +177,8 @@ export default function MyCommunityPage() {
         </div>
       )}
 
-      {/* Community Settings Form */}
-      <div className="p-6 rounded-xl bg-[#0f121d] border-2 border-[#1e2436] space-y-6">
+      {/* Settings Form */}
+      <div className="brutalist-card p-6 rounded-xl space-y-6">
         <div className="flex items-center space-x-4 border-b border-[#1e2436] pb-4">
           {logoUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
@@ -203,20 +229,42 @@ export default function MyCommunityPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
-              Community Logo URL
+          {/* Logo Upload Section */}
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider">
+              Community Logo (File Upload or Image URL)
             </label>
-            <div className="relative">
-              <input
-                type="url"
-                disabled={!isEditable}
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-                placeholder="https://..."
-                className="w-full bg-[#161a29] text-white disabled:text-slate-500 rounded-lg pl-9 pr-3.5 py-2 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
-              />
-              <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoFileUpload}
+                  disabled={!isEditable || uploading}
+                  id="logo-file-upload"
+                  className="hidden"
+                />
+                <label
+                  htmlFor="logo-file-upload"
+                  className={`w-full bg-[#161a29] hover:bg-[#1e2436] text-[#94a3b8] hover:text-white rounded-lg px-4 py-2 text-xs border border-[#1e2436] flex items-center justify-center space-x-2 cursor-pointer transition-colors ${
+                    !isEditable ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
+                  <span>{uploading ? 'Uploading Logo...' : 'Upload Logo File'}</span>
+                </label>
+              </div>
+
+              <div>
+                <input
+                  type="url"
+                  disabled={!isEditable}
+                  value={logoUrl}
+                  onChange={(e) => setLogoUrl(e.target.value)}
+                  placeholder="Or enter Image URL"
+                  className="w-full bg-[#161a29] text-white disabled:text-slate-500 rounded-lg px-3.5 py-2 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
+                />
+              </div>
             </div>
           </div>
 
@@ -269,8 +317,8 @@ export default function MyCommunityPage() {
             <div className="pt-4 border-t border-[#1e2436] flex justify-end">
               <button
                 type="submit"
-                disabled={saving}
-                className="brutalist-btn-primary px-6 py-2 rounded-lg text-xs"
+                disabled={saving || uploading}
+                className="brutalist-btn-primary px-6 py-2 rounded-lg text-xs disabled:opacity-50"
               >
                 {saving ? 'Updating...' : 'Save Community Profile'}
               </button>

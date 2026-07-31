@@ -1,39 +1,40 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { useCommunities } from "@/lib/hooks/useCommunities";
+import { useState } from 'react';
+import Link from 'next/link';
+import { Search } from 'lucide-react';
+import { useCommunities } from '@/lib/hooks/useCommunities';
 
 export default function CommunityPage() {
   const { communities, loading } = useCommunities();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   const filteredCommunities = communities.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
-    (c.description || "").toLowerCase().includes(search.toLowerCase())
+    (c.description || '').toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500 selection:text-white pb-20 md:pb-12">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16 border-b border-gray-800 pb-8">
-          <div className="flex-1">
-            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
-              Campus <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">Communities</span>
+    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col pt-28 md:pt-32 pb-20 md:pb-12">
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[#1e2436] pb-6">
+          <div className="flex-1 space-y-2">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white font-display">
+              Campus Communities
             </h1>
-            <p className="text-gray-400 text-lg max-w-xl">
-              Join the vibrant student organizations at CEV. Connect, learn, and grow with like-minded peers.
+            <p className="text-[#94a3b8] text-xs sm:text-sm max-w-xl leading-relaxed">
+              Explore student branches and technical organizations at CEV. Connect, learn, and collaborate across initiatives.
             </p>
           </div>
 
-          <div className="relative w-full md:w-96 group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <svg className="w-5 h-5 text-gray-500 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <div className="relative w-full md:w-80">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+              <Search className="w-4 h-4" />
             </div>
             <input
               type="text"
               placeholder="Search communities..."
-              className="w-full bg-gray-900/50 border border-gray-800 text-white pl-12 pr-4 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-gray-600"
+              className="w-full bg-[#0f121d] border border-[#1e2436] text-white pl-9 pr-4 py-2.5 rounded-lg text-xs focus:outline-none focus:border-[#6366f1] placeholder-slate-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -41,44 +42,55 @@ export default function CommunityPage() {
         </div>
 
         {loading ? (
-          <div className="p-12 text-center text-gray-500">Loading campus communities...</div>
+          <div className="p-12 text-center text-[#94a3b8] text-xs bg-[#0f121d] border border-[#1e2436] rounded-xl">
+            Loading campus communities...
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCommunities.map((comm) => (
-              <Link key={comm.id} href={`/community/${comm.id}`} className="group block h-full">
-                <div className="bg-[#0A0A0A] border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all duration-300 h-full flex flex-col hover:shadow-2xl hover:shadow-blue-900/10">
-                  <div className="relative w-full aspect-[1080/1350] overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${comm.color || 'from-blue-600 to-cyan-400'} opacity-80 group-hover:opacity-100 transition-all duration-700 ease-out`} />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-9xl font-extrabold text-white/20 group-hover:text-white/30 transition-colors select-none">
+              <div key={comm.id} className="brutalist-card p-6 rounded-xl space-y-4 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    {comm.logo_url ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={comm.logo_url}
+                        alt={comm.name}
+                        className="w-14 h-14 rounded-lg object-cover border border-[#1e2436]"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-lg bg-[#161a29] border border-[#1e2436] flex items-center justify-center text-white font-bold text-xl font-display">
                         {comm.initials || comm.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <div>
+                      <h2 className="text-xl font-bold text-white font-display">{comm.name}</h2>
+                      <span className="text-[10px] font-mono text-[#94a3b8]">
+                        slug: {comm.slug || comm.name.toLowerCase().replace(/\s+/g, '-')}
                       </span>
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/60 to-transparent"></div>
-
-                    <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col">
-                      <h2 className="text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition-colors drop-shadow-lg">
-                        {comm.name}
-                      </h2>
-                      <p className="text-gray-300 text-sm leading-relaxed mb-6 line-clamp-3">
-                        {comm.description}
-                      </p>
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-700/50 mt-auto">
-                        <span className="text-xs font-medium text-gray-400">
-                          View Profile
-                        </span>
-                        <span className="flex items-center gap-2 text-sm font-semibold text-white group-hover:gap-3 transition-all">
-                          Explore <span className="text-blue-500">&rarr;</span>
-                        </span>
-                      </div>
-                    </div>
                   </div>
+
+                  <p className="text-xs text-[#94a3b8] line-clamp-3 leading-relaxed">
+                    {comm.description || 'Student technical branch at CEV.'}
+                  </p>
                 </div>
-              </Link>
+
+                <div className="pt-4 border-t border-[#1e2436] flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-[#94a3b8]">Organization</span>
+                  <Link
+                    href={`/events?community=${encodeURIComponent(comm.name)}`}
+                    className="text-xs font-semibold text-[#6366f1] hover:underline"
+                  >
+                    View Events &rarr;
+                  </Link>
+                </div>
+              </div>
             ))}
 
             {filteredCommunities.length === 0 && (
-              <div className="col-span-full py-20 text-center text-gray-500">
+              <div className="col-span-full py-16 text-center text-[#94a3b8] text-xs bg-[#0f121d] border border-[#1e2436] rounded-xl">
                 No communities found matching &quot;{search}&quot;
               </div>
             )}

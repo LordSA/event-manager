@@ -118,13 +118,13 @@ export default function DynamicEventPage({ params }: { params: Promise<PageParam
   };
 
   return (
-    <div className="min-h-screen bg-[#05070E] text-white flex flex-col relative">
+    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col pt-28 md:pt-32 relative">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8 pb-20 md:pb-12">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 pb-12 space-y-8">
         <Link
           href="/events"
           className="inline-flex items-center space-x-2 text-sm text-slate-400 hover:text-white transition-colors"

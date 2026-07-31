@@ -3,7 +3,7 @@
 ## 1. Executive Summary & Overview
 This repository contains **Whats @CEV / Event Manager**, a high-performance multi-community event management, publishing, and discovery platform tailored for campus organizations and technical communities (IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
 
-The platform centralizes scheduling, slot reservation, public discovery, and real-time contextual event support via an intelligent **Event Assistant** powered by a multi-provider fallback architecture with a friendly peer-to-peer campus buddy persona.
+The platform centralizes scheduling, slot reservation, public discovery, direct binary image asset uploads (avatars & community logos via Supabase Storage), and real-time contextual event support via an intelligent **Event Assistant** powered by a multi-provider fallback architecture with a friendly peer-to-peer campus buddy persona.
 
 ---
 
@@ -15,8 +15,9 @@ The platform centralizes scheduling, slot reservation, public discovery, and rea
 * **Styling:** Tailwind CSS v4 with Dark Design System combining Restrained Glassmorphism & Light Brutalism
 * **Typography:** Custom font stack (`Quera`, `Gued`, `Rondured`) — Inter is completely removed.
 
-### Backend, Database & Authentication
-* **Database:** Supabase (PostgreSQL with Row Level Security - RLS)
+### Backend, Database & Storage
+* **Database & Storage:** Supabase PostgreSQL with RLS & Public Storage Buckets (`avatars`, `community-logos`)
+* **Upload Utility:** `lib/supabase/storage.ts` (`uploadImageToSupabase`)
 * **Authentication:** Supabase Auth with Dual Login Modes: 6-Digit Email OTP verification & Password Authentication.
 * **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
 * **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
@@ -67,7 +68,7 @@ event-manager/
 │   │   ├── EventAiDrawer.tsx      # Event Assistant slide-over drawer
 │   │   ├── GoogleCalendarView.tsx # Google Calendar component (Month/Week/Day time-grid views)
 │   │   ├── MasterCalendar.tsx     # Master event list timeline
-│   │   ├── Navbar.tsx             # Clean product navigation bar with logo.png (Logo | Home | Calendar | Events | Communities)
+│   │   ├── Navbar.tsx             # Floating glass pill navbar with logo.png & GSAP entrance animations
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
 │   │   ├── page.tsx               # Public events discovery directory
@@ -87,7 +88,8 @@ event-manager/
 │   └── supabase/
 │       ├── client.ts              # Browser Supabase client creator
 │       ├── middleware.ts          # Edge cookie session updater & protected route proxy
-│       └── server.ts              # Server Supabase client creator
+│       ├── server.ts              # Server Supabase client creator
+│       └── storage.ts             # Supabase storage image upload utility helper
 ├── public/                        # Static assets, logo.png, posters, images
 ├── proxy.ts                       # Next.js 16 Edge proxy middleware entry point
 ├── changelogs.md                  # Versioning history & release notes

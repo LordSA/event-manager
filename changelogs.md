@@ -4,6 +4,16 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.20.0] - 2026-07-31
+
+### 🚀 Direct Image Asset Uploads & Mobile Responsive Layout Engine
+- **Supabase Storage Integration (`lib/supabase/storage.ts`):** Built `uploadImageToSupabase` helper utility for binary image uploads to public buckets `avatars` and `community-logos`.
+- **Profile Avatar Uploads (`app/admin/profile/page.tsx`):** Added file picker input with 2MB validation uploading profile picture avatars directly to Supabase Storage.
+- **Community Logo Uploads (`app/admin/my-community/page.tsx` & `app/admin/communities/page.tsx`):** Integrated direct file upload support for community branding logos in the admin dashboard.
+- **Responsive Container Spacing (`pt-28 md:pt-32`):** Added uniform top padding across all landing, calendar, event directory, community, and detail pages to prevent floating header overlaps on mobile, tablet, and desktop screens.
+
+---
+
 ## [0.19.0] - 2026-07-31
 
 ### 💎 Full Design System Overhaul & Restrained Glass / Light Brutalism Architecture
