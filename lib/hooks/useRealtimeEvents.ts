@@ -56,6 +56,10 @@ export function useRealtimeEvents() {
           description: item.description || '',
           status: item.status as 'closed' | 'live',
           image: item.poster_url || '/images/bit.jpg',
+          poster_url: item.poster_url || '/images/bit.jpg',
+          venue: item.venue || 'Campus Setup / CEV',
+          perks: item.perks || null,
+          system_prompt: item.system_prompt || null,
         }));
         setEventsList(mapped);
       }
@@ -82,7 +86,6 @@ export function useRealtimeEvents() {
         supabase.removeChannel(channel);
       };
     } catch {
-      // Ignore channel errors
     }
   }, []);
 

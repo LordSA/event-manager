@@ -239,6 +239,8 @@ export default function EventBookingEnginePage() {
           perks: perks.trim() || null,
           status,
           system_prompt: aiSystemPrompt,
+          poster_url: posterUrl || null,
+          image: posterUrl || '/images/bit.jpg',
         };
 
         setEventsList(eventsList.map((e) => (e.id === editingEvent.id ? updatedEvt : e)));

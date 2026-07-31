@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.36.0] - 2026-07-31
+
+### 🖼️ Event Poster URL DB Fetching & Realtime Sync Fix
+- **Realtime Events Hook Mapping ([lib/hooks/useRealtimeEvents.ts](./lib/hooks/useRealtimeEvents.ts)):** Mapped `poster_url`, `venue`, `perks`, and `system_prompt` fields directly from Supabase query results into the `EventItemData` objects.
+- **Admin Event Update Fix ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Added explicit `poster_url` and `image` properties to `updatedEvt` state during event modifications, ensuring poster URLs save to Supabase and render immediately without requiring page refresh.
+
+---
+
 ## [0.35.0] - 2026-07-31
 
 ### 🤖 Intelligent AI Response Sanitization & Offline Fallback Parser

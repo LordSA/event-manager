@@ -20,7 +20,7 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 ### Backend, Database & Vercel Blob Storage
 * **Database Engine:** Supabase PostgreSQL with RLS (`events.poster_url`, `events.venue`, `communities.logo_url`, `profiles.avatar_url`).
 * **Storage Provider:** Vercel Blob Storage (`@vercel/blob`).
-* **Upload Engine:** Next.js API Route `./app/api/upload/route.ts` & Client-Side WebP Converter `./lib/upload.ts` (auto-converts JPG/PNG to WebP at 0.82 quality before uploading).
+* **Realtime Events Hook & Poster Sync:** `./lib/hooks/useRealtimeEvents.ts` maps `poster_url`, `venue`, `perks`, and `system_prompt` from Supabase into `EventItemData`. `./app/admin/events/page.tsx` saves `poster_url` in both Supabase updates and local state handlers.
 * **Public Summarizers:** `./lib/summary.ts` (generates 2-line cards for directory & calendar popovers) and `refactorDescription4To5Lines` in `./app/events/[id]/page.tsx` (generates 4-5 line overviews).
 * **Fast AI Engine & Response Sanitizer:** `./app/api/chat/route.ts` using `gemini-1.5-flash` with `maxOutputTokens: 250` and 4-second `AbortController` timeouts. Includes an intelligent offline fallback parser (`generateOfflineResponse`) that extracts structured event fields (Date, Time, Venue, Category, Perks) and generates friendly peer answers without ever printing internal system prompts (`You are the official AI Assistant...`).
 * **Authentication:** Supabase Auth with Dual Login Modes: 6-Digit Email OTP verification & Password Authentication (`./app/login/page.tsx`).

@@ -13,6 +13,10 @@ export interface EventItemData {
   date: string;
   time_slot?: string;
   image?: string;
+  poster_url?: string;
+  venue?: string;
+  perks?: string | null;
+  system_prompt?: string | null;
   description?: string;
   status?: 'closed' | 'live';
 }
