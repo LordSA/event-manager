@@ -4,6 +4,18 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.19.0] - 2026-07-31
+
+### 💎 Full Design System Overhaul & Restrained Glass / Light Brutalism Architecture
+- **Complete Visual Overhaul:** Built rich obsidian dark color system (`#08090d` background, `#0f121d` surface, `#6366f1` electric indigo primary accent) combining restrained glassmorphism with light brutalism (`.brutalist-card`, `.brutalist-btn-primary`).
+- **Typography Engine (`Quera`, `Gued`, `Rondured`):** Declared custom `@font-face` fonts in `globals.css`. Inter has been completely removed.
+- **Navbar Redesign (`app/components/Navbar.tsx`):** Removed generic icon logo, replaced with `/logo.png`. Removed position badge and logout button. Header displays `Logo | Home | Calendar | Events | Communities` (+ `Dashboard` when logged in).
+- **Dual Auth Login (`app/login/page.tsx`):** Added Password Authentication alongside the 6-digit OTP verification flow.
+- **Admin Dashboard & Community Logos/Slugs (`app/admin/my-community/page.tsx` & `app/admin/communities/page.tsx`):** Added logo image URL upload support and restricted custom slug editing to `dev` and `admin` roles.
+- **Profile Avatar Upload (`app/admin/profile/page.tsx`):** Integrated user profile picture avatar URL management and password updates.
+
+---
+
 ## [0.18.0] - 2026-07-31
 
 ### 🎨 Clean Dark Product Redesign (Landing, Navigation & Google Calendar)

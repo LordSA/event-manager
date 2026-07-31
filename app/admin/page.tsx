@@ -57,52 +57,52 @@ export default function AdminDashboardPage() {
   const draftCount = filteredEvents.filter((e) => e.status === 'closed').length;
 
   return (
-    <div className="space-y-8 pb-20 md:pb-12">
+    <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white">
+      <div className="border-b border-[#1e2436] pb-4">
+        <h1 className="text-2xl font-bold tracking-tight text-white font-display">
           {isScoped ? `${communityName} Overview` : 'Campus Dashboard Overview'}
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-xs text-[#94a3b8] mt-0.5">
           {isScoped
             ? `Overview metrics, slot reservations, and event status for ${communityName}.`
-            : 'System health, slot bookings, dynamic RBAC metrics, and multi-community publishing stats.'}
+            : 'Slot bookings, dynamic RBAC metrics, and multi-community publishing stats.'}
         </p>
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-semibold">Live Events</span>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="brutalist-card p-5 rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-[#94a3b8]">
+            <span className="text-[11px] uppercase font-bold tracking-wider">Live Events</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-white">{liveCount}</div>
-          <p className="text-xs text-slate-500">
+          <div className="text-3xl font-extrabold text-white font-display">{liveCount}</div>
+          <p className="text-[11px] text-[#94a3b8]">
             {isScoped ? `Published by ${communityName}` : 'Publicly visible across campus'}
           </p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-semibold">Draft Slots</span>
+        <div className="brutalist-card p-5 rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-[#94a3b8]">
+            <span className="text-[11px] uppercase font-bold tracking-wider">Draft Slots</span>
             <Lock className="w-4 h-4 text-amber-400" />
           </div>
-          <div className="text-3xl font-extrabold text-white">{draftCount}</div>
-          <p className="text-xs text-slate-500">Reserved on master calendar</p>
+          <div className="text-3xl font-extrabold text-white font-display">{draftCount}</div>
+          <p className="text-[11px] text-[#94a3b8]">Reserved on master calendar</p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-semibold">
+        <div className="brutalist-card p-5 rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-[#94a3b8]">
+            <span className="text-[11px] uppercase font-bold tracking-wider">
               {isScoped ? 'My Organization' : 'Communities'}
             </span>
-            <Building className="w-4 h-4 text-blue-400" />
+            <Building className="w-4 h-4 text-[#6366f1]" />
           </div>
-          <div className="text-xl font-extrabold text-white truncate">
+          <div className="text-lg font-bold text-white truncate font-display">
             {isScoped ? communityName : `${communities.length} Active`}
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-[11px] text-[#94a3b8]">
             {isScoped ? 'Assigned campus community' : 'IEEE, IEDC, TinkerHub, FOSS, MuLearn'}
           </p>
         </div>
@@ -110,62 +110,62 @@ export default function AdminDashboardPage() {
 
       {/* Quick Action Navigation Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between">
+        <div className="brutalist-card p-5 rounded-xl space-y-4 flex flex-col justify-between">
           <div className="space-y-2">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-blue-400" />
+            <h3 className="text-base font-bold text-white flex items-center gap-2 font-display">
+              <Calendar className="w-4 h-4 text-[#6366f1]" />
               Slot Booking Engine
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Reserve dates and time slots for your community events (`closed` draft state) to prevent overlaps.
+            <p className="text-xs text-[#94a3b8] leading-relaxed">
+              Reserve dates and time slots for community events to prevent scheduling overlaps.
             </p>
           </div>
           <Link
             href="/admin/events"
-            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors w-fit"
+            className="brutalist-btn-primary px-3.5 py-2 rounded-lg text-xs inline-flex items-center space-x-1.5 w-fit"
           >
             <span>Manage Events</span>
-            <ArrowUpRight className="w-4 h-4" />
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {role !== 'editor' && (
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between">
+          <div className="brutalist-card p-5 rounded-xl space-y-4 flex flex-col justify-between">
             <div className="space-y-2">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Building className="w-5 h-5 text-cyan-400" />
+              <h3 className="text-base font-bold text-white flex items-center gap-2 font-display">
+                <Building className="w-4 h-4 text-emerald-400" />
                 My Community
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Update community profile bio, accent gradients, initials badge, and theme details.
+              <p className="text-xs text-[#94a3b8] leading-relaxed">
+                Update community profile bio, logo image, initials badge, and theme details.
               </p>
             </div>
             <Link
               href="/admin/my-community"
-              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs transition-colors w-fit"
+              className="brutalist-btn-secondary px-3.5 py-2 rounded-lg text-xs inline-flex items-center space-x-1.5 w-fit"
             >
               <span>Community Details</span>
-              <ArrowUpRight className="w-4 h-4" />
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         )}
 
-        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between">
+        <div className="brutalist-card p-5 rounded-xl space-y-4 flex flex-col justify-between">
           <div className="space-y-2">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <User className="w-5 h-5 text-purple-400" />
+            <h3 className="text-base font-bold text-white flex items-center gap-2 font-display">
+              <User className="w-4 h-4 text-[#6366f1]" />
               My Account Profile
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Update your personal full name, profile picture, and auth password.
+            <p className="text-xs text-[#94a3b8] leading-relaxed">
+              Update personal profile name, avatar image picture, and auth password.
             </p>
           </div>
           <Link
             href="/admin/profile"
-            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs transition-colors w-fit"
+            className="brutalist-btn-secondary px-3.5 py-2 rounded-lg text-xs inline-flex items-center space-x-1.5 w-fit"
           >
             <span>Edit Profile</span>
-            <ArrowUpRight className="w-4 h-4" />
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>

@@ -12,13 +12,13 @@ The platform centralizes scheduling, slot reservation, public discovery, and rea
 ### Framework & Runtime
 * **Framework:** Next.js 16 (App Router)
 * **Runtime:** Node.js with React 19 & TypeScript 5
-* **Styling:** Tailwind CSS v4 with Clean Dark-Mode Product Aesthetic (Linear / Notion / Vercel design standard)
+* **Styling:** Tailwind CSS v4 with Dark Design System combining Restrained Glassmorphism & Light Brutalism
+* **Typography:** Custom font stack (`Quera`, `Gued`, `Rondured`) — Inter is completely removed.
 
 ### Backend, Database & Authentication
 * **Database:** Supabase (PostgreSQL with Row Level Security - RLS)
-* **Authentication:** Supabase Auth (6-Digit Email OTP verification & Next.js Edge Proxy Session Management)
+* **Authentication:** Supabase Auth with Dual Login Modes: 6-Digit Email OTP verification & Password Authentication.
 * **Admin User API:** `/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND `profiles` table)
-* **Auth Callback:** `/auth/callback/route.ts` (Handles code exchange for session creation)
 * **Realtime Sync:** Supabase Postgres Realtime (`postgres_changes` subscriptions on `events`, `communities`, `profiles`)
 * **RBAC Scoping:** Granular route and page-level permission scoping in Next.js `middleware.ts` and UI layout.
 
@@ -28,7 +28,7 @@ The platform centralizes scheduling, slot reservation, public discovery, and rea
 
 | User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Community Page Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Dev / Admin** | ✅ (All Users) | ✅ | ✅ (All) | ✅ (All) | ✅ (All) | ✅ (All) | ✅ |
+| **Dev / Admin** | ✅ (All Users) | ✅ | ✅ (All + Slug Edit) | ✅ (All) | ✅ (All) | ✅ (All) | ✅ |
 | **Manager (Lead)** | ✅ (Own Community Leads) | ❌ | ❌ | ✅ (Own Community) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
 | **Editor** | ❌ | ❌ | ❌ | ✅ (Own Community) | ❌ | ✅ (Own Community) | ✅ |
 | **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
@@ -55,7 +55,7 @@ event-manager/
 │   │   ├── layout.tsx             # Protected Admin layout with role-based navigation sidebar
 │   │   ├── page.tsx               # Admin Dashboard overview metrics
 │   │   ├── communities/
-│   │   │   └── page.tsx           # Community Entity Management (Restricted to Dev & Admin)
+│   │   │   └── page.tsx           # Community Entity Management with logo image upload & slug editing
 │   │   ├── events/
 │   │   │   └── page.tsx           # Slot Booking & Event Publishing Engine
 │   │   └── users/
@@ -66,16 +66,15 @@ event-manager/
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper
 │   │   ├── EventAiDrawer.tsx      # Event Assistant slide-over drawer
 │   │   ├── GoogleCalendarView.tsx # Google Calendar component (Month/Week/Day time-grid views)
-│   │   ├── HeroCanvas.tsx         # Clean background placeholder (particles removed)
 │   │   ├── MasterCalendar.tsx     # Master event list timeline
-│   │   ├── Navbar.tsx             # Clean product navigation bar (Logo | Home | Calendar | Events | Communities | Dashboard)
+│   │   ├── Navbar.tsx             # Clean product navigation bar with logo.png (Logo | Home | Calendar | Events | Communities)
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
 │   │   ├── page.tsx               # Public events discovery directory
 │   │   └── [id]/
 │   │       └── page.tsx           # Dynamic event detail page with SEO JSON-LD schema
 │   ├── login/
-│   │   └── page.tsx               # 6-Digit Email OTP Authentication page
+│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Authentication page
 │   ├── page.tsx                   # Public landing page with two CTA buttons (Explore Events, Explore Calendar)
 │   └── layout.tsx                 # Root layout with Lenis & Navbar
 ├── lib/
@@ -89,7 +88,7 @@ event-manager/
 │       ├── client.ts              # Browser Supabase client creator
 │       ├── middleware.ts          # Edge cookie session updater & protected route proxy
 │       └── server.ts              # Server Supabase client creator
-├── public/                        # Static assets, posters, images
+├── public/                        # Static assets, logo.png, posters, images
 ├── proxy.ts                       # Next.js 16 Edge proxy middleware entry point
 ├── changelogs.md                  # Versioning history & release notes
 ├── design.md                      # Design system & motion specification

@@ -1,23 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "./components/SmoothScroll";
-import Navbar from "./components/Navbar";
 import ConditionalNavbar from "./components/ConNav";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Whats @CEV",
-  description: "created by 2 vazhakal",
+  title: "Whats @CEV | Multi-Community Event Manager",
+  description: "Unified campus event discovery, slot booking, and community management.",
 };
 
 export default function RootLayout({
@@ -27,9 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`bg-black ${geistSans.variable} ${geistMono.variable} antialiased overflow-y-hidden overflow-x-hidden`}
-      >
+      <body className="bg-[#08090d] text-[#f8fafc] antialiased overflow-y-auto overflow-x-hidden selection:bg-[#6366f1] selection:text-white">
         <SmoothScroll />
         <ConditionalNavbar />
         {children}

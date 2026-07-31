@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Building, Plus, Edit2, Trash2, ShieldAlert } from 'lucide-react';
+import { Building, Plus, Trash2, ShieldAlert, Image as ImageIcon, Link2 } from 'lucide-react';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
 import { UserRole } from '@/types/database.types';
@@ -11,9 +11,11 @@ export default function CommunitiesManagementPage() {
   const [userRole, setUserRole] = useState<UserRole>('editor');
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
   const [desc, setDesc] = useState('');
   const [color, setColor] = useState('from-blue-600 to-cyan-400');
   const [initials, setInitials] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -41,12 +43,12 @@ export default function CommunitiesManagementPage() {
 
   if (userRole === 'manager' || userRole === 'editor') {
     return (
-      <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-4 max-w-2xl mx-auto my-12">
-        <div className="p-4 rounded-2xl bg-amber-950/60 border border-amber-800 text-amber-300 w-fit mx-auto">
-          <ShieldAlert className="w-8 h-8" />
+      <div className="p-8 rounded-xl bg-[#0f121d] border-2 border-[#1e2436] text-center space-y-4 max-w-2xl mx-auto my-12">
+        <div className="p-3 rounded-lg bg-amber-950/80 border border-amber-800 text-amber-300 w-fit mx-auto">
+          <ShieldAlert className="w-6 h-6" />
         </div>
-        <h2 className="text-2xl font-bold text-white">Access Restricted</h2>
-        <p className="text-sm text-slate-400 leading-relaxed">
+        <h2 className="text-xl font-bold text-white font-display">Access Restricted</h2>
+        <p className="text-xs text-[#94a3b8] leading-relaxed">
           Community Management is restricted to Super Admins and Developers. Community Managers and Editors do not have permission to add, edit, or delete campus community entities.
         </p>
       </div>
@@ -57,15 +59,15 @@ export default function CommunitiesManagementPage() {
     e.preventDefault();
     if (!name) return;
 
-    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const finalSlug = slug.trim() ? slug.toLowerCase().replace(/\s+/g, '-') : name.toLowerCase().replace(/\s+/g, '-');
     const newComm = {
       id: Date.now().toString(),
       name,
-      slug,
+      slug: finalSlug,
       description: desc || 'Campus technical community.',
       color,
       initials: initials || name.slice(0, 2).toUpperCase(),
-      logo_url: null,
+      logo_url: logoUrl || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -76,17 +78,20 @@ export default function CommunitiesManagementPage() {
       const supabase = createClient();
       await supabase.from('communities').insert({
         name,
-        slug,
+        slug: finalSlug,
         description: desc,
         color,
         initials: initials || name.slice(0, 2).toUpperCase(),
+        logo_url: logoUrl || null,
       });
     } catch (err) {
       console.error(err);
     }
 
     setName('');
+    setSlug('');
     setDesc('');
+    setLogoUrl('');
     setShowModal(false);
   };
 
@@ -101,21 +106,21 @@ export default function CommunitiesManagementPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#1e2436] pb-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-            <Building className="w-8 h-8 text-cyan-400" />
+          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3 font-display">
+            <Building className="w-6 h-6 text-[#6366f1]" />
             Community Management
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Dev & Admins can create or delete communities.
+          <p className="text-xs text-[#94a3b8] mt-0.5">
+            Dev & Admins can manage campus community entities, slugs, and branding logos.
           </p>
         </div>
 
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/25"
+          className="brutalist-btn-primary px-4 py-2 rounded-lg text-xs flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Community</span>
@@ -123,113 +128,136 @@ export default function CommunitiesManagementPage() {
       </div>
 
       {loading ? (
-        <div className="p-8 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
-          Loading community entities from database...
+        <div className="p-8 text-center text-[#94a3b8] text-xs bg-[#0f121d] border border-[#1e2436] rounded-xl">
+          Loading community entities...
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {communities.map((c) => (
-            <div key={c.id} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between">
+            <div key={c.id} className="brutalist-card p-5 rounded-xl space-y-4 flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${c.color || 'from-blue-600 to-cyan-400'} flex items-center justify-center text-white font-extrabold text-lg shadow-lg`}>
-                    {c.initials || c.name.slice(0, 2).toUpperCase()}
+                  <div className="flex items-center space-x-3">
+                    {c.logo_url ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={c.logo_url}
+                        alt={c.name}
+                        className="w-10 h-10 rounded-lg object-cover border border-[#1e2436]"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-[#161a29] border border-[#1e2436] flex items-center justify-center text-white font-bold text-sm">
+                        {c.initials || c.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <h3 className="text-base font-bold text-white">{c.name}</h3>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(c.id)}
-                      className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+
+                  <button
+                    onClick={() => handleDelete(c.id)}
+                    className="p-1.5 text-neutral-400 hover:text-red-400 rounded-md hover:bg-[#161a29] transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-bold text-white">{c.name}</h3>
-                  <p className="text-sm text-slate-400 mt-1">{c.description}</p>
-                </div>
+                <p className="text-xs text-[#94a3b8] line-clamp-2">{c.description}</p>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 flex items-center justify-between">
-                <span>Slug: {c.slug || c.name.toLowerCase().replace(/\s+/g, '-')}</span>
-                <span className="font-mono text-[10px] text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">
-                  {c.color || 'from-blue-600 to-cyan-400'}
-                </span>
+              {/* Slug & Logo Info Footer */}
+              <div className="pt-3 border-t border-[#1e2436] text-[11px] text-[#94a3b8] flex items-center justify-between font-mono">
+                <span className="truncate max-w-[150px]">slug: {c.slug || c.name.toLowerCase().replace(/\s+/g, '-')}</span>
+                {c.logo_url && (
+                  <span className="text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800 flex items-center gap-1 text-[10px]">
+                    <ImageIcon className="w-3 h-3" /> Logo Set
+                  </span>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Modal */}
+      {/* Modal for Dev/Admin Creation */}
       {showModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 w-full max-w-md space-y-4 text-white shadow-2xl">
-            <h3 className="text-xl font-bold">Create Community Entity</h3>
+          <div className="bg-[#0f121d] border-2 border-[#1e2436] rounded-xl p-6 w-full max-w-md space-y-4 text-white shadow-2xl">
+            <h3 className="text-lg font-bold font-display">Create Community Entity</h3>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Community Name</label>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">Community Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. IEEE SB CEV"
                   required
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Initials Badge</label>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
+                  Custom URL Slug (Dev / Admin Only)
+                </label>
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="e.g. ieee-sb-cev"
+                  className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
+                  Community Logo Image URL
+                </label>
+                <div className="relative">
+                  <input
+                    type="url"
+                    value={logoUrl}
+                    onChange={(e) => setLogoUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
+                  />
+                  <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">Initials Badge</label>
                 <input
                   type="text"
                   value={initials}
                   onChange={(e) => setInitials(e.target.value)}
                   placeholder="e.g. IE"
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Description / Bio</label>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">Description / Bio</label>
                 <textarea
                   value={desc}
                   onChange={(e) => setDesc(e.target.value)}
                   placeholder="Community mission..."
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 h-24"
+                  className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1] h-20"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Gradient Theme Class</label>
-                <select
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-                >
-                  <option value="from-blue-600 to-cyan-400">Electric Blue / Cyan</option>
-                  <option value="from-green-500 to-emerald-300">Emerald Green</option>
-                  <option value="from-yellow-400 to-orange-500">Solar Amber</option>
-                  <option value="from-green-600 to-lime-400">Lime Green</option>
-                  <option value="from-purple-600 to-pink-500">Neon Violet</option>
-                </select>
-              </div>
-
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-[#1e2436]">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-sm"
+                  className="px-3 py-1.5 text-xs text-[#94a3b8] hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm shadow-lg shadow-blue-500/20"
+                  className="brutalist-btn-primary px-4 py-2 rounded-lg text-xs"
                 >
                   Create Community
                 </button>

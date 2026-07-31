@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, Calendar as CalendarIcon, MessageSquare, ShieldCheck, Layers } from 'lucide-react';
+import { ArrowRight, Calendar as CalendarIcon, MessageSquare, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
@@ -16,10 +16,6 @@ export default function LandingHomePage() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
         {/* Hero Section */}
         <section className="text-center space-y-6 max-w-3xl mx-auto pt-8">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-xs font-medium text-neutral-300">
-            <CalendarIcon className="w-3.5 h-3.5 text-neutral-400" />
-            <span>Campus Event & Workshop Directory</span>
-          </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
             The central event hub for CEV campus

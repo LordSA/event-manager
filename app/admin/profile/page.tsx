@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Briefcase, Key, Image as ImageIcon, CheckCircle2, AlertCircle, Shield, Building } from 'lucide-react';
+import { User, Mail, Key, Image as ImageIcon, CheckCircle2, AlertCircle, Shield, Building, Link2 } from 'lucide-react';
 import Image from 'next/image';
 
 export default function MyProfilePage() {
@@ -54,7 +54,7 @@ export default function MyProfilePage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setToastMsg({ type: 'success', text: 'Your profile has been updated successfully!' });
+        setToastMsg({ type: 'success', text: 'Your profile and avatar have been updated!' });
         setPassword('');
         if (data.profile) {
           setProfile((prev: any) => ({ ...prev, ...data.profile }));
@@ -72,45 +72,45 @@ export default function MyProfilePage() {
 
   if (loading) {
     return (
-      <div className="p-12 text-center text-slate-500 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
-        Loading profile information...
+      <div className="p-8 text-center text-[#94a3b8] text-xs bg-[#0f121d] border border-[#1e2436] rounded-xl">
+        Loading user profile...
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl space-y-8 pb-20 md:pb-12">
-      <div>
-        <h1 className="text-3xl font-extrabold text-white flex items-center gap-3">
-          <User className="w-8 h-8 text-blue-400" />
+    <div className="max-w-3xl space-y-6">
+      <div className="border-b border-[#1e2436] pb-4">
+        <h1 className="text-2xl font-bold text-white flex items-center gap-3 font-display">
+          <User className="w-6 h-6 text-[#6366f1]" />
           My Profile & Account Settings
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Manage your personal account details, profile picture, and auth password.
+        <p className="text-xs text-[#94a3b8] mt-0.5">
+          Manage your personal user profile, avatar picture, and login password.
         </p>
       </div>
 
       {toastMsg && (
         <div
-          className={`p-4 rounded-2xl border text-sm flex items-center gap-3 ${
+          className={`p-3.5 rounded-lg border text-xs flex items-center gap-3 ${
             toastMsg.type === 'success'
               ? 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
               : 'bg-red-950/80 border-red-800 text-red-200'
           }`}
         >
           {toastMsg.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
           )}
           <span>{toastMsg.text}</span>
         </div>
       )}
 
-      {/* Account Info Card */}
-      <div className="p-8 rounded-3xl bg-slate-900/70 border border-slate-800 space-y-6 shadow-xl">
-        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-slate-800">
-          <div className="relative w-20 h-20 rounded-3xl overflow-hidden bg-slate-800 border border-slate-700 shrink-0 flex items-center justify-center text-2xl font-extrabold text-white shadow-lg">
+      {/* Account Profile Card */}
+      <div className="p-6 rounded-xl bg-[#0f121d] border-2 border-[#1e2436] space-y-6">
+        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-[#1e2436]">
+          <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#161a29] border-2 border-[#1e2436] shrink-0 flex items-center justify-center text-xl font-bold text-white shadow-md">
             {avatarUrl || profile?.avatar_url ? (
               <Image
                 src={avatarUrl || profile?.avatar_url}
@@ -124,26 +124,26 @@ export default function MyProfilePage() {
           </div>
 
           <div className="text-center sm:text-left space-y-1">
-            <h2 className="text-xl font-bold text-white">{profile?.full_name || 'My Profile'}</h2>
-            <p className="text-xs text-slate-400">{profile?.email}</p>
+            <h2 className="text-lg font-bold text-white font-display">{profile?.full_name || 'My Account'}</h2>
+            <p className="text-xs text-[#94a3b8]">{profile?.email}</p>
 
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-950 text-blue-400 border border-blue-800 flex items-center gap-1">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#6366f1] text-white border border-[#4f46e5] flex items-center gap-1">
                 <Shield className="w-3 h-3" />
                 {profile?.role || 'editor'}
               </span>
 
-              <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 flex items-center gap-1">
-                <Building className="w-3 h-3 text-slate-400" />
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#161a29] text-[#94a3b8] border border-[#1e2436] flex items-center gap-1">
+                <Building className="w-3 h-3 text-[#94a3b8]" />
                 {profile?.community?.name || 'Super Admin (All)'}
               </span>
             </div>
           </div>
         </div>
 
-        <form onSubmit={handleUpdateProfile} className="space-y-5">
+        <form onSubmit={handleUpdateProfile} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
               Full Name
             </label>
             <div className="relative">
@@ -151,16 +151,16 @@ export default function MyProfilePage() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Enter your full name"
+                placeholder="Enter full name"
                 required
-                className="w-full bg-slate-950 text-white placeholder-slate-500 rounded-xl pl-10 pr-4 py-3 text-sm border border-slate-800 focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-9 pr-3.5 py-2 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
               />
-              <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <User className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
               Email Address (Fixed)
             </label>
             <div className="relative">
@@ -168,31 +168,31 @@ export default function MyProfilePage() {
                 type="email"
                 disabled
                 value={profile?.email || ''}
-                className="w-full bg-slate-950/60 text-slate-400 rounded-xl pl-10 pr-4 py-3 text-sm border border-slate-800 cursor-not-allowed"
+                className="w-full bg-[#161a29]/60 text-slate-500 rounded-lg pl-9 pr-3.5 py-2 text-xs border border-[#1e2436] cursor-not-allowed"
               />
-              <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <Mail className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              Profile Picture URL (Avatar)
+            <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
+              Profile Avatar Image URL
             </label>
             <div className="relative">
               <input
-                type="text"
+                type="url"
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
-                placeholder="https://images.unsplash.com/photo-..."
-                className="w-full bg-slate-950 text-white placeholder-slate-500 rounded-xl pl-10 pr-4 py-3 text-sm border border-slate-800 focus:outline-none focus:border-blue-500"
+                placeholder="https://..."
+                className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-9 pr-3.5 py-2 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
               />
-              <ImageIcon className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              Change Auth Password (Optional)
+            <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
+              Auth Password (Optional)
             </label>
             <div className="relative">
               <input
@@ -200,19 +200,19 @@ export default function MyProfilePage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Leave blank to keep existing password"
-                className="w-full bg-slate-950 text-white placeholder-slate-500 rounded-xl pl-10 pr-4 py-3 text-sm border border-slate-800 focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-9 pr-3.5 py-2 text-xs border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
               />
-              <Key className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <Key className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-800 flex justify-end">
+          <div className="pt-4 border-t border-[#1e2436] flex justify-end">
             <button
               type="submit"
               disabled={saving}
-              className="py-3 px-8 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-sm shadow-lg shadow-blue-500/25 hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="brutalist-btn-primary px-6 py-2 rounded-lg text-xs"
             >
-              {saving ? 'Updating Profile...' : 'Save Profile Changes'}
+              {saving ? 'Saving...' : 'Save Profile Changes'}
             </button>
           </div>
         </form>

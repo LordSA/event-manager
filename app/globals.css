@@ -1,20 +1,125 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* -------------------------------------------------------------------------
+   Custom Font Declarations (Quera, Gued, Rondured)
+   ------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Quera';
+  src: url('/fonts/Quera.woff2') format('woff2'),
+       url('/fonts/Quera.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
+@font-face {
+  font-family: 'Gued';
+  src: url('/fonts/Gued.woff2') format('woff2'),
+       url('/fonts/Gued.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@font-face {
+  font-family: 'Rondured';
+  src: url('/fonts/Rondured.woff2') format('woff2'),
+       url('/fonts/Rondured.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* -------------------------------------------------------------------------
+   Design System Tokens & Theme Variables
+   ------------------------------------------------------------------------- */
+:root {
+  --bg-primary: #08090d;
+  --bg-surface: #0f121d;
+  --bg-elevated: #161a29;
+  --border-subtle: #1e2436;
+  --border-strong: #2a334c;
+  --accent-primary: #6366f1;
+  --accent-secondary: #10b981;
+  --text-primary: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --font-display: 'Quera', 'Gued', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Gued', 'Quera', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Rondured', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+/* -------------------------------------------------------------------------
+   Restrained Glassmorphism & Light Brutalism Components
+   ------------------------------------------------------------------------- */
+.brutalist-card {
+  background-color: #0f121d;
+  border: 2px solid #1e2436;
+  box-shadow: 4px 4px 0px 0px rgba(30, 36, 54, 0.9);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brutalist-card:hover {
+  border-color: #6366f1;
+  box-shadow: 4px 4px 0px 0px #6366f1;
+  transform: translate(-2px, -2px);
+}
+
+.brutalist-btn-primary {
+  background-color: #6366f1;
+  color: #ffffff;
+  font-weight: 700;
+  border: 2px solid #4f46e5;
+  box-shadow: 3px 3px 0px 0px #312e81;
+  transition: all 0.15s ease-in-out;
+}
+
+.brutalist-btn-primary:hover {
+  box-shadow: 5px 5px 0px 0px #312e81;
+  transform: translate(-1px, -1px);
+}
+
+.brutalist-btn-secondary {
+  background-color: #0f121d;
+  color: #f8fafc;
+  font-weight: 600;
+  border: 2px solid #1e2436;
+  box-shadow: 3px 3px 0px 0px #161a29;
+  transition: all 0.15s ease-in-out;
+}
+
+.brutalist-btn-secondary:hover {
+  border-color: #6366f1;
+  box-shadow: 4px 4px 0px 0px #6366f1;
+  transform: translate(-1px, -1px);
+}
+
+.glass-panel {
+  background: rgba(15, 18, 29, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(30, 36, 54, 0.8);
+}
+
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
   .scrollbar-hide {
-    -ms-overflow-style: none; 
-    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

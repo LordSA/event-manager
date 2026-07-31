@@ -45,17 +45,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="min-h-screen bg-[#05070E] text-white flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col md:flex-row">
       {/* Desktop Sidebar Navigation */}
-      <aside className="hidden md:flex w-64 bg-slate-950 border-r border-slate-800 p-6 flex-col justify-between shrink-0">
+      <aside className="hidden md:flex w-64 bg-[#0f121d] border-r border-[#1e2436] p-6 flex-col justify-between shrink-0">
         <div className="space-y-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl text-white shadow-lg">
+            <div className="p-2 bg-[#6366f1] border border-[#4f46e5] rounded-lg text-white shadow-[2px_2px_0px_0px_#312e81]">
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-extrabold text-lg text-white">Whats @CEV</h2>
-              <span className="text-[10px] uppercase font-bold text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">
+              <h2 className="font-bold text-base text-white font-display">Whats @CEV</h2>
+              <span className="text-[10px] uppercase font-bold text-white bg-[#6366f1] px-2 py-0.5 rounded border border-[#4f46e5]">
                 {currentRole} Access
               </span>
             </div>
@@ -70,10 +70,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                      ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[3px_3px_0px_0px_#312e81]'
+                      : 'text-[#94a3b8] hover:text-white hover:bg-[#161a29] border-transparent'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -84,10 +84,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </div>
 
-        <div className="pt-6 border-t border-slate-800 space-y-3">
+        <div className="pt-6 border-t border-[#1e2436]">
           <Link
             href="/"
-            className="flex items-center justify-between text-xs text-slate-400 hover:text-white transition-colors"
+            className="flex items-center justify-between text-xs text-[#94a3b8] hover:text-white transition-colors"
           >
             <span>Public Front-End</span>
             <LogOut className="w-3.5 h-3.5" />
@@ -95,8 +95,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Mobile Quick Admin Sub-Navigation Pills */}
-      <div className="flex md:hidden overflow-x-auto p-4 gap-2 border-b border-slate-800/80 bg-slate-950/60 no-scrollbar">
+      {/* Mobile Sub-Navigation */}
+      <div className="flex md:hidden overflow-x-auto p-3 gap-2 border-b border-[#1e2436] bg-[#0f121d] no-scrollbar">
         {navItems.map((item) => {
           if (!item.roleRequired.includes(currentRole)) return null;
           const isActive = pathname === item.href;
@@ -105,10 +105,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all ${
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 border ${
                 isActive
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                  : 'bg-slate-900 text-slate-400 border border-slate-800'
+                  ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[2px_2px_0px_0px_#312e81]'
+                  : 'bg-[#161a29] text-[#94a3b8] border-[#1e2436]'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -119,7 +119,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* Main Admin Content */}
-      <main className="flex-1 p-4 sm:p-6 md:p-10 pb-24 md:pb-10 overflow-y-auto">
+      <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
         {children}
       </main>
     </div>
