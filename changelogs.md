@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.44.0] - 2026-07-31
+
+### 🛠️ Postgres UUID Syntax Error Fix on Slug Routing
+- **Isolated Slug & UUID Queries ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Resolved `invalid input syntax for type uuid: "test"` error by separating UUID vs non-UUID string query paths. For non-UUID slugs (such as `test` or `codesprint-2026`), queries search `.eq('slug', eventId)` and `.ilike('title', eventId)` without triggering Postgres type casting exceptions.
+
+---
+
 ## [0.43.0] - 2026-07-31
 
 ### 🔗 Main Landing Page & Community Detail Page Slug Routing

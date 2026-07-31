@@ -72,22 +72,38 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         const supabase = createClient();
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(eventId);
 
-        let query = supabase
-          .from('events')
-          .select('*, community:communities(name, logo_url)');
+        let data = null;
 
         if (isUuid) {
-          query = query.eq('id', eventId);
+          const res = await supabase
+            .from('events')
+            .select('*, community:communities(name, logo_url)')
+            .eq('id', eventId)
+            .maybeSingle();
+          data = res.data;
         } else {
-          query = query.or(`slug.eq.${eventId},id.eq.${eventId}`);
+          const resBySlug = await supabase
+            .from('events')
+            .select('*, community:communities(name, logo_url)')
+            .eq('slug', eventId)
+            .maybeSingle();
+          data = resBySlug.data;
+
+          if (!data) {
+            const resByTitle = await supabase
+              .from('events')
+              .select('*, community:communities(name, logo_url)')
+              .ilike('title', eventId)
+              .maybeSingle();
+            data = resByTitle.data;
+          }
         }
 
-        const { data, error } = await query.maybeSingle();
-
-        if (!error && data) {
+        if (data) {
           setEventData(data);
         }
-      } catch {
+      } catch (err) {
+        console.error('Error fetching event detail:', err);
       } finally {
         setLoading(false);
       }
