@@ -254,7 +254,20 @@ export default function MyProfilePage() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-[#1e2436] flex justify-end">
+          <div className="pt-4 border-t border-[#1e2436] flex items-center justify-between">
+            <button
+              type="button"
+              onClick={async () => {
+                const { createClient } = await import('@/lib/supabase/client');
+                const supabase = createClient();
+                await supabase.auth.signOut();
+                window.location.href = '/login';
+              }}
+              className="px-4 py-2 rounded-lg bg-red-950/60 border border-red-800 text-red-300 text-xs font-semibold hover:bg-red-900/60 transition-colors"
+            >
+              Sign Out Account
+            </button>
+
             <button
               type="submit"
               disabled={saving || uploading}

@@ -4,6 +4,18 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.24.0] - 2026-07-31
+
+### 🔑 Single Dashboard Button Architecture, Sign-Out Engine & Middleware Routing
+- **Navbar Duplicate Link Fix ([app/components/Navbar.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/components/Navbar.tsx)):** Removed `Dashboard` from the `navLinks` array to eliminate duplicate links; navbar pill links remain strictly public (`Home`, `Calendar`, `Events`, `Communities`).
+- **Conditional CTA Button Behavior:**
+  - Logged-in Admins/Managers: Displays **`Dashboard ->`** button (`/admin`).
+  - Unauthenticated Visitors: Displays **`Calendar ->`** CTA button (`/calendar`) with a subtle `Log In` link.
+- **Sign Out Engine ([app/admin/layout.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/layout.tsx) & [app/admin/profile/page.tsx](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/app/admin/profile/page.tsx)):** Added explicit Sign Out buttons calling `supabase.auth.signOut()`.
+- **Root Middleware Setup ([middleware.ts](file:///c:/Users/shibi/Desktop/Work/event-m/event-manager/middleware.ts)):** Created root Next.js `middleware.ts` delegating to `@/lib/supabase/middleware` for cookie session refresh and role-based `/admin` route protection.
+
+---
+
 ## [0.23.0] - 2026-07-31
 
 ### 🛠️ Comprehensive Site Audit, Navbar Polish & Google Calendar Overhaul

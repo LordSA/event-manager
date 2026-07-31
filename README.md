@@ -15,7 +15,7 @@ In campus environments and multi-organization setups, event information is often
 - **Framework:** Next.js 16 (App Router)
 - **Styling & Theme:** Tailwind CSS v4 + Obsidian Dark Palette (`#08090d`, `#0f121d`, `#6366f1`)
 - **Typography:** Custom Font Engine (`Quera`, `Gued`, `Rondured`) configured via `next/font/local` for zero CLS and preloaded web fonts.
-- **Database & Auth:** Supabase PostgreSQL & Auth with Dual Login Modes (Password + 6-Digit Email OTP).
+- **Database & Auth:** Supabase PostgreSQL & Auth with Dual Login Modes (Password + 6-Digit Email OTP) + One-Click Sign Out.
 - **Storage Engine:** Vercel Blob Storage (`@vercel/blob`) with client-side WebP auto-compression.
 
 ---

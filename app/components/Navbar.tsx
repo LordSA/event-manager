@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { X, ArrowRight } from "lucide-react"
+import { X, ArrowRight, UserCheck, LogIn } from "lucide-react"
 import { usePathname } from "next/navigation"
 import gsap from "gsap"
 import { createClient } from "@/lib/supabase/client"
@@ -86,16 +86,13 @@ export default function Navbar() {
     return () => ctx.revert()
   }, [])
 
+  // Public Nav Links ONLY - Never duplicate Dashboard here
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Calendar", href: "/calendar" },
     { name: "Events", href: "/events" },
     { name: "Communities", href: "/community" },
   ]
-
-  if (session) {
-    navLinks.push({ name: "Dashboard", href: "/admin" })
-  }
 
   return (
     <nav
@@ -153,9 +150,20 @@ export default function Navbar() {
             ))}
 
             {!loading && (
-              <div className="nav-item pl-4">
+              <div className="nav-item pl-4 flex items-center space-x-3">
+                {/* Subtle Manager Log In link if not logged in */}
+                {!session && (
+                  <Link
+                    href="/login"
+                    className="text-xs font-semibold uppercase tracking-wider text-[#94a3b8] hover:text-white transition-colors px-3 py-1.5"
+                  >
+                    Log In
+                  </Link>
+                )}
+
+                {/* Main Action CTA Button */}
                 <Link
-                  href={session ? "/admin" : "/login"}
+                  href={session ? "/admin" : "/calendar"}
                   className="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-semibold text-white rounded-full bg-gradient-to-br from-[#6366f1] to-[#4f46e5] shadow-md hover:shadow-[0_10px_25px_rgba(99,102,241,0.45)] hover:-translate-y-0.5 transition-all duration-300"
                 >
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#818cf8] to-[#6366f1] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -164,7 +172,7 @@ export default function Navbar() {
                   <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-full pointer-events-none" />
 
                   <span className="relative flex items-center gap-2 text-xs tracking-widest uppercase z-10 font-bold">
-                    {session ? "Dashboard" : "Log In"}{" "}
+                    {session ? "Dashboard" : "Calendar"}{" "}
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
@@ -229,17 +237,29 @@ export default function Navbar() {
               </div>
             </div>
 
-            <Link
-              href={session ? "/admin" : "/login"}
-              onClick={() => setIsOpen(false)}
-              className="group flex flex-col text-left"
-            >
-              <p className="text-[#94a3b8] text-[10px] md:text-xs font-bold tracking-widest uppercase mb-2">CEV Event Manager</p>
-              <span className="text-3xl md:text-5xl font-bold flex items-center gap-4 md:gap-6 group-hover:text-[#6366f1] transition-colors font-display">
-                {session ? "Dashboard" : "Log In"}{" "}
-                <ArrowRight className="h-7 w-7 md:h-10 md:w-10 group-hover:translate-x-4 transition-transform text-[#6366f1]" />
-              </span>
-            </Link>
+            <div className="flex flex-col space-y-3">
+              <Link
+                href={session ? "/admin" : "/calendar"}
+                onClick={() => setIsOpen(false)}
+                className="group flex flex-col text-left"
+              >
+                <p className="text-[#94a3b8] text-[10px] md:text-xs font-bold tracking-widest uppercase mb-2">CEV Event Manager</p>
+                <span className="text-3xl md:text-5xl font-bold flex items-center gap-4 md:gap-6 group-hover:text-[#6366f1] transition-colors font-display">
+                  {session ? "Dashboard" : "Calendar"}{" "}
+                  <ArrowRight className="h-7 w-7 md:h-10 md:w-10 group-hover:translate-x-4 transition-transform text-[#6366f1]" />
+                </span>
+              </Link>
+
+              {!session && (
+                <Link
+                  href="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="text-xs font-bold text-[#6366f1] uppercase tracking-widest hover:underline pt-2 flex items-center gap-1.5"
+                >
+                  <LogIn className="w-3.5 h-3.5" /> Manager Portal Login
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>

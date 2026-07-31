@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, Users, Calendar, Building, LayoutDashboard, User, LogOut } from 'lucide-react';
+import { Shield, Users, Calendar, Building, LayoutDashboard, User, LogOut, ExternalLink } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { createClient } from '@/lib/supabase/client';
 
@@ -34,6 +34,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     fetchUserRole();
   }, []);
+
+  const handleSignOut = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      window.location.href = '/login';
+    } catch {
+      window.location.href = '/login';
+    }
+  };
 
   const navItems = [
     { label: 'Overview', href: '/admin', icon: LayoutDashboard, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
@@ -84,38 +94,56 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </div>
 
-        <div className="pt-6 border-t border-[#1e2436]">
+        <div className="pt-6 border-t border-[#1e2436] space-y-2">
           <Link
             href="/"
             className="flex items-center justify-between text-xs text-[#94a3b8] hover:text-white transition-colors py-2 px-1 font-semibold"
           >
             <span>Public Front-End</span>
-            <LogOut className="w-3.5 h-3.5" />
+            <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
           </Link>
+
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center justify-between text-xs text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded-lg py-2 px-1 font-semibold transition-colors"
+          >
+            <span>Sign Out</span>
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
         </div>
       </aside>
 
       {/* Mobile Sub-Navigation Header */}
-      <div className="flex md:hidden overflow-x-auto pt-4 pb-3 px-4 gap-2 border-b border-[#1e2436] bg-[#0f121d] scrollbar-hide shrink-0">
-        {navItems.map((item) => {
-          if (!item.roleRequired.includes(currentRole)) return null;
-          const isActive = pathname === item.href;
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold shrink-0 border ${
-                isActive
-                  ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[2px_2px_0px_0px_#312e81]'
-                  : 'bg-[#161a29] text-[#94a3b8] border-[#1e2436]'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span className="font-heading">{item.label}</span>
-            </Link>
-          );
-        })}
+      <div className="flex md:hidden items-center justify-between overflow-x-auto pt-4 pb-3 px-4 gap-2 border-b border-[#1e2436] bg-[#0f121d] scrollbar-hide shrink-0">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+          {navItems.map((item) => {
+            if (!item.roleRequired.includes(currentRole)) return null;
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold shrink-0 border ${
+                  isActive
+                    ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[2px_2px_0px_0px_#312e81]'
+                    : 'bg-[#161a29] text-[#94a3b8] border-[#1e2436]'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span className="font-heading">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={handleSignOut}
+          className="p-2 rounded-lg bg-red-950/60 border border-red-800 text-red-300 text-xs shrink-0 flex items-center gap-1 font-semibold"
+          title="Sign Out"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+        </button>
       </div>
 
       {/* Main Admin Content Container */}

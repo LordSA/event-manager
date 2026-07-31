@@ -12,6 +12,7 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 ### Framework & Runtime
 * **Framework:** Next.js 16 (App Router)
 * **Runtime:** Node.js with React 19 & TypeScript 5
+* **Middleware:** Root `middleware.ts` & `proxy.ts` updating Supabase cookies and enforcing role permissions.
 * **Styling:** Tailwind CSS v4 with Dark Design System combining Restrained Glassmorphism & Light Brutalism
 * **Typography:** `next/font/local` font optimization (`Quera`, `Gued`, `Rondured`) — zero CLS & preloaded fonts.
 
@@ -56,7 +57,7 @@ event-manager/
 │   │   └── callback/
 │   │       └── route.ts           # Supabase Auth code exchange handler
 │   ├── admin/
-│   │   ├── layout.tsx             # Protected Admin layout with role-based navigation sidebar
+│   │   ├── layout.tsx             # Protected Admin layout with role-based navigation sidebar & sign-out
 │   │   ├── page.tsx               # Admin Dashboard overview metrics
 │   │   ├── communities/
 │   │   │   └── page.tsx           # Community Entity Management with logo WebP upload & slug editing
@@ -71,7 +72,7 @@ event-manager/
 │   │   ├── EventAiDrawer.tsx      # Event Assistant slide-over drawer
 │   │   ├── GoogleCalendarView.tsx # Google Calendar component (Month/Week/Day time-grid views)
 │   │   ├── MasterCalendar.tsx     # Master event list timeline
-│   │   ├── Navbar.tsx             # TownVibes navbar with logo loading fallback & body scroll lock
+│   │   ├── Navbar.tsx             # Floating navbar with single Dashboard CTA button & Calendar fallback
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
 │   │   ├── page.tsx               # Public events directory
@@ -81,6 +82,7 @@ event-manager/
 │   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Authentication page with navbar clearance
 │   ├── page.tsx                   # Public landing page with Quera/Gued font typography and brutalist tokens
 │   └── layout.tsx                 # Root layout with next/font/local (Quera, Gued, Rondured)
+├── middleware.ts                  # Root Next.js middleware routing for session refresh & admin security
 ├── fonts/                         # Custom font binaries (.otf, .ttf)
 ├── lib/
 │   ├── auth/

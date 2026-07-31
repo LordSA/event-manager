@@ -43,10 +43,12 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 ## 5. Navigation & Asset Upload Architecture
 
 ### Header Navigation (`app/components/Navbar.tsx`)
-* **Floating Glass Pill Design:** Dynamic scroll detection (`window.scrollY > 20`) transitioning from `py-6 px-4` to `py-3 px-10` with a floating rounded pill backdrop (`rounded-[2rem] bg-[#0f121d]/90 backdrop-blur-xl border border-[#1e2436]`).
-* **Logo Alignment Engine:** Flexible logo box with error fallback logic (`setLogoFailed`) preventing layout shifts if image loading fails.
+* **Single CTA Button Architecture:** Navbar pill links are strictly public (`Home`, `Calendar`, `Events`, `Communities`). `Dashboard` is NEVER duplicated in nav links.
+* **Authentication Role Display:**
+  - **Logged-in Users / Admins:** Displays **`Dashboard`** right CTA button (`href="/admin"`).
+  - **Unauthenticated Visitors:** Displays **`Calendar`** right CTA button (`href="/calendar"`) with a subtle `Log In` link (`href="/login"`).
+* **Logo Alignment Engine:** Flexible logo box with error fallback logic (`setLogoFailed`) preventing layout shifts.
 * **Body Scroll Locking:** Automatically locks background body scroll (`overflow: hidden`) when the full-screen mobile menu drawer is open.
-* **GSAP Entrance Animations:** GSAP context animations for `.nav-logo` and `.nav-item` stagger entrance on component mount.
 
 ### Image Asset Storage Engine (`@vercel/blob` + `/api/upload` API Route)
 * **Vercel Blob Storage Integration:** Images (posters, community logos, user avatars) uploaded via `/api/upload` route using `@vercel/blob`.
