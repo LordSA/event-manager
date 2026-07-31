@@ -4,6 +4,13 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.41.0] - 2026-07-31
+
+### 🛠️ Supabase Schema Cache Missing Column Retry Fix
+- **Adaptive Payload Retry ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Resolved `Could not find the 'perks' column of 'events' in the schema cache` error by removing un-cached optional fields and automatically retrying database inserts/updates. Ensures `poster_url`, `venue`, and all core event details save reliably to Supabase.
+
+---
+
 ## [0.40.0] - 2026-07-31
 
 ### 🖼️ Default Poster Image Fallback & Supabase Error Handling

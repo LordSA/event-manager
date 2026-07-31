@@ -245,7 +245,7 @@ export default function EventBookingEnginePage() {
 
         setEventsList(eventsList.map((e) => (e.id === editingEvent.id ? updatedEvt : e)));
 
-        const { error: updateErr } = await supabase.from('events').update({
+        const eventPayload: any = {
           title,
           category: finalCategory,
           event_date: startDate,
@@ -254,10 +254,17 @@ export default function EventBookingEnginePage() {
           status,
           description: desc,
           system_prompt: aiSystemPrompt,
-          perks: perks.trim() || null,
           poster_url: posterUrl || null,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
-        }).eq('id', editingEvent.id);
+        };
+
+        let { error: updateErr } = await supabase.from('events').update(eventPayload).eq('id', editingEvent.id);
+
+        if (updateErr && updateErr.message.includes('schema cache')) {
+          delete eventPayload.perks;
+          const retry = await supabase.from('events').update(eventPayload).eq('id', editingEvent.id);
+          updateErr = retry.error;
+        }
 
         if (updateErr) {
           throw new Error(updateErr.message);
@@ -281,7 +288,7 @@ export default function EventBookingEnginePage() {
           system_prompt: aiSystemPrompt,
         };
 
-        const { data: insertedData, error: insertErr } = await supabase.from('events').insert({
+        const insertPayload: any = {
           title,
           category: finalCategory,
           event_date: startDate,
@@ -290,11 +297,19 @@ export default function EventBookingEnginePage() {
           status,
           description: desc,
           system_prompt: aiSystemPrompt,
-          perks: perks.trim() || null,
           poster_url: posterUrl || null,
           slug: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
-        }).select();
+        };
+
+        let { data: insertedData, error: insertErr } = await supabase.from('events').insert(insertPayload).select();
+
+        if (insertErr && insertErr.message.includes('schema cache')) {
+          delete insertPayload.perks;
+          const retry = await supabase.from('events').insert(insertPayload).select();
+          insertedData = retry.data;
+          insertErr = retry.error;
+        }
 
         if (insertErr) {
           throw new Error(insertErr.message);
