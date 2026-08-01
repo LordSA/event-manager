@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
 import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { ArrowLeft, Calendar, MessageSquare } from "lucide-react";
@@ -12,10 +13,26 @@ interface PageParams {
 export default function SingleCommunityPage({ params }: { params: Promise<PageParams> }) {
   const resolvedParams = use(params);
   const communityId = resolvedParams.id;
+  const router = useRouter();
 
   const [community, setCommunity] = useState<any>(null);
   const [communityEvents, setCommunityEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (typeof window !== 'undefined' && window.history.length > 1 && document.referrer) {
+      try {
+        const refUrl = new URL(document.referrer);
+        if (refUrl.origin === window.location.origin) {
+          router.back();
+          return;
+        }
+      } catch {
+      }
+    }
+    router.push('/community');
+  };
 
   useEffect(() => {
     const fetchCommunityData = async () => {
@@ -88,10 +105,15 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
         <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-r ${community.color || 'from-blue-600 to-cyan-400'} opacity-20 blur-[120px] -z-10`} />
 
         <div className="max-w-4xl mx-auto px-6 text-center space-y-4">
-          <Link href="/community" className="inline-flex items-center space-x-2 text-xs text-slate-400 hover:text-white transition-colors mb-2">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>All Communities</span>
-          </Link>
+          <div className="flex items-center justify-start text-left mb-2">
+            <button
+              onClick={handleBackClick}
+              className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </button>
+          </div>
 
           {community.logo_url ? (
             <img

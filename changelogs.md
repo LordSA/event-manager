@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.51.0] - 2026-08-01
+
+### ⬅️ Simplified "Back" Navigation Button & Referrer Redirection
+- **Standardized "Back" Label ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx), [app/community/[id]/page.tsx](./app/community/[id]/page.tsx)):** Simplified the navigation button text on all event and community slug pages to purely `"Back"`.
+- **Referrer Redirection (`router.back()`):** Configured click handlers on both detail pages to execute `router.back()` if internal history exists, returning users directly to whatever page they originated from.
+
+---
+
 ## [0.50.0] - 2026-08-01
 
 ### 🖼️ Community Page Subpage Link Fix & Logo Header Integration

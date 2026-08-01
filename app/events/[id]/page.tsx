@@ -75,37 +75,19 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [eventData, setEventData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
-  const [backLabel, setBackLabel] = useState('Back to All Events');
-  const [hasHistory, setHasHistory] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && document.referrer) {
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (typeof window !== 'undefined' && window.history.length > 1 && document.referrer) {
       try {
         const refUrl = new URL(document.referrer);
         if (refUrl.origin === window.location.origin) {
-          setHasHistory(true);
-          if (refUrl.pathname === '/' || refUrl.pathname === '') {
-            setBackLabel('Back to Home');
-          } else if (refUrl.pathname.startsWith('/community')) {
-            setBackLabel('Back to Community');
-          } else if (refUrl.pathname.startsWith('/events')) {
-            setBackLabel('Back to All Events');
-          } else {
-            setBackLabel('Back to Previous Page');
-          }
+          router.back();
+          return;
         }
       } catch {
       }
     }
-  }, []);
-
-  const handleBackClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (hasHistory) {
-      router.back();
-    } else {
-      router.push('/events');
-    }
+    router.push('/events');
   };
 
   useEffect(() => {
@@ -189,7 +171,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           className="inline-flex items-center space-x-2 text-xs font-semibold text-[#94a3b8] hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>{backLabel}</span>
+          <span>Back</span>
         </button>
 
         <div className="brutalist-card p-6 sm:p-10 rounded-2xl space-y-8 relative overflow-hidden">
