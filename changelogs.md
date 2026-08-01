@@ -4,6 +4,22 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.50.0] - 2026-08-01
+
+### 🖼️ Community Page Subpage Link Fix & Logo Header Integration
+- **Community Directory Page ([app/community/page.tsx](./app/community/page.tsx)):** Updated community cards to redirect directly to their community showcase subpages (`/community/${comm.slug || comm.id}`) instead of redirecting to the filtered event directory.
+- **Showcase Header Logo ([app/community/[id]/page.tsx](./app/community/[id]/page.tsx)):** Rendered official community logo images (`community.logo_url`) in the community subpage header with fallback to gradient initial badges.
+
+---
+
+## [0.49.0] - 2026-08-01
+
+### 🔗 Full Home Page Card Redirection & Community Subpage Badges
+- **Full Event Card Navigation ([app/page.tsx](./app/page.tsx)):** Wrapped the entire featured event cards on the home page in full `<Link>` components, matching the interaction pattern of community showcase pages.
+- **Clickable Community Badges:** Clicking the community name on any event card on the home page now redirects straight to `/community/${community_slug || community_id}`.
+
+---
+
 ## [0.48.0] - 2026-08-01
 
 ### 🔗 Community Card Redirection & Smart Back Button Navigation

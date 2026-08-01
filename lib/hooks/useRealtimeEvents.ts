@@ -42,7 +42,7 @@ export function useRealtimeEvents() {
       const supabase = createClient();
       const { data, error } = await supabase
         .from('events')
-        .select('*, community:communities(name)')
+        .select('*, community:communities(id, name, slug)')
         .order('event_date', { ascending: true });
 
       if (!error && data) {
@@ -51,6 +51,8 @@ export function useRealtimeEvents() {
           title: item.title,
           category: item.category || 'workshop',
           community: item.community?.name || 'CEV Community',
+          community_id: item.community_id || item.community?.id || null,
+          community_slug: item.community?.slug || item.community_id || item.community?.id || null,
           date: item.event_date,
           time_slot: formatTimeSlotTo12Hr(item.time_slot),
           description: item.description || '',

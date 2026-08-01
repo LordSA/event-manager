@@ -125,25 +125,37 @@ export default function LandingHomePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {eventsList.slice(0, 3).map((evt) => (
-                <div
+                <Link
                   key={evt.id}
-                  className="brutalist-card p-5 rounded-xl flex flex-col justify-between space-y-4"
+                  href={`/events/${evt.slug || evt.id}`}
+                  className="brutalist-card p-5 rounded-xl flex flex-col justify-between space-y-4 hover:border-[#6366f1] transition-all cursor-pointer group"
                 >
                   <div className="space-y-2">
                     <span className="text-[10px] font-mono uppercase font-bold text-[#6366f1] bg-[#161a29] px-2 py-0.5 rounded border border-[#1e2436]">
                       {evt.category}
                     </span>
-                    <h3 className="text-lg font-bold text-white mt-1 font-heading">{evt.title}</h3>
+                    <h3 className="text-lg font-bold text-white mt-1 font-heading group-hover:text-[#6366f1] transition-colors">{evt.title}</h3>
                     <p className="text-xs text-[#94a3b8] line-clamp-2">{evt.description}</p>
                   </div>
 
                   <div className="pt-3 border-t border-[#1e2436] flex items-center justify-between text-xs text-[#94a3b8]">
-                    <span>{evt.community}</span>
-                    <Link href={`/events/${evt.slug || evt.id}`} className="text-[#6366f1] font-semibold hover:underline flex items-center gap-1">
+                    <span
+                      onClick={(e) => {
+                        if ((evt as any).community_slug || (evt as any).community_id) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          window.location.href = `/community/${(evt as any).community_slug || (evt as any).community_id}`;
+                        }
+                      }}
+                      className="hover:text-white hover:underline cursor-pointer transition-colors"
+                    >
+                      {evt.community}
+                    </span>
+                    <span className="text-[#6366f1] font-semibold group-hover:underline flex items-center gap-1">
                       Details &rarr;
-                    </Link>
+                    </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

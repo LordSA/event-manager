@@ -20,6 +20,8 @@ export interface EventItemData {
   description?: string;
   status?: 'closed' | 'live';
   slug?: string;
+  community_id?: string;
+  community_slug?: string;
 }
 
 function formatSingleTime12(t: string): string {

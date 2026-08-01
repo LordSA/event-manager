@@ -48,7 +48,11 @@ export default function CommunityPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCommunities.map((comm) => (
-              <div key={comm.id} className="brutalist-card p-6 rounded-xl space-y-4 flex flex-col justify-between">
+              <Link
+                key={comm.id}
+                href={`/community/${comm.slug || comm.id}`}
+                className="brutalist-card p-6 rounded-xl space-y-4 flex flex-col justify-between hover:border-[#6366f1] transition-all cursor-pointer group"
+              >
                 <div className="space-y-4">
                   <div className="flex items-center space-x-4">
                     {comm.logo_url ? (
@@ -65,7 +69,7 @@ export default function CommunityPage() {
                       </div>
                     )}
                     <div>
-                      <h2 className="text-xl font-bold text-white font-display">{comm.name}</h2>
+                      <h2 className="text-xl font-bold text-white font-display group-hover:text-[#6366f1] transition-colors">{comm.name}</h2>
                       <span className="text-[10px] font-mono text-[#94a3b8]">
                         slug: {comm.slug || comm.name.toLowerCase().replace(/\s+/g, '-')}
                       </span>
@@ -79,14 +83,11 @@ export default function CommunityPage() {
 
                 <div className="pt-4 border-t border-[#1e2436] flex items-center justify-between">
                   <span className="text-[11px] font-mono text-[#94a3b8]">Organization</span>
-                  <Link
-                    href={`/events?community=${encodeURIComponent(comm.name)}`}
-                    className="text-xs font-semibold text-[#6366f1] hover:underline"
-                  >
-                    View Events &rarr;
-                  </Link>
+                  <span className="text-xs font-semibold text-[#6366f1] group-hover:underline">
+                    Explore Community &rarr;
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
 
             {filteredCommunities.length === 0 && (

@@ -93,11 +93,20 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
             <span>All Communities</span>
           </Link>
 
-          <div className={`w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br ${community.color || 'from-blue-600 to-cyan-400'} flex items-center justify-center shadow-2xl`}>
-            <span className="text-4xl font-bold text-white">
-              {community.initials || community.name.slice(0, 2).toUpperCase()}
-            </span>
-          </div>
+          {community.logo_url ? (
+            <img
+              src={community.logo_url}
+              alt={community.name}
+              className="w-24 h-24 mx-auto rounded-3xl object-cover border-2 border-[#1e2436] shadow-2xl"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+            />
+          ) : (
+            <div className={`w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br ${community.color || 'from-blue-600 to-cyan-400'} flex items-center justify-center shadow-2xl`}>
+              <span className="text-4xl font-bold text-white">
+                {community.initials || community.name.slice(0, 2).toUpperCase()}
+              </span>
+            </div>
+          )}
 
           <h1 className="text-5xl font-extrabold">{community.name}</h1>
           <p className="text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto">
