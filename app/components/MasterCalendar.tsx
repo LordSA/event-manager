@@ -71,24 +71,24 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[#1e2436] pb-4">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <CalendarIcon className="w-5 h-5 text-neutral-400" />
-            Master Event List
+          <h2 className="text-xl font-bold text-white flex items-center gap-2 font-display">
+            <CalendarIcon className="w-5 h-5 text-[#6366f1]" />
+            Event List
           </h2>
-          <p className="text-xs text-neutral-400 mt-0.5">
+          <p className="text-xs text-[#94a3b8] mt-0.5">
             Filter and browse all scheduled community events.
           </p>
         </div>
 
-        <div className="flex items-center space-x-1 p-1 rounded-lg bg-neutral-900 border border-neutral-800">
+        <div className="flex items-center space-x-1 p-1 rounded-xl bg-[#0f121d] border border-[#1e2436]">
           <button
             onClick={() => setActiveTab('list')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center space-x-2 transition-colors ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-2 transition-all ${
               activeTab === 'list'
-                ? 'bg-neutral-800 text-white font-semibold'
-                : 'text-neutral-400 hover:text-white'
+                ? 'bg-[#6366f1] text-white font-bold shadow-md border border-[#4f46e5]'
+                : 'text-[#94a3b8] hover:text-white'
             }`}
           >
             <ListFilter className="w-3.5 h-3.5" />
@@ -97,10 +97,10 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
 
           <button
             onClick={() => setActiveTab('community')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center space-x-2 transition-colors ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-2 transition-all ${
               activeTab === 'community'
-                ? 'bg-neutral-800 text-white font-semibold'
-                : 'text-neutral-400 hover:text-white'
+                ? 'bg-[#6366f1] text-white font-bold shadow-md border border-[#4f46e5]'
+                : 'text-[#94a3b8] hover:text-white'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -113,10 +113,10 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
         <div className="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-hide">
           <button
             onClick={() => setSelectedCommunity('all')}
-            className={`px-3 py-1 rounded-md text-xs font-medium shrink-0 transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-colors ${
               selectedCommunity === 'all'
-                ? 'bg-white text-black font-semibold'
-                : 'bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white'
+                ? 'bg-[#6366f1] text-white font-bold border border-[#4f46e5]'
+                : 'bg-[#161a29] border border-[#1e2436] text-[#94a3b8] hover:text-white'
             }`}
           >
             All Communities
@@ -125,10 +125,10 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
             <button
               key={c.id}
               onClick={() => setSelectedCommunity(c.name)}
-              className={`px-3 py-1 rounded-md text-xs font-medium shrink-0 transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-colors ${
                 selectedCommunity.toLowerCase() === c.name.toLowerCase()
-                  ? 'bg-white text-black font-semibold'
-                  : 'bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white'
+                  ? 'bg-[#6366f1] text-white font-bold border border-[#4f46e5]'
+                  : 'bg-[#161a29] border border-[#1e2436] text-[#94a3b8] hover:text-white'
               }`}
             >
               {c.name}
@@ -139,19 +139,20 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredEvents.length === 0 ? (
-          <div className="col-span-full p-12 text-center text-neutral-500 text-xs bg-[#121212] border border-neutral-800 rounded-xl space-y-1">
-            <p className="font-semibold text-neutral-300">No scheduled events found.</p>
-            <p className="text-xs">No slot bookings match the selected community filter.</p>
+          <div className="col-span-full p-12 text-center text-[#94a3b8] text-xs bg-[#0f121d] border border-[#1e2436] rounded-2xl space-y-1">
+            <p className="font-semibold text-white text-sm">No scheduled events found.</p>
+            <p className="text-xs text-[#94a3b8]">No slot bookings match the selected community filter.</p>
           </div>
         ) : (
           filteredEvents.map((evt) => (
-            <div
+            <Link
               key={evt.id}
-              className="p-5 rounded-xl bg-[#121212] border border-neutral-800 hover:border-neutral-700 transition-colors space-y-4 flex flex-col justify-between"
+              href={`/events/${evt.slug || evt.id}`}
+              className="brutalist-card p-6 rounded-2xl space-y-4 hover:border-[#6366f1] transition-all cursor-pointer flex flex-col justify-between h-full group"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-mono font-semibold px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-neutral-700">
+                  <span className="text-[10px] uppercase font-mono font-bold px-2.5 py-1 rounded bg-[#161a29] text-[#6366f1] border border-[#1e2436]">
                     {evt.category}
                   </span>
 
@@ -167,42 +168,50 @@ export default function MasterCalendar({ events, communities, isManagerView = fa
                 </div>
 
                 <div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-lg font-bold text-white group-hover:text-[#6366f1] transition-colors font-display">
                     {evt.title}
                   </h3>
                   {evt.description && (
-                    <p className="text-xs text-neutral-400 mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#94a3b8] mt-1 line-clamp-2 leading-relaxed">
                       {generate2LineSummary(evt.description)}
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-neutral-800 space-y-2">
-                <div className="flex items-center justify-between text-xs text-neutral-400">
-                  <span className="font-medium text-neutral-300">{evt.community}</span>
-                  <span className="flex items-center gap-1">
-                    <CalendarIcon className="w-3.5 h-3.5 text-neutral-400" />
+              <div className="pt-3 border-t border-[#1e2436] space-y-2">
+                <div className="flex items-center justify-between text-xs text-[#94a3b8]">
+                  <span
+                    onClick={(e) => {
+                      if (evt.community_slug || evt.community_id) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.location.href = `/community/${evt.community_slug || evt.community_id}`;
+                      }
+                    }}
+                    className="font-medium text-white hover:text-[#6366f1] hover:underline cursor-pointer transition-colors"
+                  >
+                    {evt.community}
+                  </span>
+                  <span className="flex items-center gap-1 font-mono text-[11px]">
+                    <CalendarIcon className="w-3.5 h-3.5 text-[#6366f1]" />
                     {evt.date}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-1">
-                  <span className="text-neutral-300 font-mono text-[11px] flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-neutral-400" />
+                  <span className="text-[#94a3b8] font-mono text-[11px] flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-slate-400" />
                     {formatTimeSlotTo12Hr(evt.time_slot)}
                   </span>
 
-                  <Link
-                    href={`/events/${evt.slug || evt.id}`}
-                    className="text-xs font-semibold text-white hover:underline flex items-center space-x-1"
-                  >
+                  <span className="text-xs font-semibold text-[#6366f1] group-hover:underline flex items-center space-x-1">
                     <span>Details</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
-                  </Link>
+                  </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))
         )}
       </div>

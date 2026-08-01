@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.53.0] - 2026-08-01
+
+### 🎨 Main Event Directory Theme & Card Redirection Upgrade
+- **Main Event Directory ([app/events/page.tsx](./app/events/page.tsx)):** Upgraded page layout to match the active dark brutalist theme (`#08090d`, `#0f121d`, `#161a29`, `#1e2436`, `#6366f1`).
+- **Master Calendar Design & Redirection ([app/components/MasterCalendar.tsx](./app/components/MasterCalendar.tsx)):** Replaced generic neutral cards with full brutalist card components (`brutalist-card`, `hover:border-[#6366f1]`), added full-card link redirection to `/events/${evt.slug || evt.id}`, and enabled clickable community name subpage links (`/community/${evt.community_slug || evt.community_id}`).
+
+---
+
 ## [0.52.0] - 2026-08-01
 
 ### ↩️ History Stack Navigation Proxy & Left-Aligned Back Button Fix
