@@ -274,8 +274,8 @@ export default function UserManagementPage() {
           </h1>
           <p className="text-sm text-slate-400 mt-1">
             {currentUserRole === 'manager'
-              ? 'Add and modify community leads and editors for your assigned organization.'
-              : 'Create, modify, and assign position roles (`dev`, `admin`, `manager`, `editor`) and Auth passwords.'}
+              ? 'Add and modify community leads and editors.'
+              : 'Create, modify, and assign position roles.'}
           </p>
         </div>
 

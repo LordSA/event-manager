@@ -66,7 +66,7 @@ export default function AdminDashboardPage() {
         <p className="text-xs text-[#94a3b8] mt-0.5">
           {isScoped
             ? `Overview metrics, slot reservations, and event status for ${communityName}.`
-            : 'Slot bookings, dynamic RBAC metrics, and multi-community publishing stats.'}
+            : 'Overview of All Campus Events and Communities.'}
         </p>
       </div>
 
@@ -89,7 +89,7 @@ export default function AdminDashboardPage() {
             <Lock className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-3xl font-extrabold text-white font-display">{draftCount}</div>
-          <p className="text-[11px] text-[#94a3b8]">Reserved on master calendar</p>
+          <p className="text-[11px] text-[#94a3b8]">Reserved</p>
         </div>
 
         <div className="brutalist-card p-5 rounded-xl space-y-2">
@@ -154,10 +154,10 @@ export default function AdminDashboardPage() {
           <div className="space-y-2">
             <h3 className="text-base font-bold text-white flex items-center gap-2 font-display">
               <User className="w-4 h-4 text-[#6366f1]" />
-              My Account Profile
+              Profile
             </h3>
             <p className="text-xs text-[#94a3b8] leading-relaxed">
-              Update personal profile name, avatar image picture, and auth password.
+              Update profile info.
             </p>
           </div>
           <Link

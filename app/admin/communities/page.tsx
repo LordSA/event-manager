@@ -203,7 +203,7 @@ export default function CommunitiesManagementPage() {
             Community Management
           </h1>
           <p className="text-xs text-[#94a3b8] mt-0.5">
-            Dev & Admins can create, edit, update slugs, and delete campus community entities.
+            Create or Modify the community data
           </p>
         </div>
 

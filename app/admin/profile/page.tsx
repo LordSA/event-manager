@@ -110,20 +110,19 @@ export default function MyProfilePage() {
       <div className="border-b border-[#1e2436] pb-4">
         <h1 className="text-2xl font-bold text-white flex items-center gap-3 font-display">
           <User className="w-6 h-6 text-[#6366f1]" />
-          My Profile & Account Settings
+          Profile & Account Settings
         </h1>
         <p className="text-xs text-[#94a3b8] mt-0.5">
-          Manage your personal profile details, WebP avatar picture, and password.
+          Manage profile settings.
         </p>
       </div>
 
       {toastMsg && (
         <div
-          className={`p-3.5 rounded-lg border text-xs flex items-center gap-3 ${
-            toastMsg.type === 'success'
-              ? 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
-              : 'bg-red-950/80 border-red-800 text-red-200'
-          }`}
+          className={`p-3.5 rounded-lg border text-xs flex items-center gap-3 ${toastMsg.type === 'success'
+            ? 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
+            : 'bg-red-950/80 border-red-800 text-red-200'
+            }`}
         >
           {toastMsg.type === 'success' ? (
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -189,7 +188,7 @@ export default function MyProfilePage() {
 
           <div>
             <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
-              Email Address (Fixed)
+              Email Address
             </label>
             <div className="relative">
               <input
@@ -205,7 +204,7 @@ export default function MyProfilePage() {
           {/* Profile Picture WebP Upload Section */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider">
-              Profile Avatar (WebP Auto-Compressed Vercel Blob Upload)
+              Profile Pic
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="relative">
@@ -266,7 +265,7 @@ export default function MyProfilePage() {
               }}
               className="px-4 py-2 rounded-lg bg-red-950/60 border border-red-800 text-red-300 text-xs font-semibold hover:bg-red-900/60 transition-colors"
             >
-              Sign Out Account
+              Sign Out
             </button>
 
             <button
