@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users } from 'lucide-react';
 import EventAiDrawer from '@/app/components/EventAiDrawer';
 import { createClient } from '@/lib/supabase/client';
@@ -69,10 +70,43 @@ function refactorDescription3Lines(text: string | null | undefined): string {
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const eventId = resolvedParams.id;
+  const router = useRouter();
 
   const [eventData, setEventData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
+  const [backLabel, setBackLabel] = useState('Back to All Events');
+  const [hasHistory, setHasHistory] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && document.referrer) {
+      try {
+        const refUrl = new URL(document.referrer);
+        if (refUrl.origin === window.location.origin) {
+          setHasHistory(true);
+          if (refUrl.pathname === '/' || refUrl.pathname === '') {
+            setBackLabel('Back to Home');
+          } else if (refUrl.pathname.startsWith('/community')) {
+            setBackLabel('Back to Community');
+          } else if (refUrl.pathname.startsWith('/events')) {
+            setBackLabel('Back to All Events');
+          } else {
+            setBackLabel('Back to Previous Page');
+          }
+        }
+      } catch {
+      }
+    }
+  }, []);
+
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (hasHistory) {
+      router.back();
+    } else {
+      router.push('/events');
+    }
+  };
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -150,13 +184,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="min-h-screen bg-[#08090d] text-[#f8fafc] pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 font-sans relative">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Link
-          href="/events"
-          className="inline-flex items-center space-x-2 text-xs font-semibold text-[#94a3b8] hover:text-white transition-colors"
+        <button
+          onClick={handleBackClick}
+          className="inline-flex items-center space-x-2 text-xs font-semibold text-[#94a3b8] hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to All Events</span>
-        </Link>
+          <span>{backLabel}</span>
+        </button>
 
         <div className="brutalist-card p-6 sm:p-10 rounded-2xl space-y-8 relative overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

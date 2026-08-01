@@ -4,6 +4,15 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.48.0] - 2026-08-01
+
+### 🔗 Community Card Redirection & Smart Back Button Navigation
+- **Home Page Community Redirection ([app/page.tsx](./app/page.tsx)):** Wrapped home page community cards with `<Link href={`/community/${c.slug || c.id}`}>` to enable direct navigation to community subpages.
+- **Smart Referrer Back Button ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Implemented referrer-aware back button navigation. Dynamically updates label (`Back to Home`, `Back to Community`, `Back to All Events`) and executes `router.back()` to return users directly to the originating page.
+- **Isolated Community Slug Lookup ([app/community/[id]/page.tsx](./app/community/[id]/page.tsx)):** Separated UUID vs non-UUID slug queries to prevent Postgres type casting crashes when querying community subpages by slug.
+
+---
+
 ## [0.47.0] - 2026-07-31
 
 ### 💬 AI Assistant Markdown Bold Renderer

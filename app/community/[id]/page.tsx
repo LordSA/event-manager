@@ -22,12 +22,20 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
       try {
         const supabase = createClient();
         
-        // Fetch community record
-        const { data: commData } = await supabase
-          .from("communities")
-          .select("*")
-          .or(`id.eq.${communityId},slug.eq.${communityId}`)
-          .single();
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(communityId);
+        let commData = null;
+
+        if (isUuid) {
+          const res = await supabase.from("communities").select("*").eq("id", communityId).maybeSingle();
+          commData = res.data;
+        } else {
+          const resSlug = await supabase.from("communities").select("*").eq("slug", communityId).maybeSingle();
+          commData = resSlug.data;
+          if (!commData) {
+            const resName = await supabase.from("communities").select("*").ilike("name", communityId).maybeSingle();
+            commData = resName.data;
+          }
+        }
 
         if (commData) {
           setCommunity(commData);

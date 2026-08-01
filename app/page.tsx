@@ -74,7 +74,7 @@ export default function LandingHomePage() {
 
         <section className="space-y-6">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white font-display">Participating Communities</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white font-display">Communities and Clubs</h2>
             <p className="text-[#94a3b8] text-xs mt-1">Student branches and technical chapters at CEV.</p>
           </div>
 
@@ -85,9 +85,10 @@ export default function LandingHomePage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {communities.map((c) => (
-                <div
+                <Link
                   key={c.id}
-                  className="brutalist-card p-5 rounded-xl flex flex-col space-y-2"
+                  href={`/community/${c.slug || c.id}`}
+                  className="brutalist-card p-5 rounded-xl flex flex-col space-y-2 hover:border-[#6366f1] transition-all cursor-pointer group"
                 >
                   {c.logo_url ? (
                     <img
@@ -101,9 +102,9 @@ export default function LandingHomePage() {
                       {c.initials || c.name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
-                  <h3 className="font-bold text-white text-sm mt-1 font-heading">{c.name}</h3>
+                  <h3 className="font-bold text-white text-sm mt-1 font-heading group-hover:text-[#6366f1] transition-colors">{c.name}</h3>
                   <p className="text-xs text-[#94a3b8] line-clamp-2">{c.description || 'Campus community.'}</p>
-                </div>
+                </Link>
               ))}
             </div>
           )}
