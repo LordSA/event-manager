@@ -4,6 +4,14 @@ All notable changes and structural milestones for **Whats @CEV / Event Manager**
 
 ---
 
+## [0.52.0] - 2026-08-01
+
+### ↩️ History Stack Navigation Proxy & Left-Aligned Back Button Fix
+- **Unrestricted `router.back()` History Proxy ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx), [app/community/[id]/page.tsx](./app/community/[id]/page.tsx)):** Removed strict `document.referrer` checks so client-side SPA transitions seamlessly execute `router.back()` to return users directly to their exact originating page (Home, Community Showcase, Events Directory, or Calendar).
+- **Left-Aligned Back Button ([app/community/[id]/page.tsx](./app/community/[id]/page.tsx)):** Moved the `"Back"` button to the top left of the layout container (`max-w-6xl mx-auto`), matching the exact position, styling, and brutalist card design system of event detail pages.
+
+---
+
 ## [0.51.0] - 2026-08-01
 
 ### ⬅️ Simplified "Back" Navigation Button & Referrer Redirection

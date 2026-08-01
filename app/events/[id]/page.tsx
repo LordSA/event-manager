@@ -77,17 +77,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   const handleBackClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (typeof window !== 'undefined' && window.history.length > 1 && document.referrer) {
-      try {
-        const refUrl = new URL(document.referrer);
-        if (refUrl.origin === window.location.origin) {
-          router.back();
-          return;
-        }
-      } catch {
-      }
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/events');
     }
-    router.push('/events');
   };
 
   useEffect(() => {

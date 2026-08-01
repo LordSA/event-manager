@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { ArrowLeft, Calendar, MessageSquare } from "lucide-react";
+import { ArrowLeft, MessageSquare } from "lucide-react";
 
 interface PageParams {
   id: string;
@@ -21,17 +21,11 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
 
   const handleBackClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (typeof window !== 'undefined' && window.history.length > 1 && document.referrer) {
-      try {
-        const refUrl = new URL(document.referrer);
-        if (refUrl.origin === window.location.origin) {
-          router.back();
-          return;
-        }
-      } catch {
-      }
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/community');
     }
-    router.push('/community');
   };
 
   useEffect(() => {
@@ -81,7 +75,7 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center text-sm">
+      <div className="min-h-screen bg-[#08090d] text-[#94a3b8] flex items-center justify-center text-xs">
         Loading community details...
       </div>
     );
@@ -89,9 +83,9 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
 
   if (!community) {
     return (
-      <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center space-y-4">
-        <p className="text-gray-400">Community not found.</p>
-        <Link href="/community" className="text-sm text-blue-400 hover:underline">
+      <div className="min-h-screen bg-[#08090d] text-[#f8fafc] flex flex-col items-center justify-center p-6 space-y-4">
+        <p className="text-xs text-[#94a3b8]">Community not found.</p>
+        <Link href="/community" className="brutalist-btn-primary px-4 py-2 rounded-lg text-xs">
           &larr; Back to Communities
         </Link>
       </div>
@@ -99,21 +93,19 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500 selection:text-white pb-20 md:pb-12">
-      {/* Header */}
-      <div className="relative pt-24 pb-12 overflow-hidden border-b border-gray-900">
-        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-r ${community.color || 'from-blue-600 to-cyan-400'} opacity-20 blur-[120px] -z-10`} />
+    <div className="min-h-screen bg-[#08090d] text-[#f8fafc] pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 font-sans relative">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <button
+          onClick={handleBackClick}
+          className="inline-flex items-center space-x-2 text-xs font-semibold text-[#94a3b8] hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
 
-        <div className="max-w-4xl mx-auto px-6 text-center space-y-4">
-          <div className="flex items-center justify-start text-left mb-2">
-            <button
-              onClick={handleBackClick}
-              className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
-            </button>
-          </div>
+        {/* Header Card */}
+        <div className="brutalist-card p-6 sm:p-10 rounded-2xl space-y-6 relative overflow-hidden text-center">
+          <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r ${community.color || 'from-blue-600 to-cyan-400'} opacity-15 blur-[100px] -z-10`} />
 
           {community.logo_url ? (
             <img
@@ -130,57 +122,57 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
             </div>
           )}
 
-          <h1 className="text-5xl font-extrabold">{community.name}</h1>
-          <p className="text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto">
-            {community.description}
+          <h1 className="text-4xl sm:text-5xl font-bold text-white font-display">{community.name}</h1>
+          <p className="text-sm sm:text-base text-[#94a3b8] leading-relaxed max-w-2xl mx-auto">
+            {community.description || 'Campus student technical branch & community at CEV.'}
           </p>
         </div>
-      </div>
 
-      {/* Events Grid */}
-      <div className="max-w-7xl mx-auto px-6 py-12 space-y-8">
-        <h2 className="text-2xl font-bold text-gray-200">
-          Events by {community.name}
-        </h2>
+        {/* Events Grid */}
+        <div className="space-y-6 pt-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
+            Events by {community.name}
+          </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {communityEvents.length > 0 ? (
-            communityEvents.map((event) => (
-              <Link key={event.id} href={`/events/${event.slug || event.id}`} className="group block h-full">
-                <div className="bg-[#0A0A0A] border border-gray-800 rounded-3xl p-6 h-full hover:border-gray-600 transition-all flex flex-col justify-between space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-start">
-                      <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
-                        {event.category || 'Workshop'}
-                      </span>
-                      <span className="text-xs font-mono text-gray-400 border border-gray-800 px-2 py-1 rounded">
-                        {event.event_date}
-                      </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {communityEvents.length > 0 ? (
+              communityEvents.map((event) => (
+                <Link key={event.id} href={`/events/${event.slug || event.id}`} className="group block h-full">
+                  <div className="brutalist-card p-6 rounded-2xl h-full hover:border-[#6366f1] transition-all flex flex-col justify-between space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs font-bold text-[#6366f1] uppercase tracking-wider">
+                          {event.category || 'Workshop'}
+                        </span>
+                        <span className="text-xs font-mono text-[#94a3b8] border border-[#1e2436] px-2 py-1 rounded">
+                          {event.event_date}
+                        </span>
+                      </div>
+
+                      <h3 className="text-xl font-bold text-white group-hover:text-[#6366f1] transition-colors font-display">
+                        {event.title}
+                      </h3>
+                      <p className="text-[#94a3b8] text-xs line-clamp-2 leading-relaxed">
+                        {event.description}
+                      </p>
                     </div>
 
-                    <h3 className="text-xl font-bold group-hover:text-blue-400 transition-colors">
-                      {event.title}
-                    </h3>
-                    <p className="text-gray-400 text-sm line-clamp-2">
-                      {event.description}
-                    </p>
+                    <div className="pt-4 border-t border-[#1e2436] flex items-center justify-between text-xs font-semibold text-[#94a3b8]">
+                      <span className="flex items-center gap-1.5 text-cyan-400 font-mono text-[11px]">
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        Event Assistant
+                      </span>
+                      <span className="text-[#6366f1] font-bold">&rarr;</span>
+                    </div>
                   </div>
-
-                  <div className="pt-4 border-t border-gray-800 flex items-center justify-between text-xs font-semibold text-slate-300">
-                    <span className="flex items-center gap-1.5 text-cyan-400">
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      Event Assistant
-                    </span>
-                    <span className="text-blue-500">&rarr;</span>
-                  </div>
-                </div>
-              </Link>
-            ))
-          ) : (
-            <div className="col-span-full py-12 text-center border border-dashed border-gray-800 rounded-2xl text-gray-500">
-              No live events currently published for {community.name}.
-            </div>
-          )}
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center border border-dashed border-[#1e2436] rounded-2xl text-[#94a3b8] text-xs">
+                No active live events hosted by {community.name} right now.
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
