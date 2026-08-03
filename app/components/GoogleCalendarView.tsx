@@ -254,8 +254,8 @@ export default function GoogleCalendarView({
       </div>
 
       {viewMode === 'month' && (
-        <div className="flex-1 flex flex-col min-h-[620px]">
-          <div className="grid grid-cols-7 border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2.5 uppercase tracking-wider">
+        <div className="flex-1 flex flex-col min-h-[500px]">
+          <div className="grid grid-cols-7 border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2 uppercase tracking-wider">
             {daysOfWeek.map((day) => (
               <div key={day}>{day}</div>
             ))}
@@ -263,7 +263,7 @@ export default function GoogleCalendarView({
 
           <div className="grid grid-cols-7 flex-1 auto-rows-fr bg-[#08090d]">
             {Array.from({ length: startDay }).map((_, idx) => (
-              <div key={`empty-${idx}`} className="border-r border-b border-[#1e2436]/60 bg-[#0f121d]/40 min-h-[110px]" />
+              <div key={`empty-${idx}`} className="border-r border-b border-[#1e2436]/60 bg-[#0f121d]/40 min-h-[90px]" />
             ))}
 
             {Array.from({ length: totalDays }).map((_, idx) => {
@@ -278,11 +278,11 @@ export default function GoogleCalendarView({
               return (
                 <div
                   key={`day-${dayNum}`}
-                  className="border-r border-b border-[#1e2436] p-2 min-h-[110px] flex flex-col justify-start hover:bg-[#161a29]/40 transition-colors group relative"
+                  className="border-r border-b border-[#1e2436] p-1.5 min-h-[90px] flex flex-col justify-start hover:bg-[#161a29]/40 transition-colors group relative"
                 >
-                  <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center justify-between mb-1">
                     <span
-                      className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full ${
+                      className={`text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full ${
                         isToday ? 'bg-[#6366f1] text-white' : 'text-[#94a3b8]'
                       }`}
                     >
@@ -292,7 +292,7 @@ export default function GoogleCalendarView({
                     {isAdminMode && onSelectDateSlot && (
                       <button
                         onClick={() => onSelectDateSlot(formatDateForSlot(dateObj))}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-[10px] font-bold bg-[#6366f1]/20 hover:bg-[#6366f1] text-[#6366f1] hover:text-white rounded-lg transition-all flex items-center gap-0.5"
+                        className="opacity-0 group-hover:opacity-100 p-0.5 text-[10px] font-bold bg-[#6366f1]/20 hover:bg-[#6366f1] text-[#6366f1] hover:text-white rounded-md transition-all flex items-center gap-0.5"
                         title="Book Slot on this Date"
                       >
                         <Plus className="w-3 h-3" />
@@ -300,7 +300,7 @@ export default function GoogleCalendarView({
                     )}
                   </div>
 
-                  <div className="space-y-1 overflow-y-auto max-h-[90px] pr-0.5 scrollbar-hide flex-1">
+                  <div className="space-y-1 overflow-y-auto max-h-[72px] pr-0.5 scrollbar-hide flex-1">
                     {dayEvents.map((evt) => {
                       const { displayTime } = parseTimeSlot(evt.time_slot);
                       const isClosed = evt.status === 'closed';
@@ -314,7 +314,7 @@ export default function GoogleCalendarView({
                           <div
                             key={evt.id}
                             onClick={() => setActiveModalEvent(evt)}
-                            className="w-full text-left px-2 py-1 rounded-lg bg-amber-950/40 border border-amber-900/60 transition-colors block cursor-pointer"
+                            className="w-full text-left px-1.5 py-0.5 rounded-md bg-amber-950/40 border border-amber-900/60 transition-colors block cursor-pointer"
                           >
                             <div className="text-[10px] font-bold text-amber-400 truncate flex items-center gap-1">
                               <Lock className="w-3 h-3 text-amber-400 shrink-0" />
@@ -331,25 +331,25 @@ export default function GoogleCalendarView({
                         <button
                           key={evt.id}
                           onClick={() => setActiveModalEvent(evt)}
-                          className={`w-full text-left px-2 py-1 rounded-lg border transition-colors block group/btn ${
+                          className={`w-full text-left px-1.5 py-0.5 rounded-md border transition-colors block group/btn ${
                             isClosed
                               ? 'bg-amber-950/40 border-amber-800/80 hover:border-amber-500 text-amber-300'
                               : 'bg-[#161a29] border-[#1e2436] hover:border-[#6366f1] text-white'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-1">
-                            <span className="text-[11px] font-bold truncate leading-tight font-heading group-hover/btn:text-[#6366f1]">
+                            <span className="text-[10px] font-bold truncate leading-tight font-heading group-hover/btn:text-[#6366f1]">
                               {evt.title}
                             </span>
                             {isAdminMode && (
-                              <span className={`text-[8px] font-extrabold px-1 rounded uppercase shrink-0 ${
+                              <span className={`text-[7px] font-extrabold px-0.5 rounded uppercase shrink-0 ${
                                 isClosed ? 'bg-amber-900/80 text-amber-300' : 'bg-emerald-950 text-emerald-400'
                               }`}>
                                 {isClosed ? 'Draft' : 'Live'}
                               </span>
                             )}
                           </div>
-                          <div className="text-[9px] text-[#94a3b8] truncate flex items-center justify-between mt-0.5">
+                          <div className="text-[8px] text-[#94a3b8] truncate flex items-center justify-between mt-0.5">
                             <span>{evt.community}</span>
                             <span>{displayTime.split('-')[0].trim()}</span>
                           </div>
@@ -365,9 +365,9 @@ export default function GoogleCalendarView({
       )}
 
       {(viewMode === 'week' || viewMode === 'day') && (
-        <div className="flex-1 flex flex-col min-h-[650px] bg-[#08090d]">
-          <div className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2.5`}>
-            <div className="w-16 text-center text-[#94a3b8] font-mono text-[11px]">Time</div>
+        <div className="flex-1 flex flex-col min-h-[520px] bg-[#08090d]">
+          <div className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2`}>
+            <div className="w-16 text-center text-[#94a3b8] font-mono text-[10px]">Time</div>
             {(viewMode === 'week' ? weekDays : [currentDate]).map((d) => (
               <div key={d.toISOString()} className="flex flex-col items-center">
                 <span>{daysOfWeek[d.getDay()]}</span>
@@ -378,13 +378,13 @@ export default function GoogleCalendarView({
             ))}
           </div>
 
-          <div className="flex-1 overflow-y-auto max-h-[600px] relative scrollbar-hide">
+          <div className="flex-1 overflow-y-auto max-h-[480px] relative scrollbar-hide">
             {hours.map((hour) => (
               <div
                 key={hour}
-                className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} border-b border-[#1e2436]/60 min-h-[60px]`}
+                className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} border-b border-[#1e2436]/60 min-h-[52px]`}
               >
-                <div className="w-16 border-r border-[#1e2436] text-[10px] text-[#94a3b8] font-mono p-2 text-right select-none">
+                <div className="w-16 border-r border-[#1e2436] text-[10px] text-[#94a3b8] font-mono p-1.5 text-right select-none">
                   {hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
                 </div>
 
@@ -404,12 +404,12 @@ export default function GoogleCalendarView({
                           onSelectDateSlot(formatDateForSlot(d), hourStr);
                         }
                       }}
-                      className="border-r border-[#1e2436]/40 p-1 relative min-h-[60px] cursor-pointer hover:bg-[#161a29]/30 transition-colors"
+                      className="border-r border-[#1e2436]/40 p-0.5 relative min-h-[52px] cursor-pointer hover:bg-[#161a29]/30 transition-colors"
                     >
                       {dayEvents.map((evt) => {
                         const { startHour, endHour, displayTime } = parseTimeSlot(evt.time_slot);
                         const durationHours = Math.max(1, endHour - startHour);
-                        const blockHeightPx = durationHours * 60 - 6;
+                        const blockHeightPx = durationHours * 52 - 4;
                         const isClosed = evt.status === 'closed';
 
                         return (
@@ -420,7 +420,7 @@ export default function GoogleCalendarView({
                               setActiveModalEvent(evt);
                             }}
                             style={{ height: `${blockHeightPx}px` }}
-                            className={`absolute left-1 right-1 top-1 z-10 p-2 rounded-xl border cursor-pointer shadow-md flex flex-col justify-between transition-all overflow-hidden ${
+                            className={`absolute left-0.5 right-0.5 top-0.5 z-10 p-1.5 rounded-lg border cursor-pointer shadow-md flex flex-col justify-between transition-all overflow-hidden ${
                               isClosed
                                 ? 'bg-amber-950/60 border-amber-700/80 hover:border-amber-400'
                                 : 'bg-[#161a29] border-[#6366f1]/50 hover:border-[#6366f1]'
@@ -428,25 +428,25 @@ export default function GoogleCalendarView({
                           >
                             <div>
                               <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-mono text-[#6366f1] uppercase font-bold">
+                                <span className="text-[8px] font-mono text-[#6366f1] uppercase font-bold">
                                   {evt.category}
                                 </span>
                                 {isAdminMode && (
-                                  <span className={`text-[8px] uppercase font-bold px-1 rounded ${
+                                  <span className={`text-[7px] uppercase font-bold px-1 rounded ${
                                     isClosed ? 'bg-amber-900 text-amber-300' : 'bg-emerald-950 text-emerald-400'
                                   }`}>
                                     {isClosed ? 'Draft' : 'Live'}
                                   </span>
                                 )}
                               </div>
-                              <h4 className="text-xs font-bold text-white line-clamp-1 mt-0.5 font-heading">
+                              <h4 className="text-[11px] font-bold text-white line-clamp-1 mt-0.5 font-heading">
                                 {evt.title}
                               </h4>
-                              <p className="text-[10px] text-[#94a3b8] line-clamp-1">
+                              <p className="text-[9px] text-[#94a3b8] line-clamp-1">
                                 {evt.community}
                               </p>
                             </div>
-                            <div className="text-[9px] text-[#94a3b8] font-mono flex items-center justify-between border-t border-[#1e2436] pt-1 mt-1">
+                            <div className="text-[8px] text-[#94a3b8] font-mono flex items-center justify-between border-t border-[#1e2436] pt-0.5 mt-0.5">
                               <span>{displayTime}</span>
                             </div>
                           </div>
@@ -462,7 +462,7 @@ export default function GoogleCalendarView({
       )}
 
       {viewMode === 'grid' && (
-        <div className="p-6 bg-[#08090d] min-h-[500px]">
+        <div className="p-4 sm:p-6 bg-[#08090d] min-h-[420px]">
           {filteredEvents.length === 0 ? (
             <div className="p-8 text-center text-slate-500 text-xs italic bg-[#0f121d] border border-[#1e2436] rounded-2xl">
               No events found matching current criteria.

@@ -123,6 +123,7 @@ event-manager/
 │   ├── calendar/
 │   │   └── page.tsx               # Google Calendar view route (Month, Week, Day time-grid views)
 │   ├── components/
+│   │   ├── AdminSidebar.tsx       # Standalone admin sidebar component with sticky viewport layout isolation
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper hiding main navbar on /admin
 │   │   ├── EventAiDrawer.tsx      # z-[200] Event Assistant drawer with body scroll lock
 │   │   ├── GoogleCalendarView.tsx # Interactive Google Calendar component supporting public & admin slot booking modes

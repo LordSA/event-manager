@@ -2,6 +2,15 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.55.0] - 2026-08-03
+
+### 🧱 Standalone Admin Sidebar Component & Calendar Size Optimization
+- **Standalone Admin Sidebar ([app/components/AdminSidebar.tsx](./app/components/AdminSidebar.tsx)):** Extracted admin sidebar navigation into a dedicated component with viewport sticky positioning (`sticky top-0 h-screen`), isolating its width and height from any page content length or scroll behavior.
+- **Admin Layout Refactoring ([app/admin/layout.tsx](./app/admin/layout.tsx)):** Refactored layout shell to invoke `<AdminSidebar />` with `min-w-0` content container.
+- **Compact Calendar Sizing ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Reduced calendar container min-heights (`min-h-[500px]`), cell heights (`min-h-[90px]`), and hour slot heights (`min-h-[52px]`) for a sleeker, well-proportioned view.
+
+---
+
 ## [0.54.0] - 2026-08-03
 
 ### 📅 Admin Google Calendar Event Slot View Upgrade
