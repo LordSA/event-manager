@@ -2,6 +2,13 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.57.0] - 2026-08-03
+
+### ➖ Connected Horizontal Multi-Day Calendar Banner Upgrade
+- **Google Calendar Multi-Day Banner Spanning ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Replaced separate individual event boxes on multi-day events with connected horizontal banner bars. Multi-day events now span edge-to-edge across consecutive day cells (`rounded-l-md` on start day, `rounded-none -mx-[10px]` on middle days, and `rounded-r-md` on end day), forming a single continuous horizontal line across calendar columns just like Google Calendar.
+
+---
+
 ## [0.56.0] - 2026-08-03
 
 ### 📆 Multi-Day Event Calendar Range Rendering Fix

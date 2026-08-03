@@ -210,6 +210,56 @@ export default function GoogleCalendarView({
     return targetStr >= isoStart && targetStr <= isoEnd;
   };
 
+  const getEventDatePosition = (evt: CalendarEvent, dateObj: Date) => {
+    if (!evt.date) return { isMultiDay: false, isStart: true, isEnd: true };
+
+    const cleanStr = evt.date.trim();
+    let startPart = cleanStr;
+    let endPart = cleanStr;
+
+    if (cleanStr.toLowerCase().includes(' to ')) {
+      const parts = cleanStr.split(/ to /i);
+      startPart = parts[0].trim();
+      endPart = parts[1].trim();
+    } else if (cleanStr.includes(' - ')) {
+      const parts = cleanStr.split(/\s+-\s+/);
+      startPart = parts[0].trim();
+      endPart = parts[1].trim();
+    } else if (cleanStr.includes(' / ')) {
+      const parts = cleanStr.split(/\s+\/\s+/);
+      startPart = parts[0].trim();
+      endPart = parts[1].trim();
+    }
+
+    const extractIsoDate = (str: string): string => {
+      if (!str) return '';
+      const match = str.match(/\d{4}-\d{2}-\d{2}/);
+      if (match) return match[0];
+      const parsed = new Date(str);
+      if (!isNaN(parsed.getTime())) {
+        const py = parsed.getFullYear();
+        const pm = String(parsed.getMonth() + 1).padStart(2, '0');
+        const pd = String(parsed.getDate()).padStart(2, '0');
+        return `${py}-${pm}-${pd}`;
+      }
+      return str.split('T')[0];
+    };
+
+    const isoStart = extractIsoDate(startPart);
+    const isoEnd = extractIsoDate(endPart) || isoStart;
+
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    const currentIso = `${y}-${m}-${d}`;
+
+    const isMultiDay = isoStart !== isoEnd;
+    const isStart = currentIso === isoStart || dateObj.getDay() === 0;
+    const isEnd = currentIso === isoEnd || dateObj.getDay() === 6;
+
+    return { isMultiDay, isStart, isEnd };
+  };
+
   const formatDateForSlot = (dateObj: Date): string => {
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -348,20 +398,41 @@ export default function GoogleCalendarView({
                         (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
                       );
 
+                      const { isMultiDay, isStart, isEnd } = getEventDatePosition(evt, dateObj);
+
+                      let shapeClass = 'rounded-md';
+                      if (isMultiDay) {
+                        if (isStart && !isEnd) {
+                          shapeClass = 'rounded-l-md rounded-r-none -mr-[10px] border-r-0 z-20';
+                        } else if (!isStart && !isEnd) {
+                          shapeClass = 'rounded-none -mx-[10px] border-x-0 z-20';
+                        } else if (!isStart && isEnd) {
+                          shapeClass = 'rounded-r-md rounded-l-none -ml-[10px] border-l-0 z-20';
+                        }
+                      }
+
                       if (isAdminMode && !isOwnCommunity && isClosed) {
                         return (
                           <div
                             key={evt.id}
                             onClick={() => setActiveModalEvent(evt)}
-                            className="w-full text-left px-1.5 py-0.5 rounded-md bg-amber-950/40 border border-amber-900/60 transition-colors block cursor-pointer"
+                            className={`w-full text-left px-1.5 py-0.5 bg-amber-950/50 border border-amber-900/80 transition-all block cursor-pointer ${shapeClass}`}
                           >
-                            <div className="text-[10px] font-bold text-amber-400 truncate flex items-center gap-1">
-                              <Lock className="w-3 h-3 text-amber-400 shrink-0" />
-                              <span>Slot Booked (Reserved)</span>
-                            </div>
-                            <div className="text-[9px] text-amber-500/80 truncate">
-                              {evt.community}
-                            </div>
+                            {isStart ? (
+                              <>
+                                <div className="text-[10px] font-bold text-amber-400 truncate flex items-center gap-1">
+                                  <Lock className="w-3 h-3 text-amber-400 shrink-0" />
+                                  <span>Slot Reserved</span>
+                                </div>
+                                <div className="text-[8px] text-amber-500/80 truncate">
+                                  {evt.community}
+                                </div>
+                              </>
+                            ) : (
+                              <div className="text-[9px] font-bold text-amber-400/90 truncate py-0.5 font-mono">
+                                ➔ Reserved ({evt.community})
+                              </div>
+                            )}
                           </div>
                         );
                       }
@@ -370,28 +441,37 @@ export default function GoogleCalendarView({
                         <button
                           key={evt.id}
                           onClick={() => setActiveModalEvent(evt)}
-                          className={`w-full text-left px-1.5 py-0.5 rounded-md border transition-colors block group/btn ${
+                          className={`w-full text-left px-1.5 py-0.5 border transition-all block group/btn ${shapeClass} ${
                             isClosed
-                              ? 'bg-amber-950/40 border-amber-800/80 hover:border-amber-500 text-amber-300'
+                              ? 'bg-amber-950/80 border-amber-800/90 hover:border-amber-400 text-amber-300'
                               : 'bg-[#161a29] border-[#1e2436] hover:border-[#6366f1] text-white'
                           }`}
                         >
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-[10px] font-bold truncate leading-tight font-heading group-hover/btn:text-[#6366f1]">
-                              {evt.title}
-                            </span>
-                            {isAdminMode && (
-                              <span className={`text-[7px] font-extrabold px-0.5 rounded uppercase shrink-0 ${
-                                isClosed ? 'bg-amber-900/80 text-amber-300' : 'bg-emerald-950 text-emerald-400'
-                              }`}>
-                                {isClosed ? 'Draft' : 'Live'}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[8px] text-[#94a3b8] truncate flex items-center justify-between mt-0.5">
-                            <span>{evt.community}</span>
-                            <span>{displayTime.split('-')[0].trim()}</span>
-                          </div>
+                          {isStart ? (
+                            <>
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-[10px] font-bold truncate leading-tight font-heading group-hover/btn:text-[#6366f1]">
+                                  {evt.title}
+                                </span>
+                                {isAdminMode && (
+                                  <span className={`text-[7px] font-extrabold px-0.5 rounded uppercase shrink-0 ${
+                                    isClosed ? 'bg-amber-900/80 text-amber-300' : 'bg-emerald-950 text-emerald-400'
+                                  }`}>
+                                    {isClosed ? 'Draft' : 'Live'}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[8px] text-[#94a3b8] truncate flex items-center justify-between mt-0.5">
+                                <span>{evt.community}</span>
+                                <span>{displayTime.split('-')[0].trim()}</span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="text-[9px] font-bold truncate py-0.5 flex items-center justify-between text-slate-300 group-hover/btn:text-[#6366f1]">
+                              <span>➔ {evt.title}</span>
+                              {isEnd && <span className="text-[7px] text-slate-500 font-mono">Ends</span>}
+                            </div>
+                          )}
                         </button>
                       );
                     })}
