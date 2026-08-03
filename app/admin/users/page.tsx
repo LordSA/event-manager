@@ -93,11 +93,16 @@ export default function UserManagementPage() {
 
   // Filter profiles depending on role
   const displayedProfiles = profiles.filter((p) => {
+    // Dev / Superuser accounts are strictly protected and hidden from non-dev roles
+    if (p.role === 'dev' && currentUserRole !== 'dev') {
+      return false;
+    }
+
     if (currentUserRole === 'dev' || currentUserRole === 'admin') {
-      return true; // See all
+      return true; // Admin sees all non-dev accounts; Dev sees everyone
     }
     if (currentUserRole === 'manager') {
-      // Manager can only see managers & editors in their own community
+      // Manager can only see non-dev managers & editors in their own community
       return p.community_id === currentUserCommunityId || p.id === currentUserCommunityId;
     }
     return false;
@@ -131,6 +136,10 @@ export default function UserManagementPage() {
   };
 
   const openEditModal = (user: Profile) => {
+    if (user.role === 'dev' && currentUserRole !== 'dev') {
+      setToastMsg({ type: 'error', text: 'Dev (Superuser) accounts cannot be modified.' });
+      return;
+    }
     setEditingUser(user);
     setFullName(user.full_name || '');
     setPosition(user.position || '');
@@ -249,6 +258,12 @@ export default function UserManagementPage() {
   };
 
   const handleDeleteUser = async (userId: string, userName: string) => {
+    const targetUser = profiles.find((p) => p.id === userId);
+    if (targetUser?.role === 'dev' && currentUserRole !== 'dev') {
+      setToastMsg({ type: 'error', text: 'Dev (Superuser) accounts cannot be deleted by non-dev roles.' });
+      return;
+    }
+
     if (!confirm(`Are you sure you want to delete user "${userName || userId}"?`)) {
       return;
     }
@@ -257,7 +272,14 @@ export default function UserManagementPage() {
     setToastMsg({ type: 'success', text: 'User removed from list!' });
 
     try {
-      await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE' });
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: Record<string, string> = {};
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
+      await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE', headers });
     } catch {
       // Ignore
     }
@@ -497,21 +519,16 @@ export default function UserManagementPage() {
                   <select
                     value={role}
                     onChange={(e) => setRole(e.target.value as UserRole)}
-                    className="w-full bg-slate-950 text-white rounded-xl px-3 py-2.5 text-sm border border-slate-800 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-950 text-[#fff] rounded-xl px-3 py-2.5 text-sm border border-slate-800 focus:outline-none focus:border-blue-500"
                   >
-                    {currentUserRole === 'dev' || currentUserRole === 'admin' ? (
-                      <>
-                        <option value="dev">Dev (Super Admin)</option>
-                        <option value="admin">Admin</option>
-                        <option value="manager">Manager (Lead)</option>
-                        <option value="editor">Editor</option>
-                      </>
-                    ) : (
-                      <>
-                        <option value="manager">Manager (Lead)</option>
-                        <option value="editor">Editor</option>
-                      </>
+                    {currentUserRole === 'dev' && (
+                      <option value="dev">Dev (Super Admin)</option>
                     )}
+                    {(currentUserRole === 'dev' || currentUserRole === 'admin') && (
+                      <option value="admin">Admin</option>
+                    )}
+                    <option value="manager">Manager (Lead)</option>
+                    <option value="editor">Editor</option>
                   </select>
                 </div>
 

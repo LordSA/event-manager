@@ -13,6 +13,26 @@ function getAdminSupabaseClient() {
   });
 }
 
+async function getRequesterRole(req: NextRequest, supabase: any): Promise<string | null> {
+  try {
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) return null;
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user } } = await supabase.auth.getUser(token);
+    if (!user) return null;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    return profile?.role || null;
+  } catch {
+    return null;
+  }
+}
+
 // GET all user profiles
 export async function GET() {
   try {
@@ -43,6 +63,14 @@ export async function POST(req: NextRequest) {
     }
 
     const supabase = getAdminSupabaseClient();
+
+    // Protection: Non-dev users cannot create Dev (superuser) accounts
+    if (role === 'dev') {
+      const requesterRole = await getRequesterRole(req, supabase);
+      if (requesterRole && requesterRole !== 'dev') {
+        return NextResponse.json({ error: 'Forbidden: Only Dev users can create Dev accounts.' }, { status: 403 });
+      }
+    }
 
     // 1. Attempt Supabase Auth DB user creation
     let userId = `usr_${Date.now()}`;
@@ -112,6 +140,15 @@ export async function PUT(req: NextRequest) {
 
     const supabase = getAdminSupabaseClient();
 
+    // Protection: Non-dev users cannot modify Dev accounts or elevate to Dev role
+    const { data: existingProfile } = await supabase.from('profiles').select('role').eq('id', id).single();
+    if (existingProfile?.role === 'dev' || role === 'dev') {
+      const requesterRole = await getRequesterRole(req, supabase);
+      if (requesterRole && requesterRole !== 'dev') {
+        return NextResponse.json({ error: 'Forbidden: Dev accounts cannot be modified by non-dev roles.' }, { status: 403 });
+      }
+    }
+
     // 1. Update Auth user if password/email provided
     if (email || password) {
       try {
@@ -172,6 +209,15 @@ export async function DELETE(req: NextRequest) {
     }
 
     const supabase = getAdminSupabaseClient();
+
+    // Protection: Non-dev users cannot delete Dev accounts
+    const { data: targetProfile } = await supabase.from('profiles').select('role').eq('id', id).single();
+    if (targetProfile?.role === 'dev') {
+      const requesterRole = await getRequesterRole(req, supabase);
+      if (requesterRole && requesterRole !== 'dev') {
+        return NextResponse.json({ error: 'Forbidden: Dev accounts cannot be deleted by non-dev roles.' }, { status: 403 });
+      }
+    }
 
     // 1. Delete from Auth DB
     try {

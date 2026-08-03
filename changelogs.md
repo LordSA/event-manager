@@ -2,6 +2,16 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.58.0] - 2026-08-03
+
+### 🛡️ Dev / Superuser RBAC Protection
+- **User Management Page Protection ([app/admin/users/page.tsx](./app/admin/users/page.tsx)):** Enforced strict role isolation for Dev (Superuser) accounts.
+  - Hidden `dev` role options and profiles from `admin` and `manager` roles.
+  - Prevented non-dev users from modifying, adding, or deleting `dev` accounts.
+- **Backend API RBAC Enforcement ([app/api/admin/users/route.ts](./app/api/admin/users/route.ts)):** Added server-side authorization validation blocking non-dev users from creating, modifying, or deleting `dev` accounts.
+
+---
+
 ## [0.57.0] - 2026-08-03
 
 ### ➖ Connected Horizontal Multi-Day Calendar Banner & Gap Fix
