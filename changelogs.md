@@ -2,6 +2,15 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.59.0] - 2026-08-03
+
+### 🎨 Community Brand Color Selector & Dynamic Calendar Slot Rendering
+- **Community Custom Color Selector ([app/admin/communities/page.tsx](./app/admin/communities/page.tsx)):** Added custom brand color selection to Create and Edit Community forms, featuring preset swatches (Indigo, Blue, Emerald, Pink, Amber, Purple, Red, Teal, Cyan, Orange), HTML color picker (`<input type="color">`), and hex input field.
+- **Calendar Event Community Color Integration ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Integrated community signature colors into Google Calendar views (Month, Week, Day, and Grid view modes) with dynamic background fill, border accent, and bullet dot indicators matching each community's color branding.
+- **Realtime Query Join Update ([lib/hooks/useRealtimeEvents.ts](./lib/hooks/useRealtimeEvents.ts)):** Updated Supabase select query to fetch `community:communities(id, name, slug, color)` and map `community_color` onto event objects.
+
+---
+
 ## [0.58.0] - 2026-08-03
 
 ### 🛡️ Dev / Superuser RBAC Protection

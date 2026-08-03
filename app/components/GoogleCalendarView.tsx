@@ -34,6 +34,7 @@ export interface CalendarEvent {
   perks?: string | null;
   poster_url?: string | null;
   image?: string | null;
+  community_color?: string | null;
 }
 
 export interface CommunityOption {
@@ -42,6 +43,33 @@ export interface CommunityOption {
   color: string;
   initials: string;
 }
+
+const getEventCommunityColor = (evt: CalendarEvent, communitiesList: CommunityOption[]): string => {
+  if (evt.community_color && evt.community_color.startsWith('#')) {
+    return evt.community_color;
+  }
+  const matched = communitiesList.find(
+    (c) => c.name.toLowerCase() === (evt.community || '').toLowerCase()
+  );
+  if (matched?.color && matched.color.startsWith('#')) {
+    return matched.color;
+  }
+  return '#6366f1';
+};
+
+const hexToRgba = (hex: string, alpha: number): string => {
+  if (!hex || !hex.startsWith('#')) return `rgba(99, 102, 241, ${alpha})`;
+  let c = hex.substring(1);
+  if (c.length === 3) {
+    c = c.split('').map((x) => x + x).join('');
+  }
+  const num = parseInt(c, 16);
+  if (isNaN(num)) return `rgba(99, 102, 241, ${alpha})`;
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 interface GoogleCalendarViewProps {
   events: CalendarEvent[];
@@ -399,6 +427,7 @@ export default function GoogleCalendarView({
                       );
 
                       const { isMultiDay, isStart, isEnd } = getEventDatePosition(evt, dateObj);
+                      const commColor = getEventCommunityColor(evt, communities);
 
                       let shapeClass = 'mx-1 rounded-md';
                       if (isMultiDay) {
@@ -418,7 +447,11 @@ export default function GoogleCalendarView({
                           <div
                             key={evt.id}
                             onClick={() => setActiveModalEvent(evt)}
-                            className={`w-full text-left px-1.5 py-0.5 bg-amber-950/60 border border-amber-900/80 transition-all block cursor-pointer ${shapeClass}`}
+                            style={{
+                              backgroundColor: hexToRgba(commColor, 0.2),
+                              borderColor: hexToRgba(commColor, 0.6),
+                            }}
+                            className={`w-full text-left px-1.5 py-0.5 border transition-all block cursor-pointer ${shapeClass}`}
                           >
                             {isStart ? (
                               <>
@@ -443,17 +476,20 @@ export default function GoogleCalendarView({
                         <button
                           key={evt.id}
                           onClick={() => setActiveModalEvent(evt)}
+                          style={{
+                            backgroundColor: isClosed ? hexToRgba(commColor, 0.18) : hexToRgba(commColor, 0.28),
+                            borderColor: hexToRgba(commColor, 0.7),
+                          }}
                           className={`w-full text-left px-1.5 py-0.5 border transition-all block group/btn ${shapeClass} ${
-                            isClosed
-                              ? 'bg-amber-950/90 border-t border-b border-amber-700 hover:border-amber-400 text-amber-300'
-                              : 'bg-[#161a29] border-t border-b border-[#1e2436] hover:border-[#6366f1] text-white'
+                            isClosed ? 'text-amber-300' : 'text-white'
                           }`}
                         >
                           {isStart ? (
                             <>
                               <div className="flex items-center justify-between gap-1">
-                                <span className="text-[10px] font-bold truncate leading-tight font-heading group-hover/btn:text-[#6366f1]">
-                                  {evt.title}
+                                <span className="text-[10px] font-bold truncate leading-tight font-heading flex items-center gap-1">
+                                  <span className="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: commColor }} />
+                                  <span className="truncate">{evt.title}</span>
                                 </span>
                                 {isAdminMode && (
                                   <span className={`text-[7px] font-extrabold px-0.5 rounded uppercase shrink-0 ${
@@ -463,15 +499,18 @@ export default function GoogleCalendarView({
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[8px] text-[#94a3b8] truncate flex items-center justify-between mt-0.5">
-                                <span>{evt.community}</span>
-                                <span>{displayTime.split('-')[0].trim()}</span>
+                              <div className="text-[8px] text-slate-300 truncate flex items-center justify-between mt-0.5">
+                                <span className="truncate" style={{ color: commColor }}>{evt.community}</span>
+                                <span className="text-slate-400">{displayTime.split('-')[0].trim()}</span>
                               </div>
                             </>
                           ) : (
-                            <div className="text-[9px] font-bold truncate py-0.5 flex items-center justify-between text-slate-300 group-hover/btn:text-[#6366f1] px-1">
-                              <span className="truncate">➔ {evt.title}</span>
-                              {isEnd && <span className="text-[7px] text-slate-500 font-mono shrink-0 ml-1">Ends</span>}
+                            <div className="text-[9px] font-bold truncate py-0.5 flex items-center justify-between text-slate-200 px-1">
+                              <span className="truncate flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: commColor }} />
+                                ➔ {evt.title}
+                              </span>
+                              {isEnd && <span className="text-[7px] text-slate-400 font-mono shrink-0 ml-1">Ends</span>}
                             </div>
                           )}
                         </button>
@@ -532,6 +571,7 @@ export default function GoogleCalendarView({
                         const durationHours = Math.max(1, endHour - startHour);
                         const blockHeightPx = durationHours * 52 - 4;
                         const isClosed = evt.status === 'closed';
+                        const commColor = getEventCommunityColor(evt, communities);
 
                         return (
                           <div
@@ -540,16 +580,17 @@ export default function GoogleCalendarView({
                               e.stopPropagation();
                               setActiveModalEvent(evt);
                             }}
-                            style={{ height: `${blockHeightPx}px` }}
-                            className={`absolute left-0.5 right-0.5 top-0.5 z-10 p-1.5 rounded-lg border cursor-pointer shadow-md flex flex-col justify-between transition-all overflow-hidden ${
-                              isClosed
-                                ? 'bg-amber-950/60 border-amber-700/80 hover:border-amber-400'
-                                : 'bg-[#161a29] border-[#6366f1]/50 hover:border-[#6366f1]'
-                            }`}
+                            style={{
+                              height: `${blockHeightPx}px`,
+                              backgroundColor: isClosed ? hexToRgba(commColor, 0.2) : hexToRgba(commColor, 0.3),
+                              borderColor: hexToRgba(commColor, 0.75),
+                            }}
+                            className="absolute left-0.5 right-0.5 top-0.5 z-10 p-1.5 rounded-lg border cursor-pointer shadow-md flex flex-col justify-between transition-all overflow-hidden"
                           >
                             <div>
                               <div className="flex items-center justify-between">
-                                <span className="text-[8px] font-mono text-[#6366f1] uppercase font-bold">
+                                <span className="text-[8px] font-mono uppercase font-bold flex items-center gap-1" style={{ color: commColor }}>
+                                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: commColor }} />
                                   {evt.category}
                                 </span>
                                 {isAdminMode && (
@@ -563,11 +604,11 @@ export default function GoogleCalendarView({
                               <h4 className="text-[11px] font-bold text-white line-clamp-1 mt-0.5 font-heading">
                                 {evt.title}
                               </h4>
-                              <p className="text-[9px] text-[#94a3b8] line-clamp-1">
+                              <p className="text-[9px] font-semibold line-clamp-1 mt-0.5" style={{ color: commColor }}>
                                 {evt.community}
                               </p>
                             </div>
-                            <div className="text-[8px] text-[#94a3b8] font-mono flex items-center justify-between border-t border-[#1e2436] pt-0.5 mt-0.5">
+                            <div className="text-[8px] text-slate-300 font-mono flex items-center justify-between border-t border-slate-700/50 pt-0.5 mt-0.5">
                               <span>{displayTime}</span>
                             </div>
                           </div>
@@ -596,6 +637,7 @@ export default function GoogleCalendarView({
                   currentUserCommunityName &&
                   (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
                 );
+                const commColor = getEventCommunityColor(evt, communities);
 
                 if (isAdminMode && !isOwnCommunity && isClosed) {
                   return (
@@ -619,7 +661,10 @@ export default function GoogleCalendarView({
                         </div>
                       </div>
                       <div className="pt-4 border-t border-slate-800/80 space-y-1">
-                        <div className="font-semibold text-slate-300 text-xs">{evt.community}</div>
+                        <div className="font-semibold text-slate-300 text-xs flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: commColor }} />
+                          <span>{evt.community}</span>
+                        </div>
                         <div className="flex items-center justify-between text-xs text-slate-400">
                           <span className="flex items-center gap-1">
                             <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
@@ -637,13 +682,23 @@ export default function GoogleCalendarView({
                   <div
                     key={evt.id}
                     onClick={() => setActiveModalEvent(evt)}
-                    className={`p-6 rounded-2xl bg-[#0f121d] border ${
-                      isClosed ? 'border-amber-800/60' : 'border-[#1e2436]'
-                    } space-y-4 flex flex-col justify-between cursor-pointer hover:border-[#6366f1] transition-all`}
+                    style={{
+                      backgroundColor: '#0f121d',
+                      borderColor: hexToRgba(commColor, 0.4),
+                    }}
+                    className="p-6 rounded-2xl border space-y-4 flex flex-col justify-between cursor-pointer hover:shadow-lg transition-all"
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
+                        <span
+                          className="text-xs uppercase font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5"
+                          style={{
+                            backgroundColor: hexToRgba(commColor, 0.15),
+                            borderColor: hexToRgba(commColor, 0.5),
+                            color: commColor,
+                          }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: commColor }} />
                           {evt.category}
                         </span>
                         {isAdminMode ? (

@@ -22,6 +22,7 @@ export interface EventItemData {
   slug?: string;
   community_id?: string;
   community_slug?: string;
+  community_color?: string | null;
 }
 
 function formatSingleTime12(t: string): string {

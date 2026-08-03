@@ -7,6 +7,19 @@ import { createClient } from '@/lib/supabase/client';
 import { UserRole, Community } from '@/types/database.types';
 import { uploadImageFile } from '@/lib/upload';
 
+const COLOR_PRESETS = [
+  { name: 'Indigo', hex: '#6366f1' },
+  { name: 'Blue', hex: '#3b82f6' },
+  { name: 'Emerald', hex: '#10b981' },
+  { name: 'Pink', hex: '#ec4899' },
+  { name: 'Amber', hex: '#f59e0b' },
+  { name: 'Purple', hex: '#8b5cf6' },
+  { name: 'Red', hex: '#ef4444' },
+  { name: 'Teal', hex: '#14b8a6' },
+  { name: 'Cyan', hex: '#06b6d4' },
+  { name: 'Orange', hex: '#f97316' },
+];
+
 export default function CommunitiesManagementPage() {
   const { communities, setCommunities, loading } = useCommunities();
   const [userRole, setUserRole] = useState<UserRole>('editor');
@@ -19,7 +32,7 @@ export default function CommunitiesManagementPage() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [desc, setDesc] = useState('');
-  const [color, setColor] = useState('from-blue-600 to-cyan-400');
+  const [color, setColor] = useState('#6366f1');
   const [initials, setInitials] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -53,7 +66,7 @@ export default function CommunitiesManagementPage() {
     setName('');
     setSlug('');
     setDesc('');
-    setColor('from-blue-600 to-cyan-400');
+    setColor('#6366f1');
     setInitials('');
     setLogoUrl('');
     setEditingCommunity(null);
@@ -65,7 +78,7 @@ export default function CommunitiesManagementPage() {
     setName(c.name || '');
     setSlug(c.slug || '');
     setDesc(c.description || '');
-    setColor(c.color || 'from-blue-600 to-cyan-400');
+    setColor(c.color || '#6366f1');
     setInitials(c.initials || '');
     setLogoUrl(c.logo_url || '');
   };
@@ -364,6 +377,43 @@ export default function CommunitiesManagementPage() {
               </div>
 
               <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
+                  Community Brand Color (Calendar Slot Color)
+                </label>
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  {COLOR_PRESETS.map((preset) => (
+                    <button
+                      key={`add-${preset.hex}`}
+                      type="button"
+                      onClick={() => setColor(preset.hex)}
+                      className={`w-6 h-6 rounded-full transition-transform border ${
+                        color.toLowerCase() === preset.hex.toLowerCase()
+                          ? 'scale-125 border-white shadow-md ring-2 ring-white/30'
+                          : 'border-transparent hover:scale-110 opacity-80 hover:opacity-100'
+                      }`}
+                      style={{ backgroundColor: preset.hex }}
+                      title={preset.name}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="color"
+                    value={color.startsWith('#') ? color : '#6366f1'}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="w-9 h-9 p-0.5 bg-[#161a29] border border-[#1e2436] rounded-lg cursor-pointer shrink-0"
+                  />
+                  <input
+                    type="text"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    placeholder="#6366f1"
+                    className="flex-1 bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-[#6366f1]"
+                  />
+                </div>
+              </div>
+
+              <div>
                 <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">Description / Bio</label>
                 <textarea
                   value={desc}
@@ -478,6 +528,43 @@ export default function CommunitiesManagementPage() {
                   placeholder="e.g. IE"
                   className="w-full bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#6366f1]"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1">
+                  Community Brand Color (Calendar Slot Color)
+                </label>
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  {COLOR_PRESETS.map((preset) => (
+                    <button
+                      key={`edit-${preset.hex}`}
+                      type="button"
+                      onClick={() => setColor(preset.hex)}
+                      className={`w-6 h-6 rounded-full transition-transform border ${
+                        color.toLowerCase() === preset.hex.toLowerCase()
+                          ? 'scale-125 border-white shadow-md ring-2 ring-white/30'
+                          : 'border-transparent hover:scale-110 opacity-80 hover:opacity-100'
+                      }`}
+                      style={{ backgroundColor: preset.hex }}
+                      title={preset.name}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="color"
+                    value={color.startsWith('#') ? color : '#6366f1'}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="w-9 h-9 p-0.5 bg-[#161a29] border border-[#1e2436] rounded-lg cursor-pointer shrink-0"
+                  />
+                  <input
+                    type="text"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    placeholder="#6366f1"
+                    className="flex-1 bg-[#161a29] border border-[#1e2436] rounded-lg px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-[#6366f1]"
+                  />
+                </div>
               </div>
 
               <div>
