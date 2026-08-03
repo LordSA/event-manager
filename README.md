@@ -6,13 +6,16 @@ A modern, high-performance event management, slot booking, and public discovery 
 
 ## 🚀 Key Features & Capabilities
 
-- **Centralized Master Event Schedule & Google Calendar View:** Interactive Google Calendar slot booking engine (Month, Week, Day, and Grid views) where organizers click date/time slots directly to reserve dates in `closed` draft mode before publishing to `live` state.
-- **Role-Based Access Control (RBAC):** Tiered permissions for Developers (`dev`), Super Admins (`admin`), Community Leads (`manager`), and Event Editors (`editor`).
+- **Interactive Google Calendar Slot Booking Engine:** Features Month, Week, Day, and Grid views where organizers click date/time slots to reserve dates in `closed` draft mode before publishing to `live` state.
+- **Connected Multi-Day Calendar Banners:** Multi-day events span continuously across calendar columns as single horizontal line bars with zero-gap column boundary alignment (`px-0` day cell containers).
+- **Custom Community Brand Color Signatures:** Custom color picker (10 preset swatches, HTML color picker `<input type="color">`, hex input) for communities. Events automatically render using their community signature color for background fill, border accent, and bullet dots.
+- **W3C Relative Luminance Text Contrast:** Perceived relative luminance algorithm `(0.299*R + 0.587*G + 0.114*B) / 255`. If a community color is dark (< 0.6), community name text automatically renders in crisp bright white (`#f8fafc`) for 100% readability.
+- **Dev / Superuser RBAC Account Protection:** Strict role isolation protecting `dev` accounts. Non-dev roles cannot view, edit, elevate to, or delete `dev` accounts in UI or backend API routes (returning `403 Forbidden`).
+- **Standalone Viewport-Sticky Admin Sidebar:** Extracted navigation sidebar with `sticky top-0 h-screen` positioning, isolating admin navigation layout from page height or scroll lengths.
 - **Vercel Blob Storage Integration:** Direct client-side WebP image conversion and asset uploading for event posters (`posters/*.webp`), community logos (`logos/*.webp`), and user avatars (`avatars/*.webp`).
-- **Fast AI Event Assistant & Response Sanitizer:** Multi-provider fallback AI chat engine (`gemini-1.5-flash` with Grok & OpenRouter fallbacks) with intelligent offline parsing (`generateOfflineResponse`) delivering direct answers for event schedules, venues, rules, and registration guidance without prompt preambles or raw system prompt leaks.
+- **Fast AI Event Assistant:** Multi-provider fallback AI chat engine (`gemini-1.5-flash` with Grok & OpenRouter fallbacks) delivering direct answers for event schedules, venues, rules, and registration guidance.
 - **Custom Font Optimization (`next/font/local`):** Zero Cumulative Layout Shift (CLS) font engine featuring `Quera` (Display Headlines), `Gued` (Section Headings), and `Rondured` (Body Copy).
-- **Public 2-Line & 4-5 Line Summarizer:** Refactored description parser that filters out raw prompt preambles and clamps public card text to prevent layout flickering.
-- **Clean Production Codebase:** Zero temporary comments or inline block notes across all `.ts` and `.tsx` source code files.
+- **Clean Production Codebase:** Zero temporary comments or inline block notes across all `.ts`, `.tsx`, `.js`, and `.css` source code files.
 
 ---
 
@@ -81,12 +84,15 @@ event-manager/
 │   └── AGENTS.md                  # Developer agent workspace rules & guidelines
 ├── app/
 │   ├── api/
-│   │   ├── admin/users/route.ts   # Supabase Auth + Profiles admin management API
+│   │   ├── admin/
+│   │   │   ├── my-community/route.ts # Manager level community update API
+│   │   │   └── users/route.ts     # Admin users management API with Dev role guards
 │   │   ├── chat/route.ts          # Fast AI assistant endpoint (gemini-1.5-flash)
+│   │   ├── profile/route.ts       # Self profile update API
 │   │   └── upload/route.ts        # Vercel Blob storage upload route
-│   ├── admin/                     # Protected Admin Console (/admin, /events, /communities, /users)
+│   ├── admin/                     # Protected Admin Console (/admin, /events, /communities, /users, /my-community)
 │   ├── calendar/                  # Google Calendar view route (Month, Week, Day grids)
-│   ├── components/                # Reusable UI components (Navbar, EventAiDrawer, MasterCalendar)
+│   ├── components/                # Reusable UI components (AdminSidebar, GoogleCalendarView, MasterCalendar)
 │   ├── events/                    # Public event directory & dynamic detail pages
 │   └── layout.tsx                 # Root layout with font optimization
 ├── fonts/                         # Custom font binaries (.otf, .ttf)

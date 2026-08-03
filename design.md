@@ -18,6 +18,23 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 * **Text Primary:** `#f8fafc` (High-contrast Slate White)
 * **Text Muted:** `#94a3b8` (Slate Neutral Muted)
 
+### Community Signature Color Palette (Preset Swatches)
+* **IEEE Indigo:** `#6366f1` (Default)
+* **IEEE Blue:** `#3b82f6`
+* **IEDC Emerald:** `#10b981`
+* **TinkerHub Pink:** `#ec4899`
+* **FOSS Amber:** `#f59e0b`
+* **MuLearn Purple:** `#8b5cf6`
+* **Red Accent:** `#ef4444`
+* **Teal Accent:** `#14b8a6`
+* **Cyan Accent:** `#06b6d4`
+* **Orange Accent:** `#f97316`
+
+### W3C Relative Luminance Contrast Standard
+* **Perceived Relative Luminance Formula:** `luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255`
+* **Dark Community Colors (`luminance < 0.6`):** Community name text automatically renders in crisp bright white (`#f8fafc`) for 100% legibility against dark backgrounds.
+* **Light Community Colors (`luminance >= 0.6`):** Community name text renders using the vibrant community hex color.
+
 ---
 
 ## 3. Typography Hierarchy & Custom Fonts
@@ -43,6 +60,12 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 * Primary CTA: `.brutalist-btn-primary` (`bg-[#6366f1] text-white border border-[#4f46e5] shadow-[3px_3px_0px_0px_#312e81]`)
 * Secondary CTA: `.brutalist-btn-secondary` (`bg-[#161a29] text-white border border-[#1e2436]`)
 
+### Connected Multi-Day Calendar Banner Layout
+* Day cell containers use `px-0` padding to eliminate horizontal gaps across grid columns.
+* **Start Day:** `ml-1 mr-0 rounded-l-md rounded-r-none border-r-0`
+* **Middle Days:** `mx-0 rounded-none border-x-0`
+* **End Day:** `mr-1 ml-0 rounded-r-md rounded-l-none border-l-0`
+
 ---
 
 ## 5. Modal Window Sizing, Production Code & Clean Standards
@@ -52,4 +75,4 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 * **HTML5 Time Parser (`parseTimeTo24Hr`):** Converts 12-hour database strings into 24-hour `HH:mm` format for time inputs.
 * **Spacious 2-Column Layout (`max-w-3xl`):** Extended modal container width to `768px` (`max-w-3xl`) with `data-lenis-prevent` for mouse wheel scrolling inside Lenis smooth scroll overlays.
 * **Z-Index Layering:** Main Navbar (`z-[100]`), Modal Windows (`z-[150]`), AI Assistant Drawer (`z-[200]`).
-* **Admin Google Calendar Slot View:** Fully interactive month/week/day/grid slot view with amber draft indicators (`#f59e0b`), emerald live badges (`#10b981`), direct cell date selection, popovers with quick status toggles, and RBAC matrix enforcement.
+* **Admin Google Calendar Slot View:** Fully interactive month/week/day/grid slot view with amber draft indicators (`#f59e0b`), emerald live badges (`#10b981`), direct cell date selection, popovers with quick status toggles, connected multi-day banners, community signature colors, W3C contrast readability, and RBAC matrix enforcement.

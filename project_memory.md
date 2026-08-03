@@ -3,7 +3,7 @@
 ## 1. Executive Summary & Repository Overview
 This repository contains **Whats @CEV / Event Manager**, a high-performance multi-community event management, publishing, slot booking, and discovery platform tailored for campus organizations and technical communities at **College of Engineering Vadakara (CE Vadakara)** (IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
 
-The platform centralizes scheduling, slot reservation, public discovery, direct binary image asset WebP uploads (via `@vercel/blob` & `./app/api/upload/route.ts` API route), and real-time contextual event support via an intelligent **Event Assistant** powered by a multi-provider fallback architecture (`gemini-1.5-flash` with Grok & OpenRouter fallbacks) with a friendly peer-to-peer campus buddy persona.
+The platform centralizes scheduling, slot reservation, public discovery, direct binary image asset WebP uploads (via `@vercel/blob` & `./app/api/upload/route.ts`), connected multi-day Google Calendar slot booking, custom community brand color signatures with W3C luminance text contrast, strict Dev (Superuser) RBAC protections, and real-time contextual event support via an intelligent **Event Assistant** powered by a multi-provider fallback architecture (`gemini-1.5-flash` with Grok & OpenRouter fallbacks).
 
 ---
 
@@ -19,13 +19,20 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 * **Clean Code Policy:** Zero explanatory inline comments in source code files (`.ts`, `.tsx`, `.js`, `.css`) for maximum production readability.
 
 ### Backend, Database & Vercel Blob Storage
-* **Database Engine:** Supabase PostgreSQL with RLS (`events.poster_url`, `events.venue`, `communities.logo_url`, `profiles.avatar_url`).
+* **Database Engine:** Supabase PostgreSQL with RLS (`events`, `communities.color`, `communities.logo_url`, `profiles.avatar_url`).
 * **Storage Provider:** Vercel Blob Storage (`@vercel/blob`).
-* **Realtime Events Hook & Master Calendar:** `./lib/hooks/useRealtimeEvents.ts` maps `poster_url`, `venue`, `perks`, `slug`, `community_id`, and `community_slug` into `EventItemData`. `./app/events/page.tsx` and `./app/components/MasterCalendar.tsx` match the active dark brutalist design system (`#08090d`, `#0f121d`, `#161a29`, `#1e2436`, `#6366f1`) with full-card links and clickable community subpage badges. `./app/page.tsx` features full event card redirection. `./app/community/[id]/page.tsx` and `./app/events/[id]/page.tsx` feature left-aligned `"Back"` buttons that execute `router.back()`.
-* **Public Summarizers & Description Parser:** `./lib/summary.ts` (generates 2-line cards for directory & calendar popovers). `refactorDescription3Lines` in `./app/events/[id]/page.tsx` uses a lookbehind regex splitter (`/(?<=[.!?])\s+|\n+/`) to extract 3 clean sentences regardless of missing periods or markdown formatting.
-* **Fast AI Engine & Drawer Chat UI:** `./app/api/chat/route.ts` using `gemini-1.5-flash` with `maxOutputTokens: 250` and 4-second `AbortController` timeouts. `./app/components/EventAiDrawer.tsx` features `renderFormattedMessage` to parse markdown bold syntax (`**text**`) into styled `<strong>` badge tags inside chat bubbles. Includes an intelligent offline fallback parser (`generateOfflineResponse`).
+* **Realtime Events Hook & Master Calendar:** `./lib/hooks/useRealtimeEvents.ts` queries `events` joined with `community:communities(id, name, slug, color)` and maps `community_color` onto `EventItemData`.
+* **Google Calendar Booking Engine:** `./app/components/GoogleCalendarView.tsx` supports Month, Week, Day, and Grid view modes. Features:
+  - **Connected Multi-Day Banners:** `getEventDatePosition(evt, dateObj)` detects multi-day range boundaries and renders connected horizontal banner bars across calendar columns with 0px column gaps (`px-0` day cell containers, `ml-1 mr-0` start day, `mx-0` middle days, `mr-1 ml-0` end day).
+  - **Dynamic Community Colors:** Dynamically applies community signature colors for event card backgrounds (~20-25% opacity fill), borders (~65-75% opacity), and title bullet dots.
+  - **W3C Relative Luminance Contrast:** `isDarkColor(hex)` and `getReadableTextColor(hex)` calculate perceived relative luminance `(0.299*R + 0.587*G + 0.114*B) / 255`. If a community color is dark (< 0.6), community name text automatically renders in crisp bright white (`#f8fafc`) for 100% legibility.
+* **Standalone Sticky Admin Sidebar:** `./app/components/AdminSidebar.tsx` isolates navigation logic with sticky viewport positioning (`sticky top-0 h-screen`), preventing main page length or scroll height from affecting sidebar layout.
+* **Dev / Superuser RBAC Protection:**
+  - `./app/admin/users/page.tsx`: Filters out `dev` profiles from non-dev views and hides `Dev (Super Admin)` role selection options.
+  - `./app/api/admin/users/route.ts`: Server-side authorization validation returning `403 Forbidden` if a non-dev user attempts to create, modify, or delete a `dev` user.
+* **Public Summarizers & Description Parser:** `./lib/summary.ts` generates clean 2-line summary cards. Description parser in `./app/events/[id]/page.tsx` uses lookbehind regex (`/(?<=[.!?])\s+|\n+/`) to extract 3 clean sentences.
+* **Fast AI Engine & Drawer Chat UI:** `./app/api/chat/route.ts` using `gemini-1.5-flash` with 4-second `AbortController` timeouts. `./app/components/EventAiDrawer.tsx` features `renderFormattedMessage` parsing markdown bold syntax (`**text**`) into styled `<strong>` tags. Includes offline fallback parser (`generateOfflineResponse`).
 * **Authentication:** Supabase Auth with Dual Login Modes: 6-Digit Email OTP verification & Password Authentication (`./app/login/page.tsx`).
-* **Admin User API:** `./app/api/admin/users/route.ts` (Creates/modifies users in both Supabase Auth `auth.users` AND public `profiles` table using `SUPABASE_SERVICE_ROLE_KEY`).
 
 ---
 
@@ -61,7 +68,7 @@ CREATE TABLE IF NOT EXISTS public.communities (
   description TEXT,
   logo_url TEXT,
   initials TEXT,
-  color TEXT DEFAULT '#6366f1',
+  color TEXT DEFAULT '#6366f1', -- Community signature color hex code
   created_at TIMESTAMPTZ DEFAULT now()
 );
 ```
@@ -83,12 +90,13 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 ## 4. Role-Based Access Control (RBAC) Matrix
 
-| User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Community Entity Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Dev / Admin** | ✅ (All Users) | ✅ | ✅ (Full Name, Slug, Logo, Desc) | ✅ (All + Venue Input) | ✅ (All) | ✅ (All) | ✅ |
-| **Manager (Lead)** | ✅ (Own Community Leads) | ❌ | ❌ | ✅ (Own Community + Venue) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
-| **Editor** | ❌ | ❌ | ❌ | ✅ (Own Community + Venue) | ❌ | ✅ (Own Community) | ✅ |
-| **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Modify Dev (`dev`) Users | Community Entity Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Dev (Super Admin)** | ✅ (All Users) | ✅ | ✅ | ✅ (Full Name, Slug, Logo, Desc, Color) | ✅ (All + Venue Input) | ✅ (All) | ✅ (All) | ✅ |
+| **Admin** | ✅ (Non-Dev Users) | ✅ | ❌ (Strictly Forbidden) | ✅ (Full Name, Slug, Logo, Desc, Color) | ✅ (All + Venue Input) | ✅ (All) | ✅ (All) | ✅ |
+| **Manager (Lead)** | ✅ (Own Community Leads) | ❌ | ❌ (Strictly Forbidden) | ✅ (Own Community via `/admin/my-community`) | ✅ (Own Community + Venue) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
+| **Editor** | ❌ | ❌ | ❌ (Strictly Forbidden) | ❌ | ✅ (Own Community + Venue) | ❌ | ✅ (Own Community) | ✅ |
+| **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ---
 
@@ -101,43 +109,49 @@ event-manager/
 ├── app/
 │   ├── api/
 │   │   ├── admin/
+│   │   │   ├── my-community/
+│   │   │   │   └── route.ts       # Manager level community update API endpoint
 │   │   │   └── users/
-│   │   │       └── route.ts       # Supabase Auth + Profiles admin management API endpoint
+│   │   │       └── route.ts       # Supabase Auth + Profiles admin management API endpoint with Dev role guards
 │   │   ├── chat/
 │   │   │   └── route.ts           # Ultra-fast gemini-1.5-flash AI chat endpoint
+│   │   ├── profile/
+│   │   │   └── route.ts           # Self profile update API route
 │   │   └── upload/
 │   │       └── route.ts           # Vercel Blob API upload route (@vercel/blob put)
 │   ├── auth/
 │   │   └── callback/
 │   │       └── route.ts           # Supabase Auth code exchange handler
 │   ├── admin/
-│   │   ├── layout.tsx             # Protected Admin layout with role-based navigation sidebar & sign-out
+│   │   ├── layout.tsx             # Protected Admin layout with standalone sticky sidebar & sign-out
 │   │   ├── page.tsx               # Admin Dashboard overview metrics
 │   │   ├── communities/
-│   │   │   └── page.tsx           # Community Entity Management with Edit & Create modals & WebP upload
+│   │   │   └── page.tsx           # Community Management with color pickers, modals & WebP upload
 │   │   ├── events/
-│   │   │   └── page.tsx           # Admin booking engine page integrated with Google Calendar Slot View & max-w-3xl modal
+│   │   │   └── page.tsx           # Admin booking engine integrated with Google Calendar Slot View
+│   │   ├── my-community/
+│   │   │   └── page.tsx           # Assigned community lead manager portal
 │   │   ├── profile/
 │   │   │   └── page.tsx           # User profile & avatar WebP upload page
 │   │   └── users/
-│   │       └── page.tsx           # Community Leads & Team Management Console
+│   │       └── page.tsx           # Community Leads & Team Management Console with Dev protection
 │   ├── calendar/
-│   │   └── page.tsx               # Google Calendar view route (Month, Week, Day time-grid views)
+│   │   └── page.tsx               # Google Calendar view route (Month, Week, Day grids)
 │   ├── components/
 │   │   ├── AdminSidebar.tsx       # Standalone admin sidebar component with sticky viewport layout isolation
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper hiding main navbar on /admin
 │   │   ├── EventAiDrawer.tsx      # z-[200] Event Assistant drawer with body scroll lock
-│   │   ├── GoogleCalendarView.tsx # Interactive Google Calendar component supporting public & admin slot booking modes
-│   │   ├── MasterCalendar.tsx     # Master event list timeline with 2-line summary cards
+│   │   ├── GoogleCalendarView.tsx # Interactive Google Calendar with multi-day connected banners & W3C luminance text contrast
+│   │   ├── MasterCalendar.tsx     # Master event list timeline with 2-line summary cards & community colors
 │   │   ├── Navbar.tsx             # Floating navbar with vector badge & single Calendar CTA button
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup
 │   ├── events/
 │   │   ├── page.tsx               # Public events directory
 │   │   └── [id]/
-│   │       └── page.tsx           # Dynamic event detail page with 4-5 line description overview
+│   │       └── page.tsx           # Dynamic event detail page with 3-line sentence description overview
 │   ├── login/
-│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Login with suppressHydrationWarning
-│   ├── page.tsx                   # Public landing page with clean production-ready code (zero comments)
+│   │   └── page.tsx               # Password Auth & 6-Digit Email OTP Login
+│   ├── page.tsx                   # Public landing page with clean production-ready code
 │   └── layout.tsx                 # Root layout with next/font/local (Quera, Gued, Rondured)
 ├── next.config.ts                 # Next.js configuration with remotePatterns for Vercel Blob Storage
 ├── proxy.ts                       # Next.js 16 Proxy file for session refresh & admin security
@@ -148,18 +162,17 @@ event-manager/
 │   ├── hooks/
 │   │   ├── useCommunities.ts      # Real-time Supabase hook for communities
 │   │   ├── useProfiles.ts         # Real-time Supabase hook for user profiles
-│   │   └── useRealtimeEvents.ts   # Real-time Supabase hook for events
-│   ├── summary.ts                 # Clean 2-line public summary generator (zero comments)
+│   │   └── useRealtimeEvents.ts   # Real-time Supabase hook for events joined with communities color
+│   ├── summary.ts                 # Clean 2-line public summary generator
 │   ├── supabase/
 │   │   ├── client.ts              # Browser Supabase client creator
 │   │   ├── middleware.ts          # Edge cookie session updater & protected route proxy
-│   │   ├── server.ts              # Server Supabase client creator
-│   │   └── storage.ts             # Storage adapter delegating to lib/upload.ts
-│   └── upload.ts                  # Clean client-side WebP image converter & Vercel Blob API uploader
+│   │   └── server.ts              # Server Supabase client creator
+│   └── upload.ts                  # Client-side WebP image converter & Vercel Blob API uploader
 ├── public/
 │   └── fonts/                     # Public font binaries for fallback web loading
 ├── changelogs.md                  # Versioning history & release notes
-├── design.md                      # Design system & motion specification
+├── design.md                      # Design system tokens, color specifications & motion standards
 ├── project_memory.md              # Technical program memory (this file)
 └── README.md                      # Technical setup & developer guide
 ```
