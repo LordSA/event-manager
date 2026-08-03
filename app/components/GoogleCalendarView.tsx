@@ -161,14 +161,53 @@ export default function GoogleCalendarView({
   const weekDays = getWeekDays(currentDate);
   const hours = Array.from({ length: 13 }, (_, i) => i + 8);
 
-  const isEventOnDate = (evt: CalendarEvent, dateObj: Date) => {
+  const isEventOnDate = (evt: CalendarEvent, dateObj: Date): boolean => {
     if (!evt.date) return false;
-    const evtDateStr = evt.date.split('T')[0];
+
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, '0');
     const d = String(dateObj.getDate()).padStart(2, '0');
     const targetStr = `${y}-${m}-${d}`;
-    return evtDateStr === targetStr;
+
+    const cleanStr = evt.date.trim();
+
+    let startPart = cleanStr;
+    let endPart = cleanStr;
+
+    if (cleanStr.toLowerCase().includes(' to ')) {
+      const parts = cleanStr.split(/ to /i);
+      startPart = parts[0].trim();
+      endPart = parts[1].trim();
+    } else if (cleanStr.includes(' - ')) {
+      const parts = cleanStr.split(/\s+-\s+/);
+      startPart = parts[0].trim();
+      endPart = parts[1].trim();
+    } else if (cleanStr.includes(' / ')) {
+      const parts = cleanStr.split(/\s+\/\s+/);
+      startPart = parts[0].trim();
+      endPart = parts[1].trim();
+    }
+
+    const extractIsoDate = (str: string): string => {
+      if (!str) return '';
+      const match = str.match(/\d{4}-\d{2}-\d{2}/);
+      if (match) return match[0];
+      const parsed = new Date(str);
+      if (!isNaN(parsed.getTime())) {
+        const py = parsed.getFullYear();
+        const pm = String(parsed.getMonth() + 1).padStart(2, '0');
+        const pd = String(parsed.getDate()).padStart(2, '0');
+        return `${py}-${pm}-${pd}`;
+      }
+      return str.split('T')[0];
+    };
+
+    const isoStart = extractIsoDate(startPart);
+    const isoEnd = extractIsoDate(endPart) || isoStart;
+
+    if (!isoStart) return false;
+
+    return targetStr >= isoStart && targetStr <= isoEnd;
   };
 
   const formatDateForSlot = (dateObj: Date): string => {

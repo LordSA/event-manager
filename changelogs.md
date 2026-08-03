@@ -2,6 +2,14 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.56.0] - 2026-08-03
+
+### 📆 Multi-Day Event Calendar Range Rendering Fix
+- **Multi-Day Date Range Evaluation ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Refactored `isEventOnDate` matcher function to parse start and end ISO date boundaries from multi-day event date range strings (`YYYY-MM-DD to YYYY-MM-DD`, `YYYY-MM-DD - YYYY-MM-DD`, `YYYY-MM-DD / YYYY-MM-DD`), ensuring multi-day events render continuously across all dates in their scheduled range.
+- **Supabase Multi-Day Date Hydration ([lib/hooks/useRealtimeEvents.ts](./lib/hooks/useRealtimeEvents.ts)):** Hydrated full multi-day date range strings from event system prompts (`- Date: YYYY-MM-DD to YYYY-MM-DD`) during realtime query sync.
+
+---
+
 ## [0.55.0] - 2026-08-03
 
 ### 🧱 Standalone Admin Sidebar Component & Calendar Size Optimization

@@ -46,24 +46,34 @@ export function useRealtimeEvents() {
         .order('event_date', { ascending: true });
 
       if (!error && data) {
-        const mapped: EventItemData[] = data.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          category: item.category || 'workshop',
-          community: item.community?.name || 'CEV Community',
-          community_id: item.community_id || item.community?.id || null,
-          community_slug: item.community?.slug || item.community_id || item.community?.id || null,
-          date: item.event_date,
-          time_slot: formatTimeSlotTo12Hr(item.time_slot),
-          description: item.description || '',
-          status: item.status as 'closed' | 'live',
-          image: item.poster_url || '/images/poster.webp',
-          poster_url: item.poster_url || '/images/poster.webp',
-          venue: item.venue || 'Campus Setup / CEV',
-          perks: item.perks || null,
-          system_prompt: item.system_prompt || null,
-          slug: item.slug || item.id,
-        }));
+        const mapped: EventItemData[] = data.map((item: any) => {
+          let dateStr = item.event_date;
+          if (item.system_prompt) {
+            const match = item.system_prompt.match(/- Date:\s*([^\n]+)/i);
+            if (match && match[1]) {
+              dateStr = match[1].trim();
+            }
+          }
+
+          return {
+            id: item.id,
+            title: item.title,
+            category: item.category || 'workshop',
+            community: item.community?.name || 'CEV Community',
+            community_id: item.community_id || item.community?.id || null,
+            community_slug: item.community?.slug || item.community_id || item.community?.id || null,
+            date: dateStr,
+            time_slot: formatTimeSlotTo12Hr(item.time_slot),
+            description: item.description || '',
+            status: item.status as 'closed' | 'live',
+            image: item.poster_url || '/images/poster.webp',
+            poster_url: item.poster_url || '/images/poster.webp',
+            venue: item.venue || 'Campus Setup / CEV',
+            perks: item.perks || null,
+            system_prompt: item.system_prompt || null,
+            slug: item.slug || item.id,
+          };
+        });
         setEventsList(mapped);
       }
     } catch (err) {
