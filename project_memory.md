@@ -171,8 +171,11 @@ event-manager/
 │   └── upload.ts                  # Client-side WebP image converter & Vercel Blob API uploader
 ├── public/
 │   └── fonts/                     # Public font binaries for fallback web loading
-├── changelogs.md                  # Versioning history & release notes
-├── design.md                      # Design system tokens, color specifications & motion standards
-├── project_memory.md              # Technical program memory (this file)
-└── README.md                      # Technical setup & developer guide
+├── CHANGELOGS.md                  # Versioning history & release notes
+├── CONTRIBUTORS.md                # Creator attribution, live GitHub contributor tracking & rules
+├── DESIGN.md                      # Design system tokens, color specifications & motion standards
+├── LICENSE                        # Official MIT License for Shibili Aman TK
+├── PROJECT_MEMORY.md              # Technical program memory (this file)
+├── README.md                      # Technical setup & developer guide
+└── SECURITY.md                    # Security policy & vulnerability reporting guide
 ```

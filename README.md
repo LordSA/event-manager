@@ -97,9 +97,13 @@ event-manager/
 │   └── layout.tsx                 # Root layout with font optimization
 ├── fonts/                         # Custom font binaries (.otf, .ttf)
 ├── lib/                           # Core utilities, Supabase client, WebP converter, & summarizers
-├── proxy.ts                       # Next.js 16 Proxy middleware for session refresh & route security
+├── public/
+│   └── fonts/                     # Public font binaries for fallback web loading
 ├── changelogs.md                  # Detailed versioning history
+├── CONTRIBUTORS.md                # Creator attribution & live GitHub contributor roll
 ├── design.md                      # Design system tokens & typography spec
+├── LICENSE                        # MIT License for Shibili Aman TK
 ├── project_memory.md              # Technical program memory & database schema
-└── README.md                      # Project documentation (this file)
+├── README.md                      # Project documentation (this file)
+└── SECURITY.md                    # Security policy & vulnerability reporting
 ```
