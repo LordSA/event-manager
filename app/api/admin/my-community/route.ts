@@ -1,3 +1,4 @@
+// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
