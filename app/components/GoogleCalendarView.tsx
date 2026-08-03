@@ -71,6 +71,28 @@ const hexToRgba = (hex: string, alpha: number): string => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+const isDarkColor = (hex: string): boolean => {
+  if (!hex || !hex.startsWith('#')) return true;
+  let c = hex.substring(1);
+  if (c.length === 3) {
+    c = c.split('').map((x) => x + x).join('');
+  }
+  const num = parseInt(c, 16);
+  if (isNaN(num)) return true;
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance < 0.6;
+};
+
+const getReadableTextColor = (hex: string): string => {
+  if (isDarkColor(hex)) {
+    return '#f8fafc'; // Crisp bright white for dark community colors
+  }
+  return hex; // Keep vibrant light color for bright community colors
+};
+
 interface GoogleCalendarViewProps {
   events: CalendarEvent[];
   communities: CommunityOption[];
@@ -500,7 +522,7 @@ export default function GoogleCalendarView({
                                 )}
                               </div>
                               <div className="text-[8px] text-slate-300 truncate flex items-center justify-between mt-0.5">
-                                <span className="truncate" style={{ color: commColor }}>{evt.community}</span>
+                                <span className="truncate font-semibold" style={{ color: getReadableTextColor(commColor) }}>{evt.community}</span>
                                 <span className="text-slate-400">{displayTime.split('-')[0].trim()}</span>
                               </div>
                             </>
@@ -604,7 +626,7 @@ export default function GoogleCalendarView({
                               <h4 className="text-[11px] font-bold text-white line-clamp-1 mt-0.5 font-heading">
                                 {evt.title}
                               </h4>
-                              <p className="text-[9px] font-semibold line-clamp-1 mt-0.5" style={{ color: commColor }}>
+                              <p className="text-[9px] font-bold line-clamp-1 mt-0.5" style={{ color: getReadableTextColor(commColor) }}>
                                 {evt.community}
                               </p>
                             </div>

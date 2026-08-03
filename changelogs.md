@@ -2,6 +2,15 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.60.0] - 2026-08-03
+
+### 💡 Dynamic Luminance Text Contrast for Community Colors
+- **Perceived Luminance Algorithm ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Implemented `isDarkColor` and `getReadableTextColor` algorithms based on W3C perceived relative luminance standards (`0.299*R + 0.587*G + 0.114*B`).
+  - When a community's brand color is dark (e.g. dark blue, indigo, deep purple), community name text automatically renders in crisp bright white (`#f8fafc`).
+  - Ensures 100% legibility across all calendar slot views regardless of how dark or vibrant the community's chosen hex color is.
+
+---
+
 ## [0.59.0] - 2026-08-03
 
 ### 🎨 Community Brand Color Selector & Dynamic Calendar Slot Rendering
