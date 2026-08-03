@@ -1,3 +1,4 @@
+// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import { createBrowserClient } from '@supabase/ssr';
 
 export function createClient() {

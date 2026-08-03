@@ -1,3 +1,4 @@
+// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 export async function convertToWebP(file: File, quality = 0.82): Promise<File> {
   if (file.type === 'image/webp') return file;
 
