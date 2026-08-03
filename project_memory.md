@@ -16,6 +16,7 @@ The platform centralizes scheduling, slot reservation, public discovery, direct 
 * **Styling:** Tailwind CSS v4 with Dark Design System combining Restrained Glassmorphism & Light Brutalism.
 * **Typography:** `next/font/local` font optimization (`Quera`, `Gued`, `Rondured`) — zero Cumulative Layout Shift (CLS) & preloaded fonts.
 * **Smooth Scrolling:** Lenis Smooth Scroll (`./app/components/SmoothScroll.tsx`) with `data-lenis-prevent` on overlay containers.
+* **Clean Code Policy:** Zero explanatory inline comments in source code files (`.ts`, `.tsx`, `.js`, `.css`) for maximum production readability.
 
 ### Backend, Database & Vercel Blob Storage
 * **Database Engine:** Supabase PostgreSQL with RLS (`events.poster_url`, `events.venue`, `communities.logo_url`, `profiles.avatar_url`).

@@ -169,8 +169,7 @@ function LoginForm() {
         )}
 
         {authMode === 'password' && (
-          { authMode === 'password' && (
-            <form onSubmit={handlePasswordLogin} suppressHydrationWarning className="space-y-4">
+          <form onSubmit={handlePasswordLogin} suppressHydrationWarning className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">
                   Email Address

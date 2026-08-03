@@ -2,6 +2,13 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.61.0] - 2026-08-03
+
+### 🧹 Source Code Comment Cleanup
+- **Production Code Standard Enforcement:** Systematically removed all inline comments, block explanations, notes, and commented code blocks across all `.ts`, `.tsx`, `.js`, and `.css` source files in accordance with workspace standards. Markdown documentation (`.md`) was preserved.
+
+---
+
 ## [0.60.0] - 2026-08-03
 
 ### 💡 Dynamic Luminance Text Contrast for Community Colors
