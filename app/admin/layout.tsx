@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'My Community', href: '/admin/my-community', icon: Building, roleRequired: ['manager', 'editor'] },
     { label: 'User Roles', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin', 'manager'] },
     { label: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin'] },
-    { label: 'My Profile', href: '/admin/profile', icon: User, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
+    { label: 'Profile', href: '/admin/profile', icon: User, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
   ];
 
   return (
@@ -99,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             href="/"
             className="flex items-center justify-between text-xs text-[#94a3b8] hover:text-white transition-colors py-2 px-1 font-semibold"
           >
-            <span>Public Front-End</span>
+            <span>Home</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
           </Link>
 

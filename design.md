@@ -52,3 +52,4 @@ The design language of **Whats @CEV / Event Manager** is crafted as a high-contr
 * **HTML5 Time Parser (`parseTimeTo24Hr`):** Converts 12-hour database strings into 24-hour `HH:mm` format for time inputs.
 * **Spacious 2-Column Layout (`max-w-3xl`):** Extended modal container width to `768px` (`max-w-3xl`) with `data-lenis-prevent` for mouse wheel scrolling inside Lenis smooth scroll overlays.
 * **Z-Index Layering:** Main Navbar (`z-[100]`), Modal Windows (`z-[150]`), AI Assistant Drawer (`z-[200]`).
+* **Admin Google Calendar Slot View:** Fully interactive month/week/day/grid slot view with amber draft indicators (`#f59e0b`), emerald live badges (`#10b981`), direct cell date selection, popovers with quick status toggles, and RBAC matrix enforcement.

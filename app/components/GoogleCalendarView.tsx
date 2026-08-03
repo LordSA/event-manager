@@ -1,9 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, X, ArrowUpRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar as CalendarIcon,
+  Clock,
+  X,
+  ArrowUpRight,
+  Lock,
+  CheckCircle2,
+  Edit3,
+  Trash2,
+  Plus,
+  Grid as GridIcon,
+  LayoutGrid
+} from 'lucide-react';
 import Link from 'next/link';
 import { generate2LineSummary } from '@/lib/summary';
+import { UserRole } from '@/types/database.types';
 
 export interface CalendarEvent {
   id: string;
@@ -11,10 +26,14 @@ export interface CalendarEvent {
   category: string;
   community: string;
   date: string;
-  time_slot?: string;
-  description?: string;
-  status?: 'closed' | 'live';
-  slug?: string;
+  time_slot?: string | null;
+  description?: string | null;
+  status?: 'closed' | 'live' | null;
+  slug?: string | null;
+  venue?: string | null;
+  perks?: string | null;
+  poster_url?: string | null;
+  image?: string | null;
 }
 
 export interface CommunityOption {
@@ -28,9 +47,16 @@ interface GoogleCalendarViewProps {
   events: CalendarEvent[];
   communities: CommunityOption[];
   isManagerView?: boolean;
+  isAdminMode?: boolean;
+  currentUserRole?: UserRole;
+  currentUserCommunityName?: string;
+  onSelectDateSlot?: (dateStr: string, timeStr?: string) => void;
+  onEditEvent?: (event: CalendarEvent) => void;
+  onToggleStatus?: (id: string, currentStatus: 'closed' | 'live', community: string) => void;
+  onDeleteEvent?: (id: string, community: string) => void;
 }
 
-function parseTimeSlot(slot?: string): { startHour: number; endHour: number; displayTime: string } {
+function parseTimeSlot(slot?: string | null): { startHour: number; endHour: number; displayTime: string } {
   if (!slot || !slot.includes('-')) {
     return { startHour: 10, endHour: 12, displayTime: slot || '10:00 AM - 12:00 PM' };
   }
@@ -58,11 +84,24 @@ function parseTimeSlot(slot?: string): { startHour: number; endHour: number; dis
   return { startHour, endHour, displayTime: `${rawStart} - ${rawEnd}` };
 }
 
-export default function GoogleCalendarView({ events, communities, isManagerView = false }: GoogleCalendarViewProps) {
-  const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('month');
+export default function GoogleCalendarView({
+  events,
+  communities,
+  isAdminMode = false,
+  currentUserRole = 'editor',
+  currentUserCommunityName = '',
+  onSelectDateSlot,
+  onEditEvent,
+  onToggleStatus,
+  onDeleteEvent,
+}: GoogleCalendarViewProps) {
+  const [viewMode, setViewMode] = useState<'month' | 'week' | 'day' | 'grid'>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedCommunity, setSelectedCommunity] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [activeModalEvent, setActiveModalEvent] = useState<CalendarEvent | null>(null);
+
+  const isSuperAdmin = currentUserRole === 'dev' || currentUserRole === 'admin';
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
@@ -71,8 +110,11 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
   const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
 
   const filteredEvents = events.filter((evt) => {
-    if (selectedCommunity !== 'all') {
-      return (evt.community || '').toLowerCase() === selectedCommunity.toLowerCase();
+    if (selectedCommunity !== 'all' && (evt.community || '').toLowerCase() !== selectedCommunity.toLowerCase()) {
+      return false;
+    }
+    if (selectedStatus !== 'all' && (evt.status || 'closed') !== selectedStatus) {
+      return false;
     }
     return true;
   });
@@ -129,26 +171,33 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
     return evtDateStr === targetStr;
   };
 
+  const formatDateForSlot = (dateObj: Date): string => {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
   return (
-    <div className="brutalist-card rounded-2xl overflow-hidden flex flex-col font-sans">
-      <div className="p-4 border-b border-[#1e2436] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[#161a29]">
-        <div className="flex items-center space-x-3">
+    <div className="brutalist-card rounded-2xl overflow-hidden flex flex-col font-sans border-2 border-[#1e2436] bg-[#0f121d]">
+      <div className="p-4 border-b border-[#1e2436] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-[#161a29]">
+        <div className="flex flex-wrap items-center space-x-3">
           <button
             onClick={handleToday}
-            className="px-3.5 py-1.5 rounded-lg bg-[#0f121d] border border-[#1e2436] text-xs font-semibold text-white hover:border-[#6366f1] transition-colors"
+            className="px-3.5 py-1.5 rounded-xl bg-[#0f121d] border border-[#1e2436] text-xs font-bold text-white hover:border-[#6366f1] transition-colors"
           >
             Today
           </button>
           <div className="flex items-center space-x-1">
             <button
               onClick={handlePrev}
-              className="p-1.5 rounded-lg text-[#94a3b8] hover:text-white hover:bg-[#0f121d] transition-colors"
+              className="p-1.5 rounded-xl text-[#94a3b8] hover:text-white hover:bg-[#0f121d] transition-colors border border-transparent hover:border-[#1e2436]"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleNext}
-              className="p-1.5 rounded-lg text-[#94a3b8] hover:text-white hover:bg-[#0f121d] transition-colors"
+              className="p-1.5 rounded-xl text-[#94a3b8] hover:text-white hover:bg-[#0f121d] transition-colors border border-transparent hover:border-[#1e2436]"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -158,26 +207,40 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
           </h2>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <select
-            value={selectedCommunity}
-            onChange={(e) => setSelectedCommunity(e.target.value)}
-            className="px-3 py-1.5 bg-[#0f121d] border border-[#1e2436] rounded-lg text-xs font-medium text-white focus:outline-none focus:border-[#6366f1]"
-          >
-            <option value="all">All Communities</option>
-            {communities.map((c) => (
-              <option key={c.id} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={selectedCommunity}
+              onChange={(e) => setSelectedCommunity(e.target.value)}
+              className="px-3 py-1.5 bg-[#0f121d] border border-[#1e2436] rounded-xl text-xs font-medium text-white focus:outline-none focus:border-[#6366f1]"
+            >
+              <option value="all">All Communities</option>
+              {communities.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
 
-          <div className="flex items-center bg-[#0f121d] border border-[#1e2436] rounded-lg p-1">
-            {(['month', 'week', 'day'] as const).map((mode) => (
+            {isAdminMode && (
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="px-3 py-1.5 bg-[#0f121d] border border-[#1e2436] rounded-xl text-xs font-medium text-white focus:outline-none focus:border-[#6366f1]"
+              >
+                <option value="all">All Statuses</option>
+                <option value="closed">Closed Draft Slots</option>
+                <option value="live">Live Published</option>
+              </select>
+            )}
+          </div>
+
+          <div className="flex items-center bg-[#0f121d] border border-[#1e2436] rounded-xl p-1">
+            {(['month', 'week', 'day', 'grid'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`px-3 py-1 text-xs font-semibold capitalize rounded-md transition-all ${
+                className={`px-3 py-1 text-xs font-semibold capitalize rounded-lg transition-all ${
                   viewMode === mode
                     ? 'bg-[#6366f1] text-white shadow-sm font-bold'
                     : 'text-[#94a3b8] hover:text-white'
@@ -191,7 +254,7 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
       </div>
 
       {viewMode === 'month' && (
-        <div className="flex-1 flex flex-col min-h-[600px]">
+        <div className="flex-1 flex flex-col min-h-[620px]">
           <div className="grid grid-cols-7 border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2.5 uppercase tracking-wider">
             {daysOfWeek.map((day) => (
               <div key={day}>{day}</div>
@@ -215,7 +278,7 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
               return (
                 <div
                   key={`day-${dayNum}`}
-                  className="border-r border-b border-[#1e2436] p-2 min-h-[110px] flex flex-col justify-start hover:bg-[#161a29]/40 transition-colors"
+                  className="border-r border-b border-[#1e2436] p-2 min-h-[110px] flex flex-col justify-start hover:bg-[#161a29]/40 transition-colors group relative"
                 >
                   <div className="flex items-center justify-between mb-1.5">
                     <span
@@ -225,19 +288,66 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
                     >
                       {dayNum}
                     </span>
+
+                    {isAdminMode && onSelectDateSlot && (
+                      <button
+                        onClick={() => onSelectDateSlot(formatDateForSlot(dateObj))}
+                        className="opacity-0 group-hover:opacity-100 p-1 text-[10px] font-bold bg-[#6366f1]/20 hover:bg-[#6366f1] text-[#6366f1] hover:text-white rounded-lg transition-all flex items-center gap-0.5"
+                        title="Book Slot on this Date"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
 
-                  <div className="space-y-1 overflow-y-auto max-h-[90px] pr-0.5 scrollbar-hide">
+                  <div className="space-y-1 overflow-y-auto max-h-[90px] pr-0.5 scrollbar-hide flex-1">
                     {dayEvents.map((evt) => {
                       const { displayTime } = parseTimeSlot(evt.time_slot);
+                      const isClosed = evt.status === 'closed';
+                      const isOwnCommunity = isSuperAdmin || (
+                        currentUserCommunityName &&
+                        (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
+                      );
+
+                      if (isAdminMode && !isOwnCommunity && isClosed) {
+                        return (
+                          <div
+                            key={evt.id}
+                            onClick={() => setActiveModalEvent(evt)}
+                            className="w-full text-left px-2 py-1 rounded-lg bg-amber-950/40 border border-amber-900/60 transition-colors block cursor-pointer"
+                          >
+                            <div className="text-[10px] font-bold text-amber-400 truncate flex items-center gap-1">
+                              <Lock className="w-3 h-3 text-amber-400 shrink-0" />
+                              <span>Slot Booked (Reserved)</span>
+                            </div>
+                            <div className="text-[9px] text-amber-500/80 truncate">
+                              {evt.community}
+                            </div>
+                          </div>
+                        );
+                      }
+
                       return (
                         <button
                           key={evt.id}
                           onClick={() => setActiveModalEvent(evt)}
-                          className="w-full text-left px-2 py-1 rounded bg-[#161a29] hover:bg-[#1e2436] border border-[#1e2436] transition-colors block group"
+                          className={`w-full text-left px-2 py-1 rounded-lg border transition-colors block group/btn ${
+                            isClosed
+                              ? 'bg-amber-950/40 border-amber-800/80 hover:border-amber-500 text-amber-300'
+                              : 'bg-[#161a29] border-[#1e2436] hover:border-[#6366f1] text-white'
+                          }`}
                         >
-                          <div className="text-[11px] font-bold text-white truncate leading-tight group-hover:text-[#6366f1] font-heading">
-                            {evt.title}
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-[11px] font-bold truncate leading-tight font-heading group-hover/btn:text-[#6366f1]">
+                              {evt.title}
+                            </span>
+                            {isAdminMode && (
+                              <span className={`text-[8px] font-extrabold px-1 rounded uppercase shrink-0 ${
+                                isClosed ? 'bg-amber-900/80 text-amber-300' : 'bg-emerald-950 text-emerald-400'
+                              }`}>
+                                {isClosed ? 'Draft' : 'Live'}
+                              </span>
+                            )}
                           </div>
                           <div className="text-[9px] text-[#94a3b8] truncate flex items-center justify-between mt-0.5">
                             <span>{evt.community}</span>
@@ -288,24 +398,47 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
                   return (
                     <div
                       key={d.toISOString()}
-                      className="border-r border-[#1e2436]/40 p-1 relative min-h-[60px]"
+                      onClick={() => {
+                        if (isAdminMode && onSelectDateSlot && dayEvents.length === 0) {
+                          const hourStr = hour < 10 ? `0${hour}:00` : `${hour}:00`;
+                          onSelectDateSlot(formatDateForSlot(d), hourStr);
+                        }
+                      }}
+                      className="border-r border-[#1e2436]/40 p-1 relative min-h-[60px] cursor-pointer hover:bg-[#161a29]/30 transition-colors"
                     >
                       {dayEvents.map((evt) => {
                         const { startHour, endHour, displayTime } = parseTimeSlot(evt.time_slot);
                         const durationHours = Math.max(1, endHour - startHour);
                         const blockHeightPx = durationHours * 60 - 6;
+                        const isClosed = evt.status === 'closed';
 
                         return (
                           <div
                             key={evt.id}
-                            onClick={() => setActiveModalEvent(evt)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveModalEvent(evt);
+                            }}
                             style={{ height: `${blockHeightPx}px` }}
-                            className="absolute left-1 right-1 top-1 z-10 p-2 rounded-lg bg-[#161a29] border border-[#6366f1]/50 hover:border-[#6366f1] cursor-pointer shadow-md flex flex-col justify-between transition-all overflow-hidden"
+                            className={`absolute left-1 right-1 top-1 z-10 p-2 rounded-xl border cursor-pointer shadow-md flex flex-col justify-between transition-all overflow-hidden ${
+                              isClosed
+                                ? 'bg-amber-950/60 border-amber-700/80 hover:border-amber-400'
+                                : 'bg-[#161a29] border-[#6366f1]/50 hover:border-[#6366f1]'
+                            }`}
                           >
                             <div>
-                              <span className="text-[9px] font-mono text-[#6366f1] block uppercase font-bold">
-                                {evt.category}
-                              </span>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] font-mono text-[#6366f1] uppercase font-bold">
+                                  {evt.category}
+                                </span>
+                                {isAdminMode && (
+                                  <span className={`text-[8px] uppercase font-bold px-1 rounded ${
+                                    isClosed ? 'bg-amber-900 text-amber-300' : 'bg-emerald-950 text-emerald-400'
+                                  }`}>
+                                    {isClosed ? 'Draft' : 'Live'}
+                                  </span>
+                                )}
+                              </div>
                               <h4 className="text-xs font-bold text-white line-clamp-1 mt-0.5 font-heading">
                                 {evt.title}
                               </h4>
@@ -328,9 +461,148 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
         </div>
       )}
 
+      {viewMode === 'grid' && (
+        <div className="p-6 bg-[#08090d] min-h-[500px]">
+          {filteredEvents.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 text-xs italic bg-[#0f121d] border border-[#1e2436] rounded-2xl">
+              No events found matching current criteria.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredEvents.map((evt) => {
+                const isClosed = evt.status === 'closed';
+                const isOwnCommunity = isSuperAdmin || (
+                  currentUserCommunityName &&
+                  (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
+                );
+
+                if (isAdminMode && !isOwnCommunity && isClosed) {
+                  return (
+                    <div
+                      key={evt.id}
+                      className="p-6 rounded-2xl bg-slate-900/40 border border-amber-950/80 space-y-4 flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase font-bold text-amber-400 px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-800 flex items-center gap-1">
+                            <Lock className="w-3 h-3" /> Slot Booked (Reserved)
+                          </span>
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-slate-300 flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-amber-400" /> Time Slot Reserved
+                          </h4>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Reserved by another campus community to prevent scheduling conflicts. Details hidden until live.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="pt-4 border-t border-slate-800/80 space-y-1">
+                        <div className="font-semibold text-slate-300 text-xs">{evt.community}</div>
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                          <span className="flex items-center gap-1">
+                            <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
+                          </span>
+                          <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    key={evt.id}
+                    onClick={() => setActiveModalEvent(evt)}
+                    className={`p-6 rounded-2xl bg-[#0f121d] border ${
+                      isClosed ? 'border-amber-800/60' : 'border-[#1e2436]'
+                    } space-y-4 flex flex-col justify-between cursor-pointer hover:border-[#6366f1] transition-all`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
+                          {evt.category}
+                        </span>
+                        {isAdminMode ? (
+                          <span
+                            className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5 ${
+                              isClosed
+                                ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                                : 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                            }`}
+                          >
+                            {isClosed ? (
+                              <>
+                                <Lock className="w-3 h-3" /> Closed Draft
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle2 className="w-3 h-3" /> Live
+                              </>
+                            )}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> Live
+                          </span>
+                        )}
+                      </div>
+
+                      <div>
+                        <h4 className="text-xl font-bold text-white font-heading">{evt.title}</h4>
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-[#1e2436] space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-200">{evt.community}</span>
+                        {isAdminMode && isOwnCommunity && (
+                          <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
+                            {onEditEvent && (
+                              <button
+                                onClick={() => onEditEvent(evt)}
+                                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                                title="Edit Event Slot"
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </button>
+                            )}
+                            {onDeleteEvent && (
+                              <button
+                                onClick={() => onDeleteEvent(evt.id, evt.community)}
+                                className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
+                                title="Delete Event Slot"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span className="flex items-center gap-1">
+                          <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
+                        </span>
+                        <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {activeModalEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="brutalist-card p-6 max-w-md w-full space-y-4 rounded-xl relative text-white">
+          <div className="brutalist-card p-6 max-w-md w-full space-y-5 rounded-2xl relative text-white bg-[#0f121d] border-2 border-[#1e2436] shadow-2xl">
             <button
               onClick={() => setActiveModalEvent(null)}
               className="absolute top-4 right-4 text-[#94a3b8] hover:text-white p-1 rounded-lg hover:bg-[#161a29] transition-colors"
@@ -338,16 +610,28 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
               <X className="w-5 h-5" />
             </button>
 
-            <div className="space-y-1">
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#6366f1] text-white border border-[#4f46e5]">
-                {activeModalEvent.category}
-              </span>
-              <h3 className="text-xl font-bold text-white mt-2 font-display">{activeModalEvent.title}</h3>
-              <p className="text-xs text-[#94a3b8]">{activeModalEvent.community}</p>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-lg bg-[#6366f1] text-white border border-[#4f46e5]">
+                  {activeModalEvent.category}
+                </span>
+                {isAdminMode && (
+                  <span className={`text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-lg flex items-center gap-1 border ${
+                    activeModalEvent.status === 'closed'
+                      ? 'bg-amber-950 text-amber-400 border-amber-800'
+                      : 'bg-emerald-950 text-emerald-400 border-emerald-800'
+                  }`}>
+                    {activeModalEvent.status === 'closed' ? <Lock className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
+                    {activeModalEvent.status === 'closed' ? 'Closed Draft' : 'Live Published'}
+                  </span>
+                )}
+              </div>
+              <h3 className="text-xl font-bold text-white font-display mt-2">{activeModalEvent.title}</h3>
+              <p className="text-xs text-[#94a3b8] font-semibold">{activeModalEvent.community}</p>
             </div>
 
             {activeModalEvent.description && (
-              <p className="text-xs text-[#94a3b8] leading-relaxed border-t border-b border-[#1e2436] py-3 line-clamp-2">
+              <p className="text-xs text-[#94a3b8] leading-relaxed border-t border-b border-[#1e2436] py-3 line-clamp-3">
                 {generate2LineSummary(activeModalEvent.description)}
               </p>
             )}
@@ -363,12 +647,58 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
               </div>
             </div>
 
-            <div className="pt-2 flex justify-end">
+            <div className="pt-3 border-t border-[#1e2436] flex flex-wrap items-center justify-between gap-2">
+              {isAdminMode && (
+                <div className="flex items-center gap-2">
+                  {onToggleStatus && (
+                    <button
+                      onClick={() => {
+                        onToggleStatus(activeModalEvent.id, activeModalEvent.status || 'live', activeModalEvent.community);
+                        setActiveModalEvent(null);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center gap-1 transition-all ${
+                        activeModalEvent.status === 'closed'
+                          ? 'bg-emerald-950 text-emerald-300 border-emerald-800 hover:bg-emerald-900'
+                          : 'bg-amber-950 text-amber-300 border-amber-800 hover:bg-amber-900'
+                      }`}
+                    >
+                      {activeModalEvent.status === 'closed' ? 'Publish Live' : 'Set to Draft'}
+                    </button>
+                  )}
+
+                  {onEditEvent && (
+                    <button
+                      onClick={() => {
+                        onEditEvent(activeModalEvent);
+                        setActiveModalEvent(null);
+                      }}
+                      className="p-2 text-slate-300 hover:text-white rounded-xl bg-[#161a29] hover:bg-[#1e2436] border border-[#1e2436]"
+                      title="Edit Slot"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {onDeleteEvent && (
+                    <button
+                      onClick={() => {
+                        onDeleteEvent(activeModalEvent.id, activeModalEvent.community);
+                        setActiveModalEvent(null);
+                      }}
+                      className="p-2 text-slate-300 hover:text-red-400 rounded-xl bg-[#161a29] hover:bg-[#1e2436] border border-[#1e2436]"
+                      title="Delete Slot"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              )}
+
               <Link
                 href={`/events/${activeModalEvent.slug || activeModalEvent.id}`}
-                className="brutalist-btn-primary px-4 py-2 text-xs rounded-lg flex items-center space-x-1.5"
+                className="brutalist-btn-primary px-4 py-2 text-xs rounded-xl flex items-center space-x-1.5 font-bold ml-auto"
               >
-                <span>View Full Page</span>
+                <span>View Page</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -378,3 +708,4 @@ export default function GoogleCalendarView({ events, communities, isManagerView 
     </div>
   );
 }
+

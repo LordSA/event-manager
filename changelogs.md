@@ -2,6 +2,17 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.54.0] - 2026-08-03
+
+### 📅 Admin Google Calendar Event Slot View Upgrade
+- **Admin Slot Booking Page ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Transformed admin event slot management page into a Google Calendar slot view.
+- **Interactive Google Calendar Component ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Upgraded `GoogleCalendarView` with Admin Slot Booking capabilities:
+  - Supports **Month**, **Week**, **Day**, and **Grid/List** view modes.
+  - Interactive Date Cell Selection: Clicking empty date/time cells in Month, Week, or Day views pre-selects start/end dates and times in the slot booking modal.
+  - Visual Status Badging: Amber `Closed (Draft Slot)` badges and Emerald `Live (Published)` badges.
+  - Quick Slot Action Popovers: 1-click status toggles, inline slot editing, slot deletion (with RBAC enforcement), and public page links.
+- **Documentation & Zero Comments Enforcement:** Updated all project documentation and maintained 100% clean production code with zero temporary comments.
+
 ---
 
 ## [0.53.0] - 2026-08-01

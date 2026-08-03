@@ -115,7 +115,7 @@ event-manager/
 │   │   ├── communities/
 │   │   │   └── page.tsx           # Community Entity Management with Edit & Create modals & WebP upload
 │   │   ├── events/
-│   │   │   └── page.tsx           # Clean booking engine page with max-w-3xl modal & parseTimeTo24Hr
+│   │   │   └── page.tsx           # Admin booking engine page integrated with Google Calendar Slot View & max-w-3xl modal
 │   │   ├── profile/
 │   │   │   └── page.tsx           # User profile & avatar WebP upload page
 │   │   └── users/
@@ -125,7 +125,7 @@ event-manager/
 │   ├── components/
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper hiding main navbar on /admin
 │   │   ├── EventAiDrawer.tsx      # z-[200] Event Assistant drawer with body scroll lock
-│   │   ├── GoogleCalendarView.tsx # Google Calendar component with 2-line description summarizer
+│   │   ├── GoogleCalendarView.tsx # Interactive Google Calendar component supporting public & admin slot booking modes
 │   │   ├── MasterCalendar.tsx     # Master event list timeline with 2-line summary cards
 │   │   ├── Navbar.tsx             # Floating navbar with vector badge & single Calendar CTA button
 │   │   └── SmoothScroll.tsx       # Lenis smooth scroll provider setup

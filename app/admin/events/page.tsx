@@ -7,6 +7,7 @@ import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
 import { createClient } from '@/lib/supabase/client';
 import { uploadImageFile } from '@/lib/upload';
+import GoogleCalendarView from '@/app/components/GoogleCalendarView';
 
 function formatSingleTime12(t: string): string {
   if (!t) return '';
@@ -150,13 +151,26 @@ export default function EventBookingEnginePage() {
 
   const isSuperAdmin = currentUserRole === 'dev' || currentUserRole === 'admin';
 
-  const openAddModal = () => {
+  const openAddModal = (initialDate?: string, initialStartTime?: string) => {
     setEditingEvent(null);
     setTitle('');
-    setStartDate(new Date().toISOString().split('T')[0]);
-    setEndDate(new Date().toISOString().split('T')[0]);
-    setStartTime('10:00');
-    setEndTime('16:00');
+    const targetDate = initialDate || new Date().toISOString().split('T')[0];
+    setStartDate(targetDate);
+    setEndDate(targetDate);
+    setStartTime(initialStartTime || '10:00');
+    if (initialStartTime) {
+      const parts = initialStartTime.split(':');
+      let hour = parseInt(parts[0], 10);
+      if (!isNaN(hour)) {
+        hour = (hour + 2) % 24;
+        const endHourStr = hour < 10 ? `0${hour}` : `${hour}`;
+        setEndTime(`${endHourStr}:${parts[1] || '00'}`);
+      } else {
+        setEndTime('16:00');
+      }
+    } else {
+      setEndTime('16:00');
+    }
     setCategory('Workshop');
     setCustomCategory('');
     setSelectedCommunityId(currentUserCommunityId || '');
@@ -171,8 +185,8 @@ export default function EventBookingEnginePage() {
   const openEditModal = (evt: any) => {
     setEditingEvent(evt);
     setTitle(evt.title || '');
-    setStartDate(evt.event_date || new Date().toISOString().split('T')[0]);
-    setEndDate(evt.event_date || new Date().toISOString().split('T')[0]);
+    setStartDate(evt.event_date || evt.date?.split('T')[0] || new Date().toISOString().split('T')[0]);
+    setEndDate(evt.event_date || evt.date?.split('T')[0] || new Date().toISOString().split('T')[0]);
 
     if (evt.time_slot && evt.time_slot.includes('-')) {
       const parts = evt.time_slot.split('-');
@@ -425,7 +439,7 @@ export default function EventBookingEnginePage() {
 
         <div className="flex items-center space-x-3">
           <button
-            onClick={openAddModal}
+            onClick={() => openAddModal()}
             className="flex items-center space-x-2 px-4 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/25"
           >
             <Plus className="w-4 h-4" />
@@ -443,174 +457,22 @@ export default function EventBookingEnginePage() {
       )}
 
       <div className="space-y-4">
-        <h3 className="text-lg font-bold text-white">Schedules</h3>
         {loading ? (
           <div className="p-8 text-center text-slate-400 text-sm bg-slate-900/60 border border-slate-800 rounded-2xl">
-            Syncing......
+            Syncing calendar slots......
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {eventsList.length === 0 ? (
-              <div className="col-span-full p-8 text-center text-slate-500 text-xs italic bg-slate-900/40 border border-slate-800 rounded-2xl">
-                No events or reserved slots found. Click &quot;Book Date / Time Slot&quot; to reserve your first event.
-              </div>
-            ) : (
-              eventsList.map((evt) => {
-                const isOwnCommunity = isSuperAdmin || (
-                  currentUserCommunityName &&
-                  evt.community.toLowerCase() === currentUserCommunityName.toLowerCase()
-                );
-                const isClosed = evt.status === 'closed';
-
-                if (!isOwnCommunity && isClosed) {
-                  return (
-                    <div
-                      key={evt.id}
-                      className="p-6 rounded-2xl bg-slate-900/40 border border-amber-950/80 space-y-4 flex flex-col justify-between"
-                    >
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] uppercase font-bold text-amber-400 px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-800 flex items-center gap-1">
-                            <Lock className="w-3 h-3" /> Slot Booked (Reserved)
-                          </span>
-                        </div>
-
-                        <div>
-                          <h4 className="text-lg font-bold text-slate-300 flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-amber-400" /> Time Slot Reserved
-                          </h4>
-                          <p className="text-xs text-slate-500 mt-1">
-                            Reserved by another campus community to prevent scheduling conflicts. Details hidden until live.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-800/80 space-y-1">
-                        <div className="font-semibold text-slate-300 text-xs">{evt.community}</div>
-                        <div className="flex items-center justify-between text-xs text-slate-400">
-                          <span className="flex items-center gap-1">
-                            <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
-                          </span>
-                          <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {formatTimeSlotTo12Hr(evt.time_slot)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-
-                if (!isOwnCommunity && !isClosed) {
-                  return (
-                    <div
-                      key={evt.id}
-                      className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between"
-                    >
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
-                            {evt.category}
-                          </span>
-                          <span className="text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> Live
-                          </span>
-                        </div>
-
-                        <div>
-                          <h4 className="text-xl font-bold text-white">{evt.title}</h4>
-                          <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
-                        </div>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-800 space-y-1">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-slate-200">{evt.community}</span>
-                          <span className="text-[10px] text-slate-500 italic">Read-only</span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-slate-400">
-                          <span className="flex items-center gap-1">
-                            <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
-                          </span>
-                          <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {formatTimeSlotTo12Hr(evt.time_slot)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-
-                return (
-                  <div
-                    key={evt.id}
-                    className={`p-6 rounded-2xl bg-slate-900/60 border ${isClosed ? 'border-amber-800/60' : 'border-slate-800'
-                      } space-y-4 flex flex-col justify-between`}
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs uppercase font-bold text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50">
-                          {evt.category}
-                        </span>
-                        <button
-                          onClick={() => handleToggleStatus(evt.id, evt.status || 'live', evt.community)}
-                          className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5 transition-all ${isClosed
-                            ? 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'
-                            : 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900'
-                            }`}
-                        >
-                          {isClosed ? (
-                            <>
-                              <Lock className="w-3 h-3" /> Closed (Draft Slot)
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle2 className="w-3 h-3" /> Live (Published)
-                            </>
-                          )}
-                        </button>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xl font-bold text-white">{evt.title}</h4>
-                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-slate-800 space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-200">{evt.community}</span>
-                        <div className="flex items-center space-x-1">
-                          <button
-                            onClick={() => openEditModal(evt)}
-                            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
-                            title="Edit Event Slot Details"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(evt.id, evt.community)}
-                            className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
-                            title={currentUserRole === 'editor' ? 'Editors cannot delete events' : 'Delete event'}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
-                        </span>
-                        <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-cyan-400" /> {formatTimeSlotTo12Hr(evt.time_slot)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
+          <GoogleCalendarView
+            events={eventsList}
+            communities={communities}
+            isAdminMode={true}
+            currentUserRole={currentUserRole}
+            currentUserCommunityName={currentUserCommunityName}
+            onSelectDateSlot={(dateStr, timeStr) => openAddModal(dateStr, timeStr)}
+            onEditEvent={(evt) => openEditModal(evt)}
+            onToggleStatus={(id, currentStatus, comm) => handleToggleStatus(id, currentStatus, comm)}
+            onDeleteEvent={(id, comm) => handleDelete(id, comm)}
+          />
         )}
       </div>
 

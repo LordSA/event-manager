@@ -6,7 +6,7 @@ A modern, high-performance event management, slot booking, and public discovery 
 
 ## 🚀 Key Features & Capabilities
 
-- **Centralized Master Event Schedule:** Conflict-free slot booking engine where organizers reserve dates in `closed` draft mode before publishing to `live` state.
+- **Centralized Master Event Schedule & Google Calendar View:** Interactive Google Calendar slot booking engine (Month, Week, Day, and Grid views) where organizers click date/time slots directly to reserve dates in `closed` draft mode before publishing to `live` state.
 - **Role-Based Access Control (RBAC):** Tiered permissions for Developers (`dev`), Super Admins (`admin`), Community Leads (`manager`), and Event Editors (`editor`).
 - **Vercel Blob Storage Integration:** Direct client-side WebP image conversion and asset uploading for event posters (`posters/*.webp`), community logos (`logos/*.webp`), and user avatars (`avatars/*.webp`).
 - **Fast AI Event Assistant & Response Sanitizer:** Multi-provider fallback AI chat engine (`gemini-1.5-flash` with Grok & OpenRouter fallbacks) with intelligent offline parsing (`generateOfflineResponse`) delivering direct answers for event schedules, venues, rules, and registration guidance without prompt preambles or raw system prompt leaks.
