@@ -1,3 +1,4 @@
+// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";

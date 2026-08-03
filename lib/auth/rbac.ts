@@ -1,3 +1,4 @@
+// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import { UserRole } from '@/types/database.types';
 
 export interface RBACPermissions {
