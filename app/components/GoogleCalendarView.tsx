@@ -367,9 +367,9 @@ export default function GoogleCalendarView({
               return (
                 <div
                   key={`day-${dayNum}`}
-                  className="border-r border-b border-[#1e2436] p-1.5 min-h-[90px] flex flex-col justify-start hover:bg-[#161a29]/40 transition-colors group relative"
+                  className="border-r border-b border-[#1e2436] py-1 px-0 min-h-[90px] flex flex-col justify-start hover:bg-[#161a29]/40 transition-colors group relative"
                 >
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center justify-between mb-1 px-1.5">
                     <span
                       className={`text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full ${
                         isToday ? 'bg-[#6366f1] text-white' : 'text-[#94a3b8]'
@@ -389,7 +389,7 @@ export default function GoogleCalendarView({
                     )}
                   </div>
 
-                  <div className="space-y-1 overflow-y-auto max-h-[72px] pr-0.5 scrollbar-hide flex-1">
+                  <div className="space-y-1 overflow-y-auto max-h-[72px] scrollbar-hide flex-1 w-full">
                     {dayEvents.map((evt) => {
                       const { displayTime } = parseTimeSlot(evt.time_slot);
                       const isClosed = evt.status === 'closed';
@@ -400,14 +400,16 @@ export default function GoogleCalendarView({
 
                       const { isMultiDay, isStart, isEnd } = getEventDatePosition(evt, dateObj);
 
-                      let shapeClass = 'rounded-md';
+                      let shapeClass = 'mx-1 rounded-md';
                       if (isMultiDay) {
                         if (isStart && !isEnd) {
-                          shapeClass = 'rounded-l-md rounded-r-none -mr-[10px] border-r-0 z-20';
+                          shapeClass = 'ml-1 mr-0 rounded-l-md rounded-r-none border-r-0 z-10';
                         } else if (!isStart && !isEnd) {
-                          shapeClass = 'rounded-none -mx-[10px] border-x-0 z-20';
+                          shapeClass = 'mx-0 rounded-none border-x-0 z-10';
                         } else if (!isStart && isEnd) {
-                          shapeClass = 'rounded-r-md rounded-l-none -ml-[10px] border-l-0 z-20';
+                          shapeClass = 'mr-1 ml-0 rounded-r-md rounded-l-none border-l-0 z-10';
+                        } else if (isStart && isEnd) {
+                          shapeClass = 'mx-1 rounded-md z-10';
                         }
                       }
 
@@ -416,7 +418,7 @@ export default function GoogleCalendarView({
                           <div
                             key={evt.id}
                             onClick={() => setActiveModalEvent(evt)}
-                            className={`w-full text-left px-1.5 py-0.5 bg-amber-950/50 border border-amber-900/80 transition-all block cursor-pointer ${shapeClass}`}
+                            className={`w-full text-left px-1.5 py-0.5 bg-amber-950/60 border border-amber-900/80 transition-all block cursor-pointer ${shapeClass}`}
                           >
                             {isStart ? (
                               <>
@@ -429,7 +431,7 @@ export default function GoogleCalendarView({
                                 </div>
                               </>
                             ) : (
-                              <div className="text-[9px] font-bold text-amber-400/90 truncate py-0.5 font-mono">
+                              <div className="text-[9px] font-bold text-amber-400/90 truncate py-0.5 font-mono px-1">
                                 ➔ Reserved ({evt.community})
                               </div>
                             )}
@@ -443,8 +445,8 @@ export default function GoogleCalendarView({
                           onClick={() => setActiveModalEvent(evt)}
                           className={`w-full text-left px-1.5 py-0.5 border transition-all block group/btn ${shapeClass} ${
                             isClosed
-                              ? 'bg-amber-950/80 border-amber-800/90 hover:border-amber-400 text-amber-300'
-                              : 'bg-[#161a29] border-[#1e2436] hover:border-[#6366f1] text-white'
+                              ? 'bg-amber-950/90 border-t border-b border-amber-700 hover:border-amber-400 text-amber-300'
+                              : 'bg-[#161a29] border-t border-b border-[#1e2436] hover:border-[#6366f1] text-white'
                           }`}
                         >
                           {isStart ? (
@@ -467,9 +469,9 @@ export default function GoogleCalendarView({
                               </div>
                             </>
                           ) : (
-                            <div className="text-[9px] font-bold truncate py-0.5 flex items-center justify-between text-slate-300 group-hover/btn:text-[#6366f1]">
-                              <span>➔ {evt.title}</span>
-                              {isEnd && <span className="text-[7px] text-slate-500 font-mono">Ends</span>}
+                            <div className="text-[9px] font-bold truncate py-0.5 flex items-center justify-between text-slate-300 group-hover/btn:text-[#6366f1] px-1">
+                              <span className="truncate">➔ {evt.title}</span>
+                              {isEnd && <span className="text-[7px] text-slate-500 font-mono shrink-0 ml-1">Ends</span>}
                             </div>
                           )}
                         </button>
