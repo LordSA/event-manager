@@ -42,7 +42,6 @@ export function useCommunities() {
         supabase.removeChannel(channel);
       };
     } catch {
-      // Ignore channel errors
     }
   }, []);
 

@@ -30,15 +30,12 @@ export default function UserManagementPage() {
   const [saving, setSaving] = useState(false);
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Active User Profile Info
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>('editor');
   const [currentUserCommunityId, setCurrentUserCommunityId] = useState<string | null>(null);
 
-  // Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<Profile | null>(null);
 
-  // Form Fields
   const [fullName, setFullName] = useState('');
   const [position, setPosition] = useState('');
   const [email, setEmail] = useState('');
@@ -65,7 +62,6 @@ export default function UserManagementPage() {
           }
         }
       } catch {
-        // Fallback
       }
     };
 
@@ -81,7 +77,6 @@ export default function UserManagementPage() {
         setProfiles(data.profiles);
       }
     } catch {
-      // Fallback
     } finally {
       setLoading(false);
     }
@@ -91,24 +86,20 @@ export default function UserManagementPage() {
     fetchProfiles();
   }, []);
 
-  // Filter profiles depending on role
   const displayedProfiles = profiles.filter((p) => {
-    // Dev / Superuser accounts are strictly protected and hidden from non-dev roles
     if (p.role === 'dev' && currentUserRole !== 'dev') {
       return false;
     }
 
     if (currentUserRole === 'dev' || currentUserRole === 'admin') {
-      return true; // Admin sees all non-dev accounts; Dev sees everyone
+      return true;
     }
     if (currentUserRole === 'manager') {
-      // Manager can only see non-dev managers & editors in their own community
       return p.community_id === currentUserCommunityId || p.id === currentUserCommunityId;
     }
     return false;
   });
 
-  // Editor Access Block
   if (currentUserRole === 'editor') {
     return (
       <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-4 max-w-2xl mx-auto my-12">
@@ -228,7 +219,6 @@ export default function UserManagementPage() {
         throw new Error(data.error || 'Operation failed');
       }
     } catch {
-      // Local optimistic fallback
       const fallbackUser: Profile = {
         id: editingUser ? editingUser.id : `usr_${Date.now()}`,
         email,
@@ -281,7 +271,6 @@ export default function UserManagementPage() {
 
       await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE', headers });
     } catch {
-      // Ignore
     }
   };
 

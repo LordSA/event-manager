@@ -51,7 +51,6 @@ export default function SingleCommunityPage({ params }: { params: Promise<PagePa
         if (commData) {
           setCommunity(commData);
 
-          // Fetch associated live events
           const { data: evtsData } = await supabase
             .from("events")
             .select("*")

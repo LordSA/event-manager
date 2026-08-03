@@ -12,7 +12,6 @@ function getAdminSupabaseClient() {
   });
 }
 
-// GET assigned community details
 export async function GET() {
   try {
     const cookieStore = await cookies();
@@ -54,7 +53,6 @@ export async function GET() {
   }
 }
 
-// PUT update assigned community data (Manager level)
 export async function PUT(req: NextRequest) {
   try {
     const cookieStore = await cookies();
@@ -113,7 +111,6 @@ export async function PUT(req: NextRequest) {
 
       if (data) updatedComm = data;
     } catch {
-      // Fallback
     }
 
     return NextResponse.json({ success: true, community: updatedComm });

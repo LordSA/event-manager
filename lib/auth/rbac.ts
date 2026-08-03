@@ -40,7 +40,7 @@ export function getPermissions(role: UserRole | null, userCommunityId: string | 
     canDeleteEvents: (communityId: string) => {
       if (isSuperAdmin) return true;
       if (isManager && userCommunityId === communityId) return true;
-      return false; // Editors CANNOT delete events
+      return false;
     },
     canSetEventStatus: (communityId: string) => {
       if (isSuperAdmin) return true;

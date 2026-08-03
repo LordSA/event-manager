@@ -13,7 +13,6 @@ export default function MyCommunityPage() {
   const [uploading, setUploading] = useState(false);
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Form Fields
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');

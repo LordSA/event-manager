@@ -12,7 +12,6 @@ export default function MyProfilePage() {
   const [uploading, setUploading] = useState(false);
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Form Fields
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');

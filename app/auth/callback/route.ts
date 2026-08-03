@@ -14,6 +14,5 @@ export async function GET(request: Request) {
     }
   }
 
-  // Return user to login if error
   return NextResponse.redirect(`${origin}/login?error=Could%20not%20authenticate%20user`);
 }

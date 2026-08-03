@@ -30,14 +30,12 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh auth token
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
 
-  // Protected Admin Routes Redirect
   if (pathname.startsWith('/admin')) {
     if (!user) {
       const url = request.nextUrl.clone();
@@ -46,7 +44,6 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Role-based route protection
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -55,7 +52,6 @@ export async function updateSession(request: NextRequest) {
 
     const role = profile?.role || 'editor';
 
-    // 1. /admin/communities is restricted to Dev/Admin ONLY (Managers & Editors cannot access)
     if (pathname.startsWith('/admin/communities')) {
       if (role !== 'dev' && role !== 'admin') {
         const url = request.nextUrl.clone();
@@ -64,7 +60,6 @@ export async function updateSession(request: NextRequest) {
       }
     }
 
-    // 2. /admin/users is restricted to Dev, Admin, and Manager (Editors cannot access)
     if (pathname.startsWith('/admin/users')) {
       if (role === 'editor') {
         const url = request.nextUrl.clone();
@@ -74,7 +69,6 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Already logged in user accessing /login
   if (pathname === '/login' && user) {
     const url = request.nextUrl.clone();
     url.pathname = '/admin';

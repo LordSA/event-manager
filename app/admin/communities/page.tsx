@@ -24,11 +24,9 @@ export default function CommunitiesManagementPage() {
   const { communities, setCommunities, loading } = useCommunities();
   const [userRole, setUserRole] = useState<UserRole>('editor');
 
-  // Modal States
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCommunity, setEditingCommunity] = useState<Community | null>(null);
 
-  // Form Fields
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [desc, setDesc] = useState('');

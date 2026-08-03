@@ -37,7 +37,6 @@ export default function AdminDashboardPage() {
           }
         }
       } catch {
-        // Fallback
       }
     };
 
@@ -46,7 +45,6 @@ export default function AdminDashboardPage() {
 
   const isScoped = role === 'manager' || role === 'editor';
 
-  // Filter events based on user role
   const filteredEvents = eventsList.filter((e) => {
     if (!isScoped || !communityId) return true;
     const targetComm = communities.find((c) => c.id === communityId);

@@ -14,7 +14,6 @@ export async function POST(req: NextRequest) {
     const fileExt = file.name.split('.').pop() || 'webp';
     const fileName = `${category}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
 
-    // Upload to Vercel Blob Storage
     const blob = await put(fileName, file, {
       access: 'public',
       contentType: file.type || 'image/webp',

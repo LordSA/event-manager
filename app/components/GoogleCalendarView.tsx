@@ -88,9 +88,9 @@ const isDarkColor = (hex: string): boolean => {
 
 const getReadableTextColor = (hex: string): string => {
   if (isDarkColor(hex)) {
-    return '#f8fafc'; // Crisp bright white for dark community colors
+    return '#f8fafc';
   }
-  return hex; // Keep vibrant light color for bright community colors
+  return hex;
 };
 
 interface GoogleCalendarViewProps {

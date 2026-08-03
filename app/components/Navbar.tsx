@@ -24,7 +24,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Lock body scroll when full-screen mobile menu is active
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden"
@@ -85,7 +84,6 @@ export default function Navbar() {
     return () => ctx.revert()
   }, [])
 
-  // Public Nav Links (Home, Events, Communities) - Calendar is the right CTA button
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Events", href: "/events" },
@@ -107,7 +105,6 @@ export default function Navbar() {
         }`}
       >
         <div className="flex justify-between items-center h-16">
-          {/* Logo Brand */}
           <Link href="/" className="nav-logo flex items-center group space-x-3 shrink-0">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6366f1] to-[#4f46e5] border border-[#4f46e5] flex items-center justify-center text-white shadow-[2px_2px_0px_0px_#312e81] transition-transform group-hover:scale-105">
               <Shield className="w-4 h-4 text-white" />
@@ -117,7 +114,6 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
             {navLinks.map((link) => (
               <Link
@@ -129,26 +125,22 @@ export default function Navbar() {
               >
                 <span className="relative z-10">{link.name}</span>
 
-                {/* Active Indicator Dot */}
                 {pathname === link.href && (
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#6366f1] rounded-full shadow-[0_0_8px_rgba(99,102,241,0.9)]" />
                 )}
 
-                {/* Hover Background Pill */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#6366f1]/15 to-[#6366f1]/25 rounded-full opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out -z-0 border border-[#6366f1]/30" />
               </Link>
             ))}
 
             {!loading && (
               <div className="nav-item pl-4 flex items-center">
-                {/* Single Primary Action CTA Button (Calendar for users, Dashboard for logged-in admins) */}
                 <Link
                   href={session ? "/admin" : "/calendar"}
                   className="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-semibold text-white rounded-full bg-gradient-to-br from-[#6366f1] to-[#4f46e5] shadow-md hover:shadow-[0_10px_25px_rgba(99,102,241,0.45)] hover:-translate-y-0.5 transition-all duration-300"
                 >
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#818cf8] to-[#6366f1] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                  {/* Glossy top reflection */}
                   <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-full pointer-events-none" />
 
                   <span className="relative flex items-center gap-2 text-xs tracking-widest uppercase z-10 font-bold">
@@ -160,7 +152,6 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="nav-item md:hidden w-11 h-11 flex flex-col items-center justify-center gap-1.5 rounded-full hover:bg-[#161a29] border border-transparent hover:border-[#1e2436] transition-colors group"
@@ -173,14 +164,12 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Full-screen Mobile Menu Overlay */}
       <div
         className={`fixed inset-0 bg-[#08090d]/95 backdrop-blur-2xl text-white z-[110] transition-all duration-500 ease-[0.85,0,0.15,1] overflow-y-auto ${
           isOpen ? "translate-y-0 pointer-events-auto opacity-100" : "-translate-y-full pointer-events-none opacity-0"
         }`}
       >
         <div className="min-h-full flex flex-col justify-between py-20 px-8 md:px-20 relative">
-          {/* Close Button Inside Menu */}
           <button
             onClick={() => setIsOpen(false)}
             className="absolute top-6 right-6 md:top-10 md:right-10 w-12 h-12 md:w-16 md:h-16 border border-[#1e2436] rounded-full flex items-center justify-center hover:bg-[#161a29] transition-colors"

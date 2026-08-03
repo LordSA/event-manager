@@ -12,7 +12,6 @@ function getAdminSupabaseClient() {
   });
 }
 
-// GET active user's own profile
 export async function GET() {
   try {
     const cookieStore = await cookies();
@@ -44,7 +43,6 @@ export async function GET() {
   }
 }
 
-// PUT update active user's own profile (Name, Avatar URL, Password)
 export async function PUT(req: NextRequest) {
   try {
     const cookieStore = await cookies();
@@ -69,7 +67,6 @@ export async function PUT(req: NextRequest) {
 
     const adminSupabase = getAdminSupabaseClient();
 
-    // 1. Update Auth attributes if password provided
     if (password) {
       try {
         await adminSupabase.auth.admin.updateUserById(userId, {
@@ -77,11 +74,9 @@ export async function PUT(req: NextRequest) {
           user_metadata: { full_name, avatar_url },
         });
       } catch {
-        // Fallback
       }
     }
 
-    // 2. Update profiles table
     const profilePayload: Record<string, any> = {
       updated_at: new Date().toISOString(),
     };
@@ -100,7 +95,6 @@ export async function PUT(req: NextRequest) {
 
       if (data) updatedProfile = data;
     } catch {
-      // Fallback
     }
 
     return NextResponse.json({ success: true, profile: updatedProfile });

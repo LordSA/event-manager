@@ -33,7 +33,6 @@ async function getRequesterRole(req: NextRequest, supabase: any): Promise<string
   }
 }
 
-// GET all user profiles
 export async function GET() {
   try {
     const supabase = getAdminSupabaseClient();
@@ -52,7 +51,6 @@ export async function GET() {
   }
 }
 
-// POST create new user (Auth + Profile)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -64,7 +62,6 @@ export async function POST(req: NextRequest) {
 
     const supabase = getAdminSupabaseClient();
 
-    // Protection: Non-dev users cannot create Dev (superuser) accounts
     if (role === 'dev') {
       const requesterRole = await getRequesterRole(req, supabase);
       if (requesterRole && requesterRole !== 'dev') {
@@ -72,7 +69,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 1. Attempt Supabase Auth DB user creation
     let userId = `usr_${Date.now()}`;
     try {
       const { data: authData } = await supabase.auth.admin.createUser({
@@ -93,7 +89,6 @@ export async function POST(req: NextRequest) {
       console.warn('Auth user creation warning (using profile fallback ID):', authErr);
     }
 
-    // 2. Insert/Upsert into profiles table
     const profilePayload = {
       id: userId,
       email,
@@ -118,7 +113,6 @@ export async function POST(req: NextRequest) {
         profileData = insertedProfile;
       }
     } catch {
-      // Fallback
     }
 
     return NextResponse.json({ success: true, profile: profileData });
@@ -128,7 +122,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PUT update user (Auth + Profile)
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
@@ -140,7 +133,6 @@ export async function PUT(req: NextRequest) {
 
     const supabase = getAdminSupabaseClient();
 
-    // Protection: Non-dev users cannot modify Dev accounts or elevate to Dev role
     const { data: existingProfile } = await supabase.from('profiles').select('role').eq('id', id).single();
     if (existingProfile?.role === 'dev' || role === 'dev') {
       const requesterRole = await getRequesterRole(req, supabase);
@@ -149,7 +141,6 @@ export async function PUT(req: NextRequest) {
       }
     }
 
-    // 1. Update Auth user if password/email provided
     if (email || password) {
       try {
         const updateAuthAttributes: Record<string, any> = {};
@@ -159,11 +150,9 @@ export async function PUT(req: NextRequest) {
 
         await supabase.auth.admin.updateUserById(id, updateAuthAttributes);
       } catch {
-        // Ignore if service role key not configured
       }
     }
 
-    // 2. Update profiles table
     const profilePayload: Record<string, any> = {
       updated_at: new Date().toISOString(),
     };
@@ -188,7 +177,6 @@ export async function PUT(req: NextRequest) {
         updatedProfile = data;
       }
     } catch {
-      // Fallback
     }
 
     return NextResponse.json({ success: true, profile: updatedProfile });
@@ -198,7 +186,6 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// DELETE user (Auth + Profile)
 export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -210,7 +197,6 @@ export async function DELETE(req: NextRequest) {
 
     const supabase = getAdminSupabaseClient();
 
-    // Protection: Non-dev users cannot delete Dev accounts
     const { data: targetProfile } = await supabase.from('profiles').select('role').eq('id', id).single();
     if (targetProfile?.role === 'dev') {
       const requesterRole = await getRequesterRole(req, supabase);
@@ -219,18 +205,14 @@ export async function DELETE(req: NextRequest) {
       }
     }
 
-    // 1. Delete from Auth DB
     try {
       await supabase.auth.admin.deleteUser(id);
     } catch {
-      // Ignore if service key not configured
     }
 
-    // 2. Delete from profiles table
     try {
       await supabase.from('profiles').delete().eq('id', id);
     } catch {
-      // Ignore
     }
 
     return NextResponse.json({ success: true, id });

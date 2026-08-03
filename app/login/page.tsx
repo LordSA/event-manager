@@ -14,11 +14,9 @@ function LoginForm() {
   const [authMode, setAuthMode] = useState<'password' | 'otp'>('password');
   const [step, setStep] = useState<'email' | 'otp'>('email');
 
-  // Password mode state
   const [passwordEmail, setPasswordEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // OTP mode state
   const [email, setEmail] = useState('');
   const [otpToken, setOtpToken] = useState('');
 
@@ -26,7 +24,6 @@ function LoginForm() {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // 1. Password Login Handler
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -58,7 +55,6 @@ function LoginForm() {
     }
   };
 
-  // 2. Send 6-Digit Email OTP Handler
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -88,7 +84,6 @@ function LoginForm() {
     }
   };
 
-  // 3. Verify 6-Digit Email OTP Handler
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -134,17 +129,15 @@ function LoginForm() {
           </p>
         </div>
 
-        {/* Auth Mode Toggle Tabs */}
         <div className="grid grid-cols-2 gap-2 bg-[#161a29] p-1 rounded-lg border border-[#1e2436]">
           <button
             type="button"
             suppressHydrationWarning
             onClick={() => { setAuthMode('password'); setError(''); setSuccessMsg(''); }}
-            className={`py-2 text-xs font-semibold rounded-md transition-all ${
-              authMode === 'password'
-                ? 'bg-[#6366f1] text-white shadow-sm font-bold'
-                : 'text-[#94a3b8] hover:text-white'
-            }`}
+            className={`py-2 text-xs font-semibold rounded-md transition-all ${authMode === 'password'
+              ? 'bg-[#6366f1] text-white shadow-sm font-bold'
+              : 'text-[#94a3b8] hover:text-white'
+              }`}
           >
             Password Auth
           </button>
@@ -153,11 +146,10 @@ function LoginForm() {
             type="button"
             suppressHydrationWarning
             onClick={() => { setAuthMode('otp'); setError(''); setSuccessMsg(''); }}
-            className={`py-2 text-xs font-semibold rounded-md transition-all ${
-              authMode === 'otp'
-                ? 'bg-[#6366f1] text-white shadow-sm font-bold'
-                : 'text-[#94a3b8] hover:text-white'
-            }`}
+            className={`py-2 text-xs font-semibold rounded-md transition-all ${authMode === 'otp'
+              ? 'bg-[#6366f1] text-white shadow-sm font-bold'
+              : 'text-[#94a3b8] hover:text-white'
+              }`}
           >
             6-Digit Email OTP
           </button>
@@ -176,58 +168,57 @@ function LoginForm() {
           </div>
         )}
 
-        {/* Mode A: Password Login Form */}
         {authMode === 'password' && (
-          <form onSubmit={handlePasswordLogin} suppressHydrationWarning className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">
-                Email Address
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  suppressHydrationWarning
-                  value={passwordEmail}
-                  onChange={(e) => setPasswordEmail(e.target.value)}
-                  placeholder="manager@cev.ac.in"
-                  required
-                  className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-10 pr-4 py-2.5 text-sm border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
-                />
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+          { authMode === 'password' && (
+            <form onSubmit={handlePasswordLogin} suppressHydrationWarning className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    suppressHydrationWarning
+                    value={passwordEmail}
+                    onChange={(e) => setPasswordEmail(e.target.value)}
+                    placeholder="manager@cev.ac.in"
+                    required
+                    className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-10 pr-4 py-2.5 text-sm border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
+                  />
+                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">
-                Auth Password
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  suppressHydrationWarning
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-10 pr-4 py-2.5 text-sm border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
-                />
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <div>
+                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">
+                  Auth Password
+                </label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    suppressHydrationWarning
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="w-full bg-[#161a29] text-white placeholder-slate-500 rounded-lg pl-10 pr-4 py-2.5 text-sm border border-[#1e2436] focus:outline-none focus:border-[#6366f1]"
+                  />
+                  <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                </div>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              suppressHydrationWarning
-              disabled={loading}
-              className="w-full brutalist-btn-primary py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 disabled:opacity-50"
-            >
-              <span>{loading ? 'Authenticating...' : 'Sign In with Password'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-        )}
+              <button
+                type="submit"
+                suppressHydrationWarning
+                disabled={loading}
+                className="w-full brutalist-btn-primary py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 disabled:opacity-50"
+              >
+                <span>{loading ? 'Authenticating...' : 'Sign In with Password'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+          )}
 
-        {/* Mode B: 6-Digit Email OTP Form */}
         {authMode === 'otp' && (
           <>
             {step === 'email' ? (
