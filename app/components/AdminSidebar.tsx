@@ -33,7 +33,7 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-white font-display">Whats @CEV</h2>
+              <h2 className="font-bold text-base text-white font-display">CEV EVENTS</h2>
               <span className="text-[10px] uppercase font-bold text-white bg-[#6366f1] px-2 py-0.5 rounded border border-[#4f46e5] font-mono">
                 {currentRole} Access
               </span>

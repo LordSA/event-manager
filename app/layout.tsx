@@ -25,7 +25,7 @@ const roundered = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Whats @CEV | Multi-Community Event Manager",
+  title: "CEV EVENTS | Multi-Community Event Manager",
   description: "Unified campus event discovery, slot booking, and community management.",
 };
 

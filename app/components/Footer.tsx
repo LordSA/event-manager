@@ -25,10 +25,10 @@ export default function Footer() {
           <div className="md:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#6366f1] to-[#4f46e5] flex items-center justify-center text-white font-bold font-display shadow-lg shadow-[#6366f1]/20">
-                W
+                C
               </div>
               <span className="text-xl font-bold font-display tracking-tight text-white">
-                Whats <span className="text-[#6366f1]">@CEV</span>
+                CEV <span className="text-[#6366f1]">EVENTS</span>
               </span>
             </div>
             <p className="text-xs text-[#94a3b8] leading-relaxed max-w-sm">
@@ -165,7 +165,7 @@ export default function Footer() {
             <Link href="/calendar" className="hover:text-white transition-colors">
               Calendar
             </Link>
-            <span>&copy; {new Date().getFullYear()} Whats @CEV</span>
+            <span>&copy; {new Date().getFullYear()} CEV EVENTS</span>
           </div>
         </div>
       </div>

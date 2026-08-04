@@ -1,7 +1,7 @@
 # Technical Program Memory: Multi-Community Event Management Platform
 
 ## 1. Executive Summary & Repository Overview
-This repository contains **Whats @CEV / Event Manager**, a high-performance multi-community event management, publishing, slot booking, and discovery platform tailored for campus organizations and technical communities at **College of Engineering Vadakara (CE Vadakara)** (IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
+This repository contains **CEV EVENTS**, a high-performance multi-community event management, publishing, slot booking, and discovery platform tailored for campus organizations and technical communities at **College of Engineering Vadakara (CE Vadakara)** (IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
 
 The platform centralizes scheduling, slot reservation, public discovery, direct binary image asset WebP uploads (via `@vercel/blob` & `./app/api/upload/route.ts`), connected multi-day Google Calendar slot booking, custom community brand color signatures with W3C luminance text contrast, strict Dev (Superuser) RBAC protections, and real-time contextual event support via an intelligent **Event Assistant** powered by a multi-provider fallback architecture (`gemini-1.5-flash` with Grok & OpenRouter fallbacks).
 

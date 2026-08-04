@@ -126,7 +126,7 @@ async function callOpenRouter(message: string, systemPrompt: string): Promise<st
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
         'HTTP-Referer': 'https://whatsatcev.shibili.tech',
-        'X-Title': 'Whats @CEV Event Manager',
+        'X-Title': 'CEV EVENTS Manager',
       },
       signal: controller.signal,
       body: JSON.stringify({

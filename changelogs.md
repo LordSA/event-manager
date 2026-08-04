@@ -1,6 +1,11 @@
 # Changelogs & Version History
 
-All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
+## [0.63.0] - 2026-08-04
+
+### 🏷️ Platform Rebranding to CEV EVENTS
+- **Official Platform Rebranding:** Updated project platform branding from legacy name (`Whats @CEV`) to **CEV EVENTS** across all UI headers, Navbar, Footer, Admin Sidebar, API headers, metadata, and documentation.
+
+---
 
 ## [0.62.0] - 2026-08-04
 

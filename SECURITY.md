@@ -21,7 +21,7 @@ Security updates and patches are actively applied to the following project versi
 
 ## 🐛 Reporting a Vulnerability
 
-If you discover a security vulnerability or RBAC bypass within **Whats @CEV / Event Manager**, please report it privately:
+If you discover a security vulnerability or RBAC bypass within **CEV EVENTS**, please report it privately:
 
 * **Author & Lead Maintainer:** Shibili Aman TK
 * **GitHub Profile:** [@LordSA](https://github.com/LordSA)

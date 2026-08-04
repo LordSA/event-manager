@@ -1,6 +1,6 @@
 # Contributors & Community Roll of Honor
 
-Welcome to **Whats @CEV – Event Manager**! 🎉
+Welcome to **CEV EVENTS**! 🎉
 
 Thank you to everyone who helps improve this project. Every contribution—whether it's code, documentation, bug reports, or feature suggestions—is appreciated.
 
@@ -80,4 +80,4 @@ If your changes affect functionality, APIs, database structure, or the UI, pleas
 
 ---
 
-Thank you for contributing to **Whats @CEV – Event Manager**! ❤️
+Thank you for contributing to **CEV EVENTS**! ❤️

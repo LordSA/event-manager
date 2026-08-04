@@ -111,7 +111,7 @@ export default function Navbar() {
               <Shield className="w-4 h-4 text-white" />
             </div>
             <span className="font-bold text-white tracking-tight text-lg font-display group-hover:text-[#6366f1] transition-colors">
-              Whats @CEV
+              CEV <span className="text-[#6366f1]">EVENTS</span>
             </span>
           </Link>
 

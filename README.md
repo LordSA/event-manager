@@ -1,4 +1,4 @@
-# Whats @CEV — Multi-Community Event Management Platform
+# CEV EVENTS — Multi-Community Event Management Platform
 
 A modern, high-performance event management, slot booking, and public discovery platform built for **College of Engineering Vadakara (CE Vadakara)** campus communities (IEEE SB CEV, IEDC CEV, TinkerHub CEV, FOSS Club CEV, MuLearn CEV).
 
