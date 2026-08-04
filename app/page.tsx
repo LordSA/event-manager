@@ -162,10 +162,6 @@ export default function LandingHomePage() {
           )}
         </section>
       </main>
-
-      <footer className="border-t border-[#1e2436] bg-[#0f121d] py-6 text-center text-xs text-[#94a3b8]">
-        <p>Whats @CEV - Campus Event Management Platform</p>
-      </footer>
     </div>
   );
 }

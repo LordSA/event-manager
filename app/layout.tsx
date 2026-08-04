@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import SmoothScroll from "./components/SmoothScroll";
 import ConditionalNavbar from "./components/ConNav";
+import ConditionalFooter from "./components/ConFooter";
 
 const quera = localFont({
   src: "../fonts/quera.otf",
@@ -39,6 +40,7 @@ export default function RootLayout({
         <SmoothScroll />
         <ConditionalNavbar />
         {children}
+        <ConditionalFooter />
       </body>
     </html>
   );

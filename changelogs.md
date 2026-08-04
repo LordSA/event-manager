@@ -2,6 +2,19 @@
 
 All notable changes and structural milestones for **Whats @CEV / Event Manager** are documented in this file.
 
+## [0.62.0] - 2026-08-04
+
+### 💖 Developer Credits Footer & Sponsor Button
+- **Global Developer Credits Footer ([app/components/Footer.tsx](./app/components/Footer.tsx)):** Created a global dark brutalist footer with developer credits for **Shibili Aman TK**, featuring verified link badges:
+  - 🐙 **GitHub:** [github.com/LordSA](https://github.com/LordSA)
+  - 💼 **LinkedIn:** [linkedin.com/in/shibili-aman-tk](https://linkedin.com/in/shibili-aman-tk)
+  - 🌐 **Portfolio:** [shibili.tech](https://www.shibili.tech)
+  - 📧 **Email:** [shibiliamantk@gmail.com](mailto:shibiliamantk@gmail.com)
+- **Interactive "Buy Me a Coffee" Sponsor Button:** Added UPI deep-link button (`upi://pay?pa=shibiliamantk@oksbi&pn=Shibili%20Aman&tn=Buy%20Me%20a%20Coffee&cu=INR`) with an interactive UPI ID copy utility and Pay App direct launcher.
+- **Conditional Footer Provider ([app/components/ConFooter.tsx](./app/components/ConFooter.tsx)):** Renders the Footer globally across public pages while hiding on `/admin` and `/login` routes.
+
+---
+
 ## [0.61.0] - 2026-08-03
 
 ### 🧹 Source Code Comment Cleanup

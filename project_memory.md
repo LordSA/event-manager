@@ -139,8 +139,10 @@ event-manager/
 │   │   └── page.tsx               # Google Calendar view route (Month, Week, Day grids)
 │   ├── components/
 │   │   ├── AdminSidebar.tsx       # Standalone admin sidebar component with sticky viewport layout isolation
+│   │   ├── ConFooter.tsx          # Global conditional Footer wrapper hiding footer on /admin & /login
 │   │   ├── ConNav.tsx             # Global conditional Navbar wrapper hiding main navbar on /admin
 │   │   ├── EventAiDrawer.tsx      # z-[200] Event Assistant drawer with body scroll lock
+│   │   ├── Footer.tsx             # Developer credits footer with GitHub, LinkedIn, Website, Email & UPI Coffee sponsor button
 │   │   ├── GoogleCalendarView.tsx # Interactive Google Calendar with multi-day connected banners & W3C luminance text contrast
 │   │   ├── MasterCalendar.tsx     # Master event list timeline with 2-line summary cards & community colors
 │   │   ├── Navbar.tsx             # Floating navbar with vector badge & single Calendar CTA button

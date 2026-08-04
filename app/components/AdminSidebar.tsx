@@ -79,6 +79,11 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
             <span>Sign Out</span>
             <LogOut className="w-3.5 h-3.5" />
           </button>
+
+          <div className="pt-3 border-t border-[#1e2436] text-[10px] text-[#94a3b8] flex items-center justify-between font-mono">
+            <span>By Shibili Aman TK</span>
+            <a href="https://github.com/LordSA" target="_blank" rel="noopener noreferrer" className="hover:text-[#6366f1] transition-colors">@LordSA</a>
+          </div>
         </div>
       </aside>
 
