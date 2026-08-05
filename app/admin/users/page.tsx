@@ -540,7 +540,7 @@ export default function UserManagementPage() {
                       className="w-full bg-slate-950 text-white rounded-xl px-3 py-2.5 text-sm border border-slate-800 focus:outline-none focus:border-blue-500"
                     >
                       <option value="">All Communities (Super Admin)</option>
-                      {communities.map((c) => (
+                      {communities.filter((c) => c.slug !== 'college' && c.name.toLowerCase() !== 'college').map((c) => (
                         <option key={c.id} value={c.id}>
                           {c.name}
                         </option>

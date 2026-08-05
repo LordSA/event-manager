@@ -71,6 +71,23 @@ CREATE TABLE IF NOT EXISTS public.communities (
   color TEXT DEFAULT '#6366f1', -- Community signature color hex code
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Seed System College Entity for College Events, Exams & Academic Schedules
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.communities WHERE slug = 'college' OR name = 'College') THEN
+    UPDATE public.communities
+    SET name = 'College',
+        slug = 'college',
+        description = 'Official College Academic Events, Exams, and Schedules',
+        initials = 'CLG',
+        color = '#0ea5e9'
+    WHERE slug = 'college' OR name = 'College';
+  ELSE
+    INSERT INTO public.communities (name, slug, description, initials, color)
+    VALUES ('College', 'college', 'Official College Academic Events, Exams, and Schedules', 'CLG', '#0ea5e9');
+  END IF;
+END $$;
 ```
 
 ### `profiles` Table
@@ -90,13 +107,13 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 ## 4. Role-Based Access Control (RBAC) Matrix
 
-| User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Modify Dev (`dev`) Users | Community Entity Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Dev (Super Admin)** | ✅ (All Users) | ✅ | ✅ | ✅ (Full Name, Slug, Logo, Desc, Color) | ✅ (All + Venue Input) | ✅ (All) | ✅ (All) | ✅ |
-| **Admin** | ✅ (Non-Dev Users) | ✅ | ❌ (Strictly Forbidden) | ✅ (Full Name, Slug, Logo, Desc, Color) | ✅ (All + Venue Input) | ✅ (All) | ✅ (All) | ✅ |
-| **Manager (Lead)** | ✅ (Own Community Leads) | ❌ | ❌ (Strictly Forbidden) | ✅ (Own Community via `/admin/my-community`) | ✅ (Own Community + Venue) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
-| **Editor** | ❌ | ❌ | ❌ (Strictly Forbidden) | ❌ | ✅ (Own Community + Venue) | ❌ | ✅ (Own Community) | ✅ |
-| **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| User Role | Access User Roles (`/admin/users`) | Access Communities (`/admin/communities`) | Book College Slots & Categories | Modify Dev (`dev`) Users | Community Entity Editing | Create / Edit Events | Delete Events | Toggle Event Status (`closed`/`live`) | Access AI Chat |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Dev (Super Admin)** | ✅ (All Users) | ✅ | ✅ (College, Exams, Schedules) | ✅ | ✅ (Full Name, Slug, Logo, Desc, Color) | ✅ (All + Venue Input) | ✅ (All) | ✅ (All) | ✅ |
+| **Admin** | ✅ (Non-Dev Users) | ✅ | ✅ (College, Exams, Schedules) | ❌ (Forbidden) | ✅ (Full Name, Slug, Logo, Desc, Color) | ✅ (All + Venue Input) | ✅ (All) | ✅ (All) | ✅ |
+| **Manager (Lead)** | ✅ (Own Leads) | ❌ | ❌ (Strictly Forbidden) | ❌ (Forbidden) | ✅ (Own Community) | ✅ (Own Community) | ✅ (Own Community) | ✅ (Own Community) | ✅ |
+| **Editor** | ❌ | ❌ | ❌ (Strictly Forbidden) | ❌ (Forbidden) | ❌ | ✅ (Own Community) | ❌ | ✅ (Own Community) | ✅ |
+| **Public User** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ---
 

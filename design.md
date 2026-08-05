@@ -20,6 +20,7 @@ The design language of **CEV EVENTS** is crafted as a high-contrast dark design 
 
 ### Community Signature Color Palette (Preset Swatches)
 * **IEEE Indigo:** `#6366f1` (Default)
+* **College Ocean Blue:** `#0ea5e9` (Institutional Events, Exams & Schedules)
 * **IEEE Blue:** `#3b82f6`
 * **IEDC Emerald:** `#10b981`
 * **TinkerHub Pink:** `#ec4899`

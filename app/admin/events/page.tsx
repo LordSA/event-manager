@@ -201,7 +201,10 @@ export default function EventBookingEnginePage() {
       setEndTime('16:00');
     }
 
-    const standardCategories = ['Workshop', 'Hackathon', 'Seminar', 'Tech Fest', 'Webinar', 'Competition'];
+    const standardCategories = isSuperAdmin
+      ? ['Workshop', 'Hackathon', 'Seminar', 'Tech Fest', 'Webinar', 'Competition', 'Exam', 'College Schedule']
+      : ['Workshop', 'Hackathon', 'Seminar', 'Tech Fest', 'Webinar', 'Competition'];
+
     if (standardCategories.includes(evt.category)) {
       setCategory(evt.category);
       setCustomCategory('');
@@ -211,7 +214,7 @@ export default function EventBookingEnginePage() {
     }
 
     const matchedComm = communities.find((c) => c.name.toLowerCase() === (evt.community || '').toLowerCase());
-    setSelectedCommunityId(matchedComm ? matchedComm.id : (currentUserCommunityId || ''));
+    setSelectedCommunityId(matchedComm ? matchedComm.id : (evt.community === 'College' ? 'college' : (currentUserCommunityId || '')));
     setStatus(evt.status || 'closed');
     setDesc(evt.description || '');
     setPerks(evt.perks || '');
@@ -228,7 +231,10 @@ export default function EventBookingEnginePage() {
     const finalCategory = category === 'Other' ? (customCategory || 'Custom Event') : category;
 
     const targetCommunityId = isSuperAdmin ? (selectedCommunityId || currentUserCommunityId) : currentUserCommunityId;
-    const matchedComm = communities.find((c) => c.id === targetCommunityId || c.name === targetCommunityId);
+    let matchedComm = communities.find((c) => c.id === targetCommunityId || c.name.toLowerCase() === (targetCommunityId || '').toLowerCase());
+    if (!matchedComm && isSuperAdmin && (selectedCommunityId === 'college' || targetCommunityId === 'college')) {
+      matchedComm = { id: null as any, name: 'College', slug: 'college', color: '#0ea5e9', initials: 'CLG' } as any;
+    }
     const commName = matchedComm ? matchedComm.name : (currentUserCommunityName || 'CEV Community');
 
     const formattedStartTime = formatSingleTime12(startTime);
@@ -549,6 +555,12 @@ export default function EventBookingEnginePage() {
                     <option value="Tech Fest">Tech Fest</option>
                     <option value="Webinar">Webinar</option>
                     <option value="Competition">Competition</option>
+                    {isSuperAdmin && (
+                      <>
+                        <option value="Exam">Exam</option>
+                        <option value="College Schedule">College Schedule</option>
+                      </>
+                    )}
                     <option value="Other">Other (Custom Category)</option>
                   </select>
 
@@ -576,9 +588,12 @@ export default function EventBookingEnginePage() {
                       className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                     >
                       <option value="">-- Select Organizing Community --</option>
+                      {!communities.some((c) => c.name.toLowerCase() === 'college' || c.slug === 'college') && (
+                        <option value="college">College (Exams, Events, Schedules)</option>
+                      )}
                       {communities.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {c.name}
+                          {c.name === 'College' ? 'College (Exams, Events, Schedules)' : c.name}
                         </option>
                       ))}
                     </select>

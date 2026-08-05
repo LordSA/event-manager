@@ -55,6 +55,9 @@ const getEventCommunityColor = (evt: CalendarEvent, communitiesList: CommunityOp
   if (matched?.color && matched.color.startsWith('#')) {
     return matched.color;
   }
+  if ((evt.community || '').toLowerCase() === 'college') {
+    return '#0ea5e9';
+  }
   return '#6366f1';
 };
 

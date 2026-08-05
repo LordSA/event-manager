@@ -7,6 +7,7 @@ A modern, high-performance event management, slot booking, and public discovery 
 ## 🚀 Key Features & Capabilities
 
 - **Interactive Google Calendar Slot Booking Engine:** Features Month, Week, Day, and Grid views where organizers click date/time slots to reserve dates in `closed` draft mode before publishing to `live` state.
+- **College Event & Academic Schedule Booking:** Exclusive slot booking option for Superusers (`dev`) and Admins (`admin`) to book official college-conducted events, exams, and academic schedules with dedicated Ocean Royal Blue (`#0ea5e9`) visual styling, while restricting non-admin access.
 - **Connected Multi-Day Calendar Banners:** Multi-day events span continuously across calendar columns as single horizontal line bars with zero-gap column boundary alignment (`px-0` day cell containers).
 - **Custom Community Brand Color Signatures:** Custom color picker (10 preset swatches, HTML color picker `<input type="color">`, hex input) for communities. Events automatically render using their community signature color for background fill, border accent, and bullet dots.
 - **W3C Relative Luminance Text Contrast:** Perceived relative luminance algorithm `(0.299*R + 0.587*G + 0.114*B) / 255`. If a community color is dark (< 0.6), community name text automatically renders in crisp bright white (`#f8fafc`) for 100% readability.

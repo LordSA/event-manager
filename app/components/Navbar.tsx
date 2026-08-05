@@ -94,16 +94,14 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className={`fixed top-0 inset-x-0 z-[100] transition-all duration-500 ease-in-out ${
-        scrolled ? "py-3 px-4 md:px-10" : "py-6 px-4 md:px-10"
-      }`}
+      className={`fixed top-0 inset-x-0 z-[100] transition-all duration-500 ease-in-out ${scrolled ? "py-3 px-4 md:px-10" : "py-6 px-4 md:px-10"
+        }`}
     >
       <div
-        className={`max-w-7xl mx-auto transition-all duration-500 ease-in-out rounded-[2rem] ${
-          scrolled
+        className={`max-w-7xl mx-auto transition-all duration-500 ease-in-out rounded-[2rem] ${scrolled
             ? "bg-[#0f121d]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.6)] border border-[#1e2436] px-6"
             : "bg-transparent px-0"
-        }`}
+          }`}
       >
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="nav-logo flex items-center group space-x-3 shrink-0">
@@ -120,9 +118,8 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`nav-item relative px-5 py-2 text-xs font-semibold tracking-wider uppercase transition-colors duration-300 group ${
-                  pathname === link.href ? "text-[#6366f1]" : "text-[#94a3b8] hover:text-white"
-                }`}
+                className={`nav-item relative px-5 py-2 text-xs font-semibold tracking-wider uppercase transition-colors duration-300 group ${pathname === link.href ? "text-[#6366f1]" : "text-[#94a3b8] hover:text-white"
+                  }`}
               >
                 <span className="relative z-10">{link.name}</span>
 
@@ -166,9 +163,8 @@ export default function Navbar() {
       </div>
 
       <div
-        className={`fixed inset-0 bg-[#08090d]/95 backdrop-blur-2xl text-white z-[110] transition-all duration-500 ease-[0.85,0,0.15,1] overflow-y-auto ${
-          isOpen ? "translate-y-0 pointer-events-auto opacity-100" : "-translate-y-full pointer-events-none opacity-0"
-        }`}
+        className={`fixed inset-0 bg-[#08090d]/95 backdrop-blur-2xl text-white z-[110] transition-all duration-500 ease-[0.85,0,0.15,1] overflow-y-auto ${isOpen ? "translate-y-0 pointer-events-auto opacity-100" : "-translate-y-full pointer-events-none opacity-0"
+          }`}
       >
         <div className="min-h-full flex flex-col justify-between py-20 px-8 md:px-20 relative">
           <button
@@ -199,13 +195,13 @@ export default function Navbar() {
           </div>
 
           <div className="mt-16 md:mt-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-10 pb-10 border-t border-[#1e2436] pt-10">
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <p className="text-[#94a3b8] text-[10px] md:text-xs font-bold tracking-widest uppercase text-left">Connectivity</p>
               <div className="flex gap-8 text-base md:text-xl font-medium">
                 <a href="https://instagram.com/iedc_cev" target="_blank" rel="noopener noreferrer" className="hover:text-[#6366f1] transition-colors">Instagram</a>
                 <a href="https://linkedin.com/company/iedc-cev" target="_blank" rel="noopener noreferrer" className="hover:text-[#6366f1] transition-colors">LinkedIn</a>
               </div>
-            </div>
+            </div> */}
 
             <Link
               href={session ? "/admin" : "/calendar"}

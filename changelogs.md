@@ -1,5 +1,16 @@
 # Changelogs & Version History
 
+## [0.64.0] - 2026-08-05
+
+### 🎓 College Event Slot Booking & Role Restriction
+- **Superuser & Admin College Slot Booking ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Added support for selecting **College** as the organizing entity during slot booking, specifically designed for college-conducted events, exams, and academic schedules.
+- **Strict Role Restriction:** Access to select **College** as an organizing entity and special categories (**Exam**, **College Schedule**) is strictly restricted to Superusers (`dev`) and Admins (`admin`). Non-admin roles (Managers and Editors) cannot select or modify College events.
+- **Public Directory Exclusion ([app/community/page.tsx](./app/community/page.tsx)):** Filtered out the **College** institutional entity from the public `/community` student organization directory listing so it is not displayed as a student club.
+- **Calendar Visualization & Fallback Swatch ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Configured Ocean Royal Blue (`#0ea5e9`) signature color swatch for College events with high-contrast text rendering across Month, Week, Day, and Grid calendar views.
+- **Database Seeding SQL:** Added Supabase SQL seeding command to initialize the system **College** community record.
+
+---
+
 ## [0.63.0] - 2026-08-04
 
 ### 🏷️ Platform Rebranding to CEV EVENTS

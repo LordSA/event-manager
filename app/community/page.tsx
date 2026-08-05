@@ -10,8 +10,10 @@ export default function CommunityPage() {
   const [search, setSearch] = useState('');
 
   const filteredCommunities = communities.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    (c.description || '').toLowerCase().includes(search.toLowerCase())
+    c.slug !== 'college' &&
+    c.name.toLowerCase() !== 'college' &&
+    (c.name.toLowerCase().includes(search.toLowerCase()) ||
+    (c.description || '').toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
