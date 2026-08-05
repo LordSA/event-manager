@@ -593,7 +593,7 @@ export default function EventBookingEnginePage() {
                       )}
                       {communities.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {c.name === 'College' ? 'College (Exams, Events, Schedules)' : c.name}
+                          {c.name === 'College' ? 'College' : c.name}
                         </option>
                       ))}
                     </select>
