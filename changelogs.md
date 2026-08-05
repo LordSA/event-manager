@@ -1,5 +1,14 @@
 # Changelogs & Version History
 
+## [0.72.0] - 2026-08-05
+
+### 🐛 Guaranteed Unique Event Slug Generation Fix
+- **Unique Constraint Prevention ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Resolved `duplicate key value violates unique constraint "events_slug_key"` error when booking slots or creating events with duplicate titles.
+  - Appends a random 5-character base36 hash (`${baseSlug}-${uniqueSuffix}`) to every generated event slug.
+  - Added automatic timestamp retry fallback (`${baseSlug}-${Date.now()}`) if a database unique constraint conflict occurs on insert or update operations.
+
+---
+
 ## [0.71.0] - 2026-08-05
 
 ### 🐛 Multi-Day Banner Button Inline-Block Width Calculation Fix

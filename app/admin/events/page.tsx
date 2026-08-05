@@ -247,8 +247,13 @@ export default function EventBookingEnginePage() {
 
     try {
       const supabase = createClient();
+      const baseSlug = title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'event';
+      const uniqueSuffix = Math.random().toString(36).substring(2, 7);
+
       if (editingEvent) {
-        const generatedSlug = title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const generatedSlug = (editingEvent.slug && editingEvent.title === title)
+          ? editingEvent.slug
+          : `${baseSlug}-${uniqueSuffix}`;
 
         const updatedEvt = {
           ...editingEvent,
@@ -285,6 +290,12 @@ export default function EventBookingEnginePage() {
 
         let { error: updateErr } = await supabase.from('events').update(eventPayload).eq('id', editingEvent.id);
 
+        if (updateErr && (updateErr.message.includes('unique constraint') || updateErr.message.includes('slug') || updateErr.code === '23505')) {
+          eventPayload.slug = `${baseSlug}-${Date.now()}`;
+          const retrySlug = await supabase.from('events').update(eventPayload).eq('id', editingEvent.id);
+          updateErr = retrySlug.error;
+        }
+
         if (updateErr && updateErr.message.includes('schema cache')) {
           delete eventPayload.perks;
           const retry = await supabase.from('events').update(eventPayload).eq('id', editingEvent.id);
@@ -297,7 +308,7 @@ export default function EventBookingEnginePage() {
 
         setFeedback({ type: 'success', message: 'Event slot updated successfully!' });
       } else {
-        const generatedSlug = title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const generatedSlug = `${baseSlug}-${uniqueSuffix}`;
 
         const newEvt: any = {
           id: Date.now().toString(),
@@ -331,6 +342,13 @@ export default function EventBookingEnginePage() {
         };
 
         let { data: insertedData, error: insertErr } = await supabase.from('events').insert(insertPayload).select();
+
+        if (insertErr && (insertErr.message.includes('unique constraint') || insertErr.message.includes('slug') || insertErr.code === '23505')) {
+          insertPayload.slug = `${baseSlug}-${Date.now()}`;
+          const retrySlug = await supabase.from('events').insert(insertPayload).select();
+          insertedData = retrySlug.data;
+          insertErr = retrySlug.error;
+        }
 
         if (insertErr && insertErr.message.includes('schema cache')) {
           delete insertPayload.perks;
