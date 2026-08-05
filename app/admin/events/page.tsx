@@ -589,7 +589,7 @@ export default function EventBookingEnginePage() {
                     >
                       <option value="">-- Select Organizing Community --</option>
                       {!communities.some((c) => c.name.toLowerCase() === 'college' || c.slug === 'college') && (
-                        <option value="college">College (Exams, Events, Schedules)</option>
+                        <option value="college">College</option>
                       )}
                       {communities.map((c) => (
                         <option key={c.id} value={c.id}>
