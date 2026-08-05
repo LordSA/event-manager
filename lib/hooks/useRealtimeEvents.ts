@@ -71,6 +71,7 @@ export function useRealtimeEvents() {
             image: item.poster_url || '/images/poster.webp',
             poster_url: item.poster_url || '/images/poster.webp',
             venue: item.venue || 'Campus Setup / CEV',
+            redirect_url: item.redirect_url || null,
             perks: item.perks || null,
             system_prompt: item.system_prompt || null,
             slug: item.slug || item.id,

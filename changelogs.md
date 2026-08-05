@@ -1,5 +1,14 @@
 # Changelogs & Version History
 
+## [0.73.0] - 2026-08-05
+
+### 🔗 Custom Registration Link & Conditional "Register Now" Button
+- **Registration Link Form Input ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Added an optional input field for **Registration / Form Link** (`redirect_url`) in the slot booking & event modal sheet. Allows community admins to specify custom registration links (Google Forms, Unstop, custom site URLs).
+- **Realtime Hook & Interface Sync ([lib/hooks/useRealtimeEvents.ts](./lib/hooks/useRealtimeEvents.ts), [app/components/MasterCalendar.tsx](./app/components/MasterCalendar.tsx)):** Mapped `redirect_url` property into `EventItemData` payload.
+- **Conditional "Register Now" Button ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Suppressed default fallback to `https://forms.google.com`. The **Register Now** button is now ONLY rendered if `eventData.redirect_url` is explicitly provided and non-empty.
+
+---
+
 ## [0.72.0] - 2026-08-05
 
 ### 🐛 Guaranteed Unique Event Slug Generation Fix

@@ -242,15 +242,17 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
-                <a
-                  href={eventData.redirect_url || 'https://forms.google.com'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 brutalist-btn-primary py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 text-center"
-                >
-                  <span>Register Now</span>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
+                {eventData.redirect_url && eventData.redirect_url.trim() !== '' && (
+                  <a
+                    href={eventData.redirect_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 brutalist-btn-primary py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 text-center"
+                  >
+                    <span>Register Now</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
 
                 <button
                   onClick={() => setAiDrawerOpen(true)}

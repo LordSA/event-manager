@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, AlertCircle, Clock, Upload } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, AlertCircle, Clock, Upload, Link as LinkIcon } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
@@ -95,6 +95,7 @@ export default function EventBookingEnginePage() {
   const [venue, setVenue] = useState('Campus Setup / CEV');
   const [submitting, setSubmitting] = useState(false);
   const [posterUrl, setPosterUrl] = useState('');
+  const [redirectUrl, setRedirectUrl] = useState('');
   const [uploadingPoster, setUploadingPoster] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -180,6 +181,7 @@ export default function EventBookingEnginePage() {
     setPerks('');
     setVenue('Campus Setup / CEV');
     setPosterUrl('');
+    setRedirectUrl('');
     setShowModal(true);
   };
 
@@ -220,6 +222,7 @@ export default function EventBookingEnginePage() {
     setPerks(evt.perks || '');
     setVenue(evt.venue || 'Campus Setup / CEV');
     setPosterUrl(evt.poster_url || evt.image || '');
+    setRedirectUrl(evt.redirect_url || '');
     setShowModal(true);
   };
 
@@ -269,6 +272,7 @@ export default function EventBookingEnginePage() {
           system_prompt: aiSystemPrompt,
           poster_url: posterUrl || null,
           image: posterUrl || '/images/poster.webp',
+          redirect_url: redirectUrl.trim() || null,
           slug: generatedSlug,
         };
 
@@ -284,6 +288,7 @@ export default function EventBookingEnginePage() {
           description: desc,
           system_prompt: aiSystemPrompt,
           poster_url: posterUrl || null,
+          redirect_url: redirectUrl.trim() || null,
           slug: generatedSlug,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         };
@@ -324,6 +329,7 @@ export default function EventBookingEnginePage() {
           perks: perks.trim() || null,
           status,
           system_prompt: aiSystemPrompt,
+          redirect_url: redirectUrl.trim() || null,
           slug: generatedSlug,
         };
 
@@ -337,6 +343,7 @@ export default function EventBookingEnginePage() {
           description: desc,
           system_prompt: aiSystemPrompt,
           poster_url: posterUrl || null,
+          redirect_url: redirectUrl.trim() || null,
           slug: generatedSlug,
           community_id: matchedComm ? matchedComm.id : (currentUserCommunityId || null),
         };
@@ -380,6 +387,7 @@ export default function EventBookingEnginePage() {
       setVenue('Campus Setup / CEV');
       setCustomCategory('');
       setPosterUrl('');
+      setRedirectUrl('');
       setShowModal(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'An error occurred while saving event slot.';
@@ -752,6 +760,22 @@ export default function EventBookingEnginePage() {
                     </div>
                   )}
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                  <LinkIcon className="w-3.5 h-3.5 text-emerald-400" /> Registration / Form Link (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={redirectUrl}
+                  onChange={(e) => setRedirectUrl(e.target.value)}
+                  placeholder="e.g. https://forms.google.com/your-event-form or https://unstop.com/..."
+                  className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
+                />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  If provided, a &quot;Register Now&quot; button will redirect users to your form. If left empty, no registration button will be shown on the event page.
+                </p>
               </div>
 
               <div>

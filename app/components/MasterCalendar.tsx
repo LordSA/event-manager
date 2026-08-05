@@ -16,6 +16,7 @@ export interface EventItemData {
   image?: string;
   poster_url?: string;
   venue?: string;
+  redirect_url?: string | null;
   perks?: string | null;
   system_prompt?: string | null;
   description?: string;
