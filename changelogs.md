@@ -1,5 +1,13 @@
 # Changelogs & Version History
 
+## [0.67.0] - 2026-08-05
+
+### 📅 Calendar Event Ending Day Card & END Badge Fix
+- **Ending Day Banner Card Styling ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Fixed date position calculations and shape classes so single-day events always render fully rounded borders (`mx-1 rounded-md border`) and multi-day ending days cleanly render rounded right corners (`mr-1 rounded-r-md border-r`).
+- **Explicit END Pill Badge:** Added explicit `END` status pill badges (`bg-rose-950/90 text-rose-300 border border-rose-800`) and preserved full event titles, community names, time slots, and draft/live badges on event ending days.
+
+---
+
 ## [0.66.0] - 2026-08-05
 
 ### 📱 Responsive Mobile Bottom Navbar Typography & Device Optimization

@@ -265,7 +265,7 @@ export default function GoogleCalendarView({
   };
 
   const getEventDatePosition = (evt: CalendarEvent, dateObj: Date) => {
-    if (!evt.date) return { isMultiDay: false, isStart: true, isEnd: true };
+    if (!evt.date) return { isMultiDay: false, isStart: true, isEnd: true, isActualStart: true, isActualEnd: true };
 
     const cleanStr = evt.date.trim();
     let startPart = cleanStr;
@@ -307,11 +307,21 @@ export default function GoogleCalendarView({
     const d = String(dateObj.getDate()).padStart(2, '0');
     const currentIso = `${y}-${m}-${d}`;
 
-    const isMultiDay = isoStart !== isoEnd;
-    const isStart = currentIso === isoStart || dateObj.getDay() === 0;
-    const isEnd = currentIso === isoEnd || dateObj.getDay() === 6;
+    const isMultiDay = Boolean(isoStart && isoEnd && isoStart !== isoEnd);
 
-    return { isMultiDay, isStart, isEnd };
+    if (!isMultiDay) {
+      return { isMultiDay: false, isStart: true, isEnd: true, isActualStart: true, isActualEnd: true };
+    }
+
+    const isActualStart = currentIso === isoStart;
+    const isActualEnd = currentIso === isoEnd;
+    const isWeekStart = dateObj.getDay() === 0;
+    const isWeekEnd = dateObj.getDay() === 6;
+
+    const isStart = isActualStart || (currentIso > isoStart && currentIso <= isoEnd && isWeekStart);
+    const isEnd = isActualEnd || (currentIso >= isoStart && currentIso < isoEnd && isWeekEnd);
+
+    return { isMultiDay: true, isStart, isEnd, isActualStart, isActualEnd };
   };
 
   const formatDateForSlot = (dateObj: Date): string => {
@@ -455,16 +465,16 @@ export default function GoogleCalendarView({
                       const { isMultiDay, isStart, isEnd } = getEventDatePosition(evt, dateObj);
                       const commColor = getEventCommunityColor(evt, communities);
 
-                      let shapeClass = 'mx-1 rounded-md';
+                      let shapeClass = 'mx-1 rounded-md border';
                       if (isMultiDay) {
                         if (isStart && !isEnd) {
-                          shapeClass = 'ml-1 mr-0 rounded-l-md rounded-r-none border-r-0 z-10';
+                          shapeClass = 'ml-1 mr-0 rounded-l-md rounded-r-none border-l border-t border-b border-r-0 z-10';
                         } else if (!isStart && !isEnd) {
-                          shapeClass = 'mx-0 rounded-none border-x-0 z-10';
+                          shapeClass = 'mx-0 rounded-none border-x-0 border-t border-b z-10';
                         } else if (!isStart && isEnd) {
-                          shapeClass = 'mr-1 ml-0 rounded-r-md rounded-l-none border-l-0 z-10';
+                          shapeClass = 'mr-1 ml-0 rounded-r-md rounded-l-none border-r border-t border-b border-l-0 z-10';
                         } else if (isStart && isEnd) {
-                          shapeClass = 'mx-1 rounded-md z-10';
+                          shapeClass = 'mx-1 rounded-md border z-10';
                         }
                       }
 
@@ -479,19 +489,20 @@ export default function GoogleCalendarView({
                             }}
                             className={`w-full text-left px-1.5 py-0.5 border transition-all block cursor-pointer ${shapeClass}`}
                           >
-                            {isStart ? (
-                              <>
-                                <div className="text-[10px] font-bold text-amber-400 truncate flex items-center gap-1">
-                                  <Lock className="w-3 h-3 text-amber-400 shrink-0" />
-                                  <span>Slot Reserved</span>
-                                </div>
-                                <div className="text-[8px] text-amber-500/80 truncate">
-                                  {evt.community}
-                                </div>
-                              </>
-                            ) : (
-                              <div className="text-[9px] font-bold text-amber-400/90 truncate py-0.5 font-mono px-1">
-                                ➔ Reserved ({evt.community})
+                            <div className="text-[10px] font-bold text-amber-400 truncate flex items-center justify-between gap-1">
+                              <span className="flex items-center gap-1 truncate">
+                                <Lock className="w-3 h-3 text-amber-400 shrink-0" />
+                                <span>{isStart ? 'Slot Reserved' : `➔ Reserved (${evt.community})`}</span>
+                              </span>
+                              {isEnd && isMultiDay && (
+                                <span className="text-[7px] font-extrabold px-1 rounded uppercase bg-amber-950 text-amber-300 border border-amber-800 shrink-0">
+                                  END
+                                </span>
+                              )}
+                            </div>
+                            {isStart && (
+                              <div className="text-[8px] text-amber-500/80 truncate">
+                                {evt.community}
                               </div>
                             )}
                           </div>
@@ -510,35 +521,30 @@ export default function GoogleCalendarView({
                             isClosed ? 'text-amber-300' : 'text-white'
                           }`}
                         >
-                          {isStart ? (
-                            <>
-                              <div className="flex items-center justify-between gap-1">
-                                <span className="text-[10px] font-bold truncate leading-tight font-heading flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: commColor }} />
-                                  <span className="truncate">{evt.title}</span>
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-[10px] font-bold truncate leading-tight font-heading flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: commColor }} />
+                              <span className="truncate">{!isStart ? `➔ ${evt.title}` : evt.title}</span>
+                            </span>
+                            <div className="flex items-center gap-1 shrink-0">
+                              {isEnd && isMultiDay && (
+                                <span className="text-[7px] font-extrabold px-1 rounded uppercase bg-rose-950/90 text-rose-300 border border-rose-800 shrink-0">
+                                  END
                                 </span>
-                                {isAdminMode && (
-                                  <span className={`text-[7px] font-extrabold px-0.5 rounded uppercase shrink-0 ${
-                                    isClosed ? 'bg-amber-900/80 text-amber-300' : 'bg-emerald-950 text-emerald-400'
-                                  }`}>
-                                    {isClosed ? 'Draft' : 'Live'}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-[8px] text-slate-300 truncate flex items-center justify-between mt-0.5">
-                                <span className="truncate font-semibold" style={{ color: getReadableTextColor(commColor) }}>{evt.community}</span>
-                                <span className="text-slate-400">{displayTime.split('-')[0].trim()}</span>
-                              </div>
-                            </>
-                          ) : (
-                            <div className="text-[9px] font-bold truncate py-0.5 flex items-center justify-between text-slate-200 px-1">
-                              <span className="truncate flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: commColor }} />
-                                ➔ {evt.title}
-                              </span>
-                              {isEnd && <span className="text-[7px] text-slate-400 font-mono shrink-0 ml-1">Ends</span>}
+                              )}
+                              {isAdminMode && (
+                                <span className={`text-[7px] font-extrabold px-0.5 rounded uppercase shrink-0 ${
+                                  isClosed ? 'bg-amber-900/80 text-amber-300' : 'bg-emerald-950 text-emerald-400'
+                                }`}>
+                                  {isClosed ? 'Draft' : 'Live'}
+                                </span>
+                              )}
                             </div>
-                          )}
+                          </div>
+                          <div className="text-[8px] text-slate-300 truncate flex items-center justify-between mt-0.5">
+                            <span className="truncate font-semibold" style={{ color: getReadableTextColor(commColor) }}>{evt.community}</span>
+                            <span className="text-slate-400">{displayTime.split('-')[0].trim()}</span>
+                          </div>
                         </button>
                       );
                     })}
