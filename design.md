@@ -57,6 +57,14 @@ The design language of **CEV EVENTS** is crafted as a high-contrast dark design 
 * Border Radius: `1rem` (16px / `rounded-2xl`)
 * Hover State: Border transitions to `#6366f1` with subtle 2px offset box-shadow.
 
+### Glassmorphic Mobile Bottom Navbar
+* Positioning: `fixed bottom-3 left-3 right-3 z-50 md:hidden`
+* Background: `#0f121d` with 75% opacity (`bg-[#0f121d]/75`)
+* Backdrop Filter: `backdrop-blur-2xl`
+* Border: `1px solid rgba(30, 36, 54, 0.9)` (`rounded-2xl`)
+* Box Shadow: `0px 8px 32px rgba(0, 0, 0, 0.6)`
+* Active Tab Glow: Electric Indigo pill (`#6366f1`) with `shadow-[0_0_12px_rgba(99,102,241,0.5)]` and scale micro-animation (`scale-105`)
+
 ### Brutalist Action Buttons
 * Primary CTA: `.brutalist-btn-primary` (`bg-[#6366f1] text-white border border-[#4f46e5] shadow-[3px_3px_0px_0px_#312e81]`)
 * Secondary CTA: `.brutalist-btn-secondary` (`bg-[#161a29] text-white border border-[#1e2436]`)

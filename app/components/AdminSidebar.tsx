@@ -87,37 +87,58 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
         </div>
       </aside>
 
-      <div className="flex md:hidden items-center justify-between overflow-x-auto pt-4 pb-3 px-4 gap-2 border-b border-[#1e2436] bg-[#0f121d] scrollbar-hide shrink-0 sticky top-0 z-40">
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-          {navItems.map((item) => {
-            if (!item.roleRequired.includes(currentRole)) return null;
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold shrink-0 border ${
-                  isActive
-                    ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[2px_2px_0px_0px_#312e81]'
-                    : 'bg-[#161a29] text-[#94a3b8] border-[#1e2436]'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span className="font-heading">{item.label}</span>
-              </Link>
-            );
-          })}
+      <div className="flex md:hidden items-center justify-between px-4 py-3 border-b border-[#1e2436]/80 bg-[#0f121d]/80 backdrop-blur-xl shrink-0 sticky top-0 z-40">
+        <div className="flex items-center space-x-2.5">
+          <div className="p-1.5 bg-[#6366f1] border border-[#4f46e5] rounded-lg text-white shadow-[2px_2px_0px_0px_#312e81]">
+            <Shield className="w-4 h-4" />
+          </div>
+          <div>
+            <h2 className="font-bold text-sm text-white font-display">CEV EVENTS</h2>
+            <span className="text-[9px] uppercase font-bold text-white bg-[#6366f1] px-1.5 py-0.2 rounded border border-[#4f46e5] font-mono">
+              {currentRole} Access
+            </span>
+          </div>
         </div>
 
-        <button
-          onClick={onSignOut}
-          className="p-2 rounded-lg bg-red-950/60 border border-red-800 text-red-300 text-xs shrink-0 flex items-center gap-1 font-semibold"
-          title="Sign Out"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center space-x-2">
+          <Link
+            href="/"
+            className="p-2 rounded-xl bg-[#161a29]/80 border border-[#1e2436] text-slate-300 text-xs flex items-center gap-1 font-semibold hover:text-white"
+            title="Public Site"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+          </Link>
+          <button
+            onClick={onSignOut}
+            className="p-2 rounded-xl bg-red-950/60 border border-red-800 text-red-300 text-xs flex items-center gap-1 font-semibold"
+            title="Sign Out"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
+
+      <nav className="fixed bottom-3 left-3 right-3 z-50 md:hidden bg-[#0f121d]/75 backdrop-blur-2xl border border-[#1e2436]/90 rounded-2xl p-1.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.6)] flex items-center justify-around select-none">
+        {navItems.map((item) => {
+          if (!item.roleRequired.includes(currentRole)) return null;
+          const isActive = pathname === item.href;
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 border ${
+                isActive
+                  ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[0_0_12px_rgba(99,102,241,0.5)] scale-105'
+                  : 'text-[#94a3b8] hover:text-white border-transparent'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              <span className="text-[10px] font-heading mt-0.5 tracking-tight font-semibold">{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </>
   );
 }

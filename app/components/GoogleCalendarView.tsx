@@ -323,11 +323,11 @@ export default function GoogleCalendarView({
 
   return (
     <div className="brutalist-card rounded-2xl overflow-hidden flex flex-col font-sans border-2 border-[#1e2436] bg-[#0f121d]">
-      <div className="p-4 border-b border-[#1e2436] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-[#161a29]">
-        <div className="flex flex-wrap items-center space-x-3">
+      <div className="p-3 sm:p-4 border-b border-[#1e2436] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#161a29]">
+        <div className="flex items-center justify-between sm:justify-start space-x-2 sm:space-x-3">
           <button
             onClick={handleToday}
-            className="px-3.5 py-1.5 rounded-xl bg-[#0f121d] border border-[#1e2436] text-xs font-bold text-white hover:border-[#6366f1] transition-colors"
+            className="px-3 py-1.5 rounded-xl bg-[#0f121d] border border-[#1e2436] text-xs font-bold text-white hover:border-[#6366f1] transition-colors shrink-0"
           >
             Today
           </button>
@@ -345,17 +345,17 @@ export default function GoogleCalendarView({
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-          <h2 className="text-lg font-bold text-white ml-2 font-display">
+          <h2 className="text-base sm:text-lg font-bold text-white font-display truncate">
             {monthNames[currentMonth]} {currentYear}
           </h2>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 justify-between sm:justify-end">
+          <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
             <select
               value={selectedCommunity}
               onChange={(e) => setSelectedCommunity(e.target.value)}
-              className="px-3 py-1.5 bg-[#0f121d] border border-[#1e2436] rounded-xl text-xs font-medium text-white focus:outline-none focus:border-[#6366f1]"
+              className="px-2.5 py-1.5 bg-[#0f121d] border border-[#1e2436] rounded-xl text-xs font-medium text-white focus:outline-none focus:border-[#6366f1] w-full sm:w-auto"
             >
               <option value="all">All Communities</option>
               {communities.map((c) => (
@@ -369,7 +369,7 @@ export default function GoogleCalendarView({
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-1.5 bg-[#0f121d] border border-[#1e2436] rounded-xl text-xs font-medium text-white focus:outline-none focus:border-[#6366f1]"
+                className="px-2.5 py-1.5 bg-[#0f121d] border border-[#1e2436] rounded-xl text-xs font-medium text-white focus:outline-none focus:border-[#6366f1] w-full sm:w-auto"
               >
                 <option value="all">All Statuses</option>
                 <option value="closed">Closed Draft Slots</option>
@@ -378,12 +378,12 @@ export default function GoogleCalendarView({
             )}
           </div>
 
-          <div className="flex items-center bg-[#0f121d] border border-[#1e2436] rounded-xl p-1">
+          <div className="flex items-center bg-[#0f121d] border border-[#1e2436] rounded-xl p-1 shrink-0 overflow-x-auto">
             {(['month', 'week', 'day', 'grid'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`px-3 py-1 text-xs font-semibold capitalize rounded-lg transition-all ${
+                className={`px-2.5 py-1 text-xs font-semibold capitalize rounded-lg transition-all ${
                   viewMode === mode
                     ? 'bg-[#6366f1] text-white shadow-sm font-bold'
                     : 'text-[#94a3b8] hover:text-white'
@@ -896,13 +896,19 @@ export default function GoogleCalendarView({
                 </div>
               )}
 
-              <Link
-                href={`/events/${activeModalEvent.slug || activeModalEvent.id}`}
-                className="brutalist-btn-primary px-4 py-2 text-xs rounded-xl flex items-center space-x-1.5 font-bold ml-auto"
-              >
-                <span>View Page</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
+              {activeModalEvent.status === 'live' ? (
+                <Link
+                  href={`/events/${activeModalEvent.slug || activeModalEvent.id}`}
+                  className="brutalist-btn-primary px-4 py-2 text-xs rounded-xl flex items-center space-x-1.5 font-bold ml-auto"
+                >
+                  <span>View Page</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              ) : (
+                <span className="px-3 py-1.5 text-xs font-semibold text-amber-400 bg-amber-950/60 border border-amber-800 rounded-xl flex items-center gap-1 ml-auto">
+                  <Lock className="w-3 h-3" /> Reserved Draft Slot
+                </span>
+              )}
             </div>
           </div>
         </div>

@@ -1,5 +1,15 @@
 # Changelogs & Version History
 
+## [0.65.0] - 2026-08-05
+
+### 📱 Mobile UI Overhaul & Closed Slot View Privacy Guard
+- **Glassmorphism Mobile Bottom Navigation ([app/components/AdminSidebar.tsx](./app/components/AdminSidebar.tsx)):** Replaced the top scrolling bar with a floating glassmorphic bottom navigation bar (`backdrop-blur-2xl bg-[#0f121d]/75`) with active Electric Indigo glowing tabs (`#6366f1`), touch-friendly targets, and a clean top branding header.
+- **Admin Layout Mobile Padding ([app/admin/layout.tsx](./app/admin/layout.tsx)):** Added `pb-28 md:pb-8` bottom padding to main admin container to ensure zero content overlap with the bottom navigation bar.
+- **Mobile Calendar & Modal Touch Optimization ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx), [app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Enhanced day cell heights, toolbar layout, touch targets, and bottom-sheet modal form containers (`rounded-t-2xl sm:rounded-2xl`) for mobile screens.
+- **Closed Slot View Page Privacy Guard:** Restricted public view page links (`/events/[id]`) so that draft (`closed`) slot reservations do not expose public preview links, showing a locked draft indicator badge instead until published (`live`).
+
+---
+
 ## [0.64.0] - 2026-08-05
 
 ### 🎓 College Event Slot Booking & Role Restriction
