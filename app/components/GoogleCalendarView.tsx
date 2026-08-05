@@ -462,19 +462,19 @@ export default function GoogleCalendarView({
                         (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
                       );
 
-                      const { isMultiDay, isStart, isEnd } = getEventDatePosition(evt, dateObj);
+                      const { isMultiDay, isStart, isEnd, isActualEnd } = getEventDatePosition(evt, dateObj);
                       const commColor = getEventCommunityColor(evt, communities);
 
-                      let shapeClass = 'mx-1 rounded-md border';
+                      let shapeClass = 'w-[calc(100%-8px)] mx-1 rounded-md border z-10';
                       if (isMultiDay) {
                         if (isStart && !isEnd) {
-                          shapeClass = 'ml-1 mr-0 rounded-l-md rounded-r-none border-l border-t border-b border-r-0 z-10';
+                          shapeClass = 'w-[calc(100%-4px)] ml-1 mr-0 rounded-l-md rounded-r-none border-l border-t border-b border-r-0 z-10';
                         } else if (!isStart && !isEnd) {
-                          shapeClass = 'mx-0 rounded-none border-x-0 border-t border-b z-10';
+                          shapeClass = 'w-full mx-0 rounded-none border-x-0 border-t border-b z-10';
                         } else if (!isStart && isEnd) {
-                          shapeClass = 'mr-1 ml-0 rounded-r-md rounded-l-none border-r border-t border-b border-l-0 z-10';
+                          shapeClass = 'w-[calc(100%-4px)] mr-1 ml-0 rounded-r-md rounded-l-none border-r border-t border-b border-l-0 z-10';
                         } else if (isStart && isEnd) {
-                          shapeClass = 'mx-1 rounded-md border z-10';
+                          shapeClass = 'w-[calc(100%-8px)] mx-1 rounded-md border z-10';
                         }
                       }
 
@@ -484,28 +484,62 @@ export default function GoogleCalendarView({
                             key={evt.id}
                             onClick={() => setActiveModalEvent(evt)}
                             style={{
-                              backgroundColor: hexToRgba(commColor, 0.2),
-                              borderColor: hexToRgba(commColor, 0.6),
+                              backgroundColor: hexToRgba(commColor, isMultiDay ? 0.6 : 0.2),
+                              borderColor: hexToRgba(commColor, 0.7),
                             }}
-                            className={`w-full text-left px-1.5 py-0.5 border transition-all block cursor-pointer ${shapeClass}`}
+                            className={`text-left border transition-all block box-border ${shapeClass} ${
+                              isMultiDay ? 'h-5 sm:h-6 py-0 px-1' : 'px-1.5 py-0.5'
+                            }`}
                           >
-                            <div className="text-[10px] font-bold text-amber-400 truncate flex items-center justify-between gap-1">
+                            <div className="text-[10px] font-bold text-amber-300 truncate flex items-center justify-between gap-1 h-full">
                               <span className="flex items-center gap-1 truncate">
                                 <Lock className="w-3 h-3 text-amber-400 shrink-0" />
-                                <span>{isStart ? 'Slot Reserved' : `➔ Reserved (${evt.community})`}</span>
+                                <span>{isStart ? 'Slot Reserved' : `Reserved (${evt.community})`}</span>
                               </span>
-                              {isEnd && isMultiDay && (
+                              {isActualEnd && isMultiDay && (
                                 <span className="text-[7px] font-extrabold px-1 rounded uppercase bg-amber-950 text-amber-300 border border-amber-800 shrink-0">
                                   END
                                 </span>
                               )}
                             </div>
-                            {isStart && (
-                              <div className="text-[8px] text-amber-500/80 truncate">
-                                {evt.community}
-                              </div>
-                            )}
                           </div>
+                        );
+                      }
+
+                      if (isMultiDay) {
+                        return (
+                          <button
+                            key={evt.id}
+                            onClick={() => setActiveModalEvent(evt)}
+                            style={{
+                              backgroundColor: isClosed ? hexToRgba(commColor, 0.55) : hexToRgba(commColor, 0.85),
+                              borderColor: commColor,
+                            }}
+                            className={`text-left border transition-all block box-border group/btn h-5 sm:h-6 px-1.5 py-0 ${shapeClass} ${
+                              isClosed ? 'text-amber-200' : 'text-white'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-1 h-full w-full overflow-hidden">
+                              <span className="text-[10px] font-bold truncate leading-none font-heading flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-white/90 shadow-sm" />
+                                <span className="truncate">{evt.title}</span>
+                              </span>
+                              <div className="flex items-center gap-1 shrink-0">
+                                {isActualEnd && (
+                                  <span className="text-[7px] font-extrabold px-1 py-0.2 rounded uppercase bg-rose-950 text-rose-200 border border-rose-700/80 shrink-0 leading-none">
+                                    END
+                                  </span>
+                                )}
+                                {isAdminMode && isStart && (
+                                  <span className={`text-[7px] font-extrabold px-1 py-0.2 rounded uppercase shrink-0 leading-none ${
+                                    isClosed ? 'bg-amber-950 text-amber-300 border border-amber-700' : 'bg-emerald-950 text-emerald-300 border border-emerald-700'
+                                  }`}>
+                                    {isClosed ? 'Draft' : 'Live'}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
                         );
                       }
 
@@ -517,29 +551,22 @@ export default function GoogleCalendarView({
                             backgroundColor: isClosed ? hexToRgba(commColor, 0.18) : hexToRgba(commColor, 0.28),
                             borderColor: hexToRgba(commColor, 0.7),
                           }}
-                          className={`w-full text-left px-1.5 py-0.5 border transition-all block group/btn ${shapeClass} ${
+                          className={`text-left px-1.5 py-0.5 border transition-all block box-border group/btn ${shapeClass} ${
                             isClosed ? 'text-amber-300' : 'text-white'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-1">
                             <span className="text-[10px] font-bold truncate leading-tight font-heading flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: commColor }} />
-                              <span className="truncate">{!isStart ? `➔ ${evt.title}` : evt.title}</span>
+                              <span className="truncate">{evt.title}</span>
                             </span>
-                            <div className="flex items-center gap-1 shrink-0">
-                              {isEnd && isMultiDay && (
-                                <span className="text-[7px] font-extrabold px-1 rounded uppercase bg-rose-950/90 text-rose-300 border border-rose-800 shrink-0">
-                                  END
-                                </span>
-                              )}
-                              {isAdminMode && (
-                                <span className={`text-[7px] font-extrabold px-0.5 rounded uppercase shrink-0 ${
-                                  isClosed ? 'bg-amber-900/80 text-amber-300' : 'bg-emerald-950 text-emerald-400'
-                                }`}>
-                                  {isClosed ? 'Draft' : 'Live'}
-                                </span>
-                              )}
-                            </div>
+                            {isAdminMode && (
+                              <span className={`text-[7px] font-extrabold px-0.5 rounded uppercase shrink-0 ${
+                                isClosed ? 'bg-amber-900/80 text-amber-300' : 'bg-emerald-950 text-emerald-400'
+                              }`}>
+                                {isClosed ? 'Draft' : 'Live'}
+                              </span>
+                            )}
                           </div>
                           <div className="text-[8px] text-slate-300 truncate flex items-center justify-between mt-0.5">
                             <span className="truncate font-semibold" style={{ color: getReadableTextColor(commColor) }}>{evt.community}</span>

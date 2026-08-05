@@ -1,5 +1,44 @@
 # Changelogs & Version History
 
+## [0.71.0] - 2026-08-05
+
+### 🐛 Multi-Day Banner Button Inline-Block Width Calculation Fix
+- **Explicit Width Calculations ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Resolved HTML `<button>` inline-block text content shrinking bug where multi-day cards fit-to-text width rather than spanning 100% across day cells.
+  - Middle days (`!isStart && !isEnd`) now explicitly use `w-full mx-0` to bridge column borders continuously with 0px horizontal gap.
+  - Start days (`isStart && !isEnd`) use `w-[calc(100%-4px)] ml-1 mr-0` to extend flush to the right cell border line.
+  - End days (`!isStart && isEnd`) use `w-[calc(100%-4px)] mr-1 ml-0` to start flush at the left border line and end 4px inside the right cell.
+  - Single-day events use `w-[calc(100%-8px)] mx-1` to fit inside day cells with zero grid line overflow.
+
+---
+
+## [0.70.0] - 2026-08-05
+
+### 📅 Authentic Google Calendar Multi-Day Horizontal Banner System
+- **Filled Horizontal Banner Bars ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Multi-day events ("Series Exam 1", "Onam Vacation") are now rendered as smooth, filled horizontal banner bars (`h-5 sm:h-6` with 85% opacity community color fill), matching Google Calendar's exact UI design:
+  - Eliminates 2-line detail stacking (community name + time slot repetition) inside every middle day cell.
+  - Spans continuously across month grid columns (`ml-1 mr-0` start day, `mx-0` middle days, `mr-1 ml-0` end day).
+  - Single-day events continue to render as rich 2-line detail cards (`mx-1 rounded-md border box-border`) with zero border overflow.
+
+---
+
+## [0.69.0] - 2026-08-05
+
+### 📅 Google Calendar Connected Multi-Day Banner System Fix
+- **Connected Multi-Day Banner System ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Overhauled `getEventDatePosition` and shape classes to align with Google Calendar conventions:
+  - **Start of Segment:** `ml-1 mr-0 rounded-l-md rounded-r-none border-r-0` (starts 4px inside cell, extends flush to right cell border).
+  - **Middle of Segment:** `mx-0 rounded-none border-x-0` (spans 0px to 0px across column boundaries without gaps).
+  - **End of Segment:** `mr-1 ml-0 rounded-r-md rounded-l-none border-l-0` (spans 0px from left border, leaves 4px margin on right with rounded right corner).
+- **Strict `isActualEnd` Badge Logic:** Restricted `END` status pill badges (`bg-rose-950 text-rose-300`) to strictly render on the REAL final end date of multi-day events (`isActualEnd === true`), preventing premature `END` badges on Saturday week-row wraps.
+
+---
+
+## [0.68.0] - 2026-08-05
+
+### 🐛 Calendar Single-Day & Event Banner CSS Width Overflow Fix
+- **Eliminated Cell Border Bleed ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Removed `w-full` from month view event card button/div elements to prevent CSS `100% + margin` overflow (which was causing card right edges to extend 8px past the day cell's vertical border line into adjacent day cells). Single-day events now fit 100% perfectly inside their day cell borders with clean 4px margins (`mx-1 rounded-md border box-border`).
+
+---
+
 ## [0.67.0] - 2026-08-05
 
 ### 📅 Calendar Event Ending Day Card & END Badge Fix
