@@ -1,5 +1,12 @@
 # Changelogs & Version History
 
+## [0.66.0] - 2026-08-05
+
+### 📱 Responsive Mobile Bottom Navbar Typography & Device Optimization
+- **Fluid Typography & Short Label Fallbacks ([app/components/AdminSidebar.tsx](./app/components/AdminSidebar.tsx)):** Added `shortLabel` definitions (`Overview`, `Events`, `Community`, `Users`, `Communities`, `Profile`) and fluid single-line truncation styling (`text-[9px] sm:text-[10px] truncate max-w-full text-center leading-none`) to ensure the bottom navbar text fits perfectly on every mobile screen size (from 320px compact devices like iPhone SE up to large pro phones) without wrapping, overlapping, or clipping.
+
+---
+
 ## [0.65.0] - 2026-08-05
 
 ### 📱 Mobile UI Overhaul & Closed Slot View Privacy Guard

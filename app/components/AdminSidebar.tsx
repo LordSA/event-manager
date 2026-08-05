@@ -16,12 +16,12 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
   const pathname = usePathname();
 
   const navItems = [
-    { label: 'Overview', href: '/admin', icon: LayoutDashboard, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
-    { label: 'Event Booking', href: '/admin/events', icon: Calendar, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
-    { label: 'My Community', href: '/admin/my-community', icon: Building, roleRequired: ['manager', 'editor'] },
-    { label: 'User Roles', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin', 'manager'] },
-    { label: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin'] },
-    { label: 'Profile', href: '/admin/profile', icon: User, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
+    { label: 'Overview', shortLabel: 'Overview', href: '/admin', icon: LayoutDashboard, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
+    { label: 'Event Booking', shortLabel: 'Events', href: '/admin/events', icon: Calendar, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
+    { label: 'My Community', shortLabel: 'Community', href: '/admin/my-community', icon: Building, roleRequired: ['manager', 'editor'] },
+    { label: 'User Roles', shortLabel: 'Users', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin', 'manager'] },
+    { label: 'Communities', shortLabel: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin'] },
+    { label: 'Profile', shortLabel: 'Profile', href: '/admin/profile', icon: User, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
   ];
 
   return (
@@ -118,7 +118,7 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
         </div>
       </div>
 
-      <nav className="fixed bottom-3 left-3 right-3 z-50 md:hidden bg-[#0f121d]/75 backdrop-blur-2xl border border-[#1e2436]/90 rounded-2xl p-1.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.6)] flex items-center justify-around select-none">
+      <nav className="fixed bottom-2.5 left-2 right-2 sm:left-4 sm:right-4 z-50 md:hidden bg-[#0f121d]/85 backdrop-blur-2xl border border-[#1e2436]/90 rounded-2xl p-1 sm:p-1.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] flex items-center justify-between gap-0.5 sm:gap-1 select-none">
         {navItems.map((item) => {
           if (!item.roleRequired.includes(currentRole)) return null;
           const isActive = pathname === item.href;
@@ -127,14 +127,16 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 border ${
+              className={`flex-1 min-w-0 flex flex-col items-center justify-center py-1.5 px-0.5 sm:px-2 rounded-xl transition-all duration-200 border ${
                 isActive
-                  ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[0_0_12px_rgba(99,102,241,0.5)] scale-105'
+                  ? 'bg-[#6366f1] text-white border-[#4f46e5] shadow-[0_0_10px_rgba(99,102,241,0.5)] font-bold'
                   : 'text-[#94a3b8] hover:text-white border-transparent'
               }`}
             >
-              <Icon className="w-4 h-4" />
-              <span className="text-[10px] font-heading mt-0.5 tracking-tight font-semibold">{item.label}</span>
+              <Icon className="w-4 h-4 shrink-0" />
+              <span className="text-[9px] sm:text-[10px] font-heading mt-0.5 tracking-tight truncate max-w-full text-center leading-none">
+                {item.shortLabel || item.label}
+              </span>
             </Link>
           );
         })}
