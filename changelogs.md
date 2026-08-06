@@ -1,5 +1,15 @@
 # Changelogs & Version History
 
+## [0.83.0] - 2026-08-06
+
+### 🐛 Bug Reporting & Support Portal with Super Admin Ticket Inbox
+- **Public Support & Bug Report Page ([app/support/page.tsx](./app/support/page.tsx)):** Added a dedicated public support page collecting Name, Email, Phone, Issue Founded description, Screenshot/Proof attachment (via Supabase storage upload or image URL), and Suggestions/Feedback.
+- **Footer Anchor Link ([app/components/Footer.tsx](./app/components/Footer.tsx)):** Embedded a direct anchor link (`Report Bug / Support`) in the site footer navigation.
+- **Super Admin Ticket Inbox Portal ([app/admin/support/page.tsx](./app/admin/support/page.tsx)):** Created a superadmin receiver portal (`/admin/support`) strictly restricted to `dev` and `admin` roles, featuring ticket stats, status filter tabs (`Open`, `In Progress`, `Resolved`, `Closed`), search query filter, image zoom modal, real-time status updates, and ticket deletion controls.
+- **Admin Sidebar Navigation ([app/components/AdminSidebar.tsx](./app/components/AdminSidebar.tsx)):** Added `Support Inbox` link with `LifeBuoy` icon under Super Admin navigation items.
+
+---
+
 ## [0.82.0] - 2026-08-06
 
 ### 🌐 Offline & Online Event Mode Streamlining & Grid Month/Year Selectors

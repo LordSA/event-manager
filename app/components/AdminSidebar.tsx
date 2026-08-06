@@ -4,7 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, Users, Calendar, Building, LayoutDashboard, User, LogOut, ExternalLink } from 'lucide-react';
+import { Shield, Users, Calendar, Building, LayoutDashboard, User, LogOut, ExternalLink, LifeBuoy } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 
 interface AdminSidebarProps {
@@ -21,6 +21,7 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
     { label: 'My Community', shortLabel: 'Community', href: '/admin/my-community', icon: Building, roleRequired: ['manager', 'editor'] },
     { label: 'User Roles', shortLabel: 'Users', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin', 'manager'] },
     { label: 'Communities', shortLabel: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin'] },
+    { label: 'Support Inbox', shortLabel: 'Support', href: '/admin/support', icon: LifeBuoy, roleRequired: ['dev', 'admin'] },
     { label: 'Profile', shortLabel: 'Profile', href: '/admin/profile', icon: User, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
   ];
 

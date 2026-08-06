@@ -55,3 +55,18 @@ export interface AiConfig {
   model_name: string;
   created_at: string;
 }
+
+export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+
+export interface SupportTicket {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  issue: string;
+  screenshot_url: string | null;
+  suggestions: string | null;
+  status: TicketStatus;
+  created_at: string;
+  updated_at: string;
+}
