@@ -1,5 +1,13 @@
 # Changelogs & Version History
 
+## [0.87.0] - 2026-08-06
+
+### 📬 Dynamic Super Admin Email Resolution from Database for Bug Reports
+- **Database Super Admin Query ([app/api/support/route.ts](./app/api/support/route.ts)):** When a bug report or support ticket is submitted, the API dynamically queries the Supabase `profiles` table for all users with superadmin roles (`role IN ('dev', 'admin')`).
+- **SMTP Notification Broadcast ([lib/email.ts](./lib/email.ts)):** Passes all retrieved superadmin email addresses to `sendSupportTicketEmail`, ensuring all active superadmins receive full report details (reporter info, description, suggestions, and screenshot attachment) via SMTP.
+
+---
+
 ## [0.86.0] - 2026-08-06
 
 ### 📐 Day View Flex Alignment & Real-Time Poster Upload Progress

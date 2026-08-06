@@ -11,7 +11,10 @@ export interface EmailTicketPayload {
   suggestions?: string | null;
 }
 
-export async function sendSupportTicketEmail(ticket: EmailTicketPayload) {
+export async function sendSupportTicketEmail(
+  ticket: EmailTicketPayload,
+  recipients?: string[]
+) {
   const host = process.env.SMTP_HOST || 'smtp.gmail.com';
   const port = parseInt(process.env.SMTP_PORT || '465', 10);
   const user = process.env.SMTP_USER || 'room2homies@gmail.com';
@@ -51,6 +54,9 @@ export async function sendSupportTicketEmail(ticket: EmailTicketPayload) {
       console.warn('Failed to fetch screenshot for email attachment:', fetchErr);
     }
   }
+
+  const validRecipients = recipients && recipients.length > 0 ? recipients : [user];
+  const toList = Array.from(new Set(validRecipients.filter(Boolean))).join(', ');
 
   const htmlContent = `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #08090d; color: #f8fafc; padding: 24px; border-radius: 12px; max-width: 600px; margin: 0 auto;">
@@ -94,7 +100,7 @@ export async function sendSupportTicketEmail(ticket: EmailTicketPayload) {
 
   await transporter.sendMail({
     from,
-    to: user,
+    to: toList,
     subject: `[CEV Bug Report] ${ticket.name}: ${ticket.issue.slice(0, 45)}...`,
     html: htmlContent,
     attachments,

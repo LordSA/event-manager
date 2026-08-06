@@ -39,20 +39,44 @@ export async function POST(req: NextRequest) {
 
     const ticketRecord = data && data[0] ? data[0] : { id: `TICK-${Date.now()}`, name, email, phone, issue, screenshot_url, suggestions };
 
-    // Send email notification to superadmin via SMTP in the background
+    // Fetch superadmin email addresses from DB profiles table
+    let recipientEmails: string[] = [];
     try {
-      await sendSupportTicketEmail({
-        id: ticketRecord.id,
-        name: ticketRecord.name,
-        email: ticketRecord.email,
-        phone: ticketRecord.phone,
-        issue: ticketRecord.issue,
-        screenshot_url: ticketRecord.screenshot_url,
-        suggestions: ticketRecord.suggestions,
-      });
+      const { data: superadmins } = await supabase
+        .from('profiles')
+        .select('email')
+        .in('role', ['dev', 'admin']);
+
+      if (superadmins && superadmins.length > 0) {
+        recipientEmails = superadmins
+          .map((sa: { email: string | null }) => sa.email?.trim() || '')
+          .filter((emailStr: string) => emailStr.length > 0);
+      }
+    } catch (dbErr) {
+      console.warn('Could not fetch superadmin emails from DB profiles:', dbErr);
+    }
+
+    if (recipientEmails.length === 0) {
+      const fallbackEmail = process.env.SMTP_USER || 'room2homies@gmail.com';
+      recipientEmails.push(fallbackEmail);
+    }
+
+    // Send email notification to all superadmins via SMTP in the background
+    try {
+      await sendSupportTicketEmail(
+        {
+          id: ticketRecord.id,
+          name: ticketRecord.name,
+          email: ticketRecord.email,
+          phone: ticketRecord.phone,
+          issue: ticketRecord.issue,
+          screenshot_url: ticketRecord.screenshot_url,
+          suggestions: ticketRecord.suggestions,
+        },
+        recipientEmails
+      );
     } catch (mailErr) {
       console.error('Failed to send SMTP email notification:', mailErr);
-      // Non-blocking: return success to user even if mail dispatch failed
     }
 
     return NextResponse.json({
