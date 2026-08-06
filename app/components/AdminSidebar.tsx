@@ -19,6 +19,7 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
     { label: 'Overview', shortLabel: 'Overview', href: '/admin', icon: LayoutDashboard, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
     { label: 'Event Booking', shortLabel: 'Events', href: '/admin/events', icon: Calendar, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
     { label: 'My Community', shortLabel: 'Community', href: '/admin/my-community', icon: Building, roleRequired: ['manager', 'editor'] },
+    { label: 'My Events', shortLabel: 'My Events', href: '/admin/my-community/events', icon: Calendar, roleRequired: ['manager', 'editor'] },
     { label: 'User Roles', shortLabel: 'Users', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin', 'manager'] },
     { label: 'Communities', shortLabel: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin'] },
     { label: 'Support Inbox', shortLabel: 'Support', href: '/admin/support', icon: LifeBuoy, roleRequired: ['dev', 'admin'] },

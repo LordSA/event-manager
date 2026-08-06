@@ -1,5 +1,14 @@
 # Changelogs & Version History
 
+## [0.88.0] - 2026-08-06
+
+### 🏛️ Dedicated "My Events" Management Page under My Community
+- **Community Events Portal ([app/admin/my-community/events/page.tsx](./app/admin/my-community/events/page.tsx)):** Created a dedicated community-specific events page strictly restricted to assigned community managers and editors (`roleRequired: ['manager', 'editor']`).
+- **Targeted Metrics & Dual Views:** Displays community branding banner, metric counters (Total, Live, Drafts, Online), pre-filtered Google Calendar View (`GoogleCalendarView`), and interactive List View table with search, status filters, format badges (Offline/Online), and slot booking modal pre-populated for that community.
+- **Admin Sidebar Link ([app/components/AdminSidebar.tsx](./app/components/AdminSidebar.tsx)):** Added `My Events` navigation link under `My Community` navigation section.
+
+---
+
 ## [0.87.0] - 2026-08-06
 
 ### 📬 Dynamic Super Admin Email Resolution from Database for Bug Reports
