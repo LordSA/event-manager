@@ -1,5 +1,15 @@
 # Changelogs & Version History
 
+## [0.81.0] - 2026-08-06
+
+### 🗓️ Calendar-Projected Month Grid View Synchronization
+- **Strict Month Filtering ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Grid View now strictly displays events for the month and year currently selected in the calendar header toolbar (e.g. `August 2026`).
+- **Inner Header Removal:** Removed redundant inner month headers within the grid layout, creating a clean 3-column card presentation synchronized with the calendar header.
+- **Dynamic Header Synchronization:** Navigating between months with `<` `>` arrow buttons or date selection automatically updates Grid View to display events for that selected projected month.
+- **Per-Month Pagination:** Capped 6-event pagination engine operates on the active projected month's events, resetting to Page 1 when changing months or filters.
+
+---
+
 ## [0.80.0] - 2026-08-06
 
 ### 🔢 6-Event Grid View Pagination Engine
