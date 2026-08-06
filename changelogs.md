@@ -1,5 +1,14 @@
 # Changelogs & Version History
 
+## [0.79.0] - 2026-08-06
+
+### 📅 Chronological Month Grouping & Calendar Order in Grid View
+- **Month Section Headers & Sorting ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Grid View now sorts all filtered events chronologically by start date and groups them into clean Month & Year sections (e.g., "August 2026", "September 2026", etc.).
+- **Event Count Badges:** Each month header displays a styled badge showing the count of events scheduled in that specific month.
+- **Calendar Alignment:** Aligns Grid View ordering directly with calendar month chronology for seamless user browsing.
+
+---
+
 ## [0.78.0] - 2026-08-06
 
 ### 🚀 React Portal Body Mounting & Zero-Flicker Screen Centering

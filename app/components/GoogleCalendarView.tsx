@@ -716,154 +716,191 @@ export default function GoogleCalendarView({
       )}
 
       {viewMode === 'grid' && (
-        <div className="p-4 sm:p-6 bg-[#08090d] min-h-[420px]">
+        <div className="p-4 sm:p-6 bg-[#08090d] min-h-[420px] space-y-8">
           {filteredEvents.length === 0 ? (
             <div className="p-8 text-center text-slate-500 text-xs italic bg-[#0f121d] border border-[#1e2436] rounded-2xl">
               No events found matching current criteria.
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEvents.map((evt) => {
-                const isClosed = evt.status === 'closed';
-                const isOwnCommunity = isSuperAdmin || (
-                  currentUserCommunityName &&
-                  (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
-                );
-                const commColor = getEventCommunityColor(evt, communities);
+            (() => {
+              const sortedEvents = [...filteredEvents].sort((a, b) => {
+                const dateA = new Date(a.date.split(' to ')[0].trim()).getTime() || 0;
+                const dateB = new Date(b.date.split(' to ')[0].trim()).getTime() || 0;
+                return dateA - dateB;
+              });
 
-                if (isAdminMode && !isOwnCommunity && isClosed) {
-                  return (
-                    <div
-                      key={evt.id}
-                      className="p-6 rounded-2xl bg-slate-900/40 border border-amber-950/80 space-y-4 flex flex-col justify-between"
-                    >
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] uppercase font-bold text-amber-400 px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-800 flex items-center gap-1">
-                            <Lock className="w-3 h-3" /> Slot Booked (Reserved)
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="text-lg font-bold text-slate-300 flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-amber-400" /> Time Slot Reserved
-                          </h4>
-                          <p className="text-xs text-slate-500 mt-1">
-                            Reserved by another campus community to prevent scheduling conflicts. Details hidden until live.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="pt-4 border-t border-slate-800/80 space-y-1">
-                        <div className="font-semibold text-slate-300 text-xs flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: commColor }} />
-                          <span>{evt.community}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-slate-400">
-                          <span className="flex items-center gap-1">
-                            <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
-                          </span>
-                          <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
+              const groupedByMonth: { [key: string]: CalendarEvent[] } = {};
+              sortedEvents.forEach((evt) => {
+                const startDateStr = evt.date.split(' to ')[0].trim();
+                const d = new Date(startDateStr);
+                const monthKey = !isNaN(d.getTime())
+                  ? `${monthNames[d.getMonth()]} ${d.getFullYear()}`
+                  : 'Other Events';
+                if (!groupedByMonth[monthKey]) {
+                  groupedByMonth[monthKey] = [];
                 }
+                groupedByMonth[monthKey].push(evt);
+              });
 
-                return (
-                  <div
-                    key={evt.id}
-                    onClick={() => setActiveModalEvent(evt)}
-                    style={{
-                      backgroundColor: '#0f121d',
-                      borderColor: hexToRgba(commColor, 0.4),
-                    }}
-                    className="p-6 rounded-2xl border space-y-4 flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.5)] hover:border-[#6366f1] transition-all duration-300 group relative z-0 hover:z-10"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span
-                          className="text-xs uppercase font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5"
-                          style={{
-                            backgroundColor: hexToRgba(commColor, 0.15),
-                            borderColor: hexToRgba(commColor, 0.5),
-                            color: commColor,
-                          }}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: commColor }} />
-                          {evt.category}
-                        </span>
-                        {isAdminMode ? (
-                          <span
-                            className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5 ${
-                              isClosed
-                                ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                : 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                            }`}
-                          >
-                            {isClosed ? (
-                              <>
-                                <Lock className="w-3 h-3" /> Closed Draft
-                              </>
-                            ) : (
-                              <>
-                                <CheckCircle2 className="w-3 h-3" /> Live
-                              </>
-                            )}
-                          </span>
-                        ) : (
-                          <span className="text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> Live
-                          </span>
-                        )}
-                      </div>
-
-                      <div>
-                        <h4 className="text-xl font-bold text-white font-heading group-hover:text-[#6366f1] transition-colors">{evt.title}</h4>
-                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
-                      </div>
+              return Object.entries(groupedByMonth).map(([monthLabel, monthEvts]) => (
+                <div key={monthLabel} className="space-y-4">
+                  <div className="flex items-center gap-3 border-b border-[#1e2436] pb-3">
+                    <div className="p-2 rounded-xl bg-[#6366f1]/10 border border-[#6366f1]/30">
+                      <CalendarIcon className="w-4 h-4 text-[#6366f1]" />
                     </div>
-
-                    <div className="pt-4 border-t border-[#1e2436] space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-200">{evt.community}</span>
-                        {isAdminMode && isOwnCommunity && (
-                          <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
-                            {onEditEvent && (
-                              <button
-                                onClick={() => onEditEvent(evt)}
-                                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
-                                title="Edit Event Slot"
-                              >
-                                <Edit3 className="w-4 h-4" />
-                              </button>
-                            )}
-                            {onDeleteEvent && (
-                              <button
-                                onClick={() => onDeleteEvent(evt.id, evt.community)}
-                                className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
-                                title="Delete Event Slot"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
-                        </span>
-                        <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot}
-                        </span>
-                      </div>
-                    </div>
+                    <h3 className="text-base font-bold text-white font-heading tracking-wide flex items-center gap-2">
+                      {monthLabel}
+                      <span className="text-xs font-normal text-slate-400 bg-[#161a29] px-2.5 py-0.5 rounded-full border border-[#1e2436]">
+                        {monthEvts.length} {monthEvts.length === 1 ? 'event' : 'events'}
+                      </span>
+                    </h3>
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {monthEvts.map((evt) => {
+                      const isClosed = evt.status === 'closed';
+                      const isOwnCommunity = isSuperAdmin || (
+                        currentUserCommunityName &&
+                        (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
+                      );
+                      const commColor = getEventCommunityColor(evt, communities);
+
+                      if (isAdminMode && !isOwnCommunity && isClosed) {
+                        return (
+                          <div
+                            key={evt.id}
+                            className="p-6 rounded-2xl bg-slate-900/40 border border-amber-950/80 space-y-4 flex flex-col justify-between"
+                          >
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase font-bold text-amber-400 px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-800 flex items-center gap-1">
+                                  <Lock className="w-3 h-3" /> Slot Booked (Reserved)
+                                </span>
+                              </div>
+                              <div>
+                                <h4 className="text-lg font-bold text-slate-300 flex items-center gap-2">
+                                  <Clock className="w-4 h-4 text-amber-400" /> Time Slot Reserved
+                                </h4>
+                                <p className="text-xs text-slate-500 mt-1">
+                                  Reserved by another campus community to prevent scheduling conflicts. Details hidden until live.
+                                </p>
+                              </div>
+                            </div>
+                            <div className="pt-4 border-t border-slate-800/80 space-y-1">
+                              <div className="font-semibold text-slate-300 text-xs flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: commColor }} />
+                                <span>{evt.community}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-xs text-slate-400">
+                                <span className="flex items-center gap-1">
+                                  <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
+                                </span>
+                                <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
+                                  <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div
+                          key={evt.id}
+                          onClick={() => setActiveModalEvent(evt)}
+                          style={{
+                            backgroundColor: '#0f121d',
+                            borderColor: hexToRgba(commColor, 0.4),
+                          }}
+                          className="p-6 rounded-2xl border space-y-4 flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.5)] hover:border-[#6366f1] transition-all duration-300 group relative z-0 hover:z-10"
+                        >
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span
+                                className="text-xs uppercase font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5"
+                                style={{
+                                  backgroundColor: hexToRgba(commColor, 0.15),
+                                  borderColor: hexToRgba(commColor, 0.5),
+                                  color: commColor,
+                                }}
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: commColor }} />
+                                {evt.category}
+                              </span>
+                              {isAdminMode ? (
+                                <span
+                                  className={`text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5 ${
+                                    isClosed
+                                      ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                                      : 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                                  }`}
+                                >
+                                  {isClosed ? (
+                                    <>
+                                      <Lock className="w-3 h-3" /> Closed Draft
+                                    </>
+                                  ) : (
+                                    <>
+                                      <CheckCircle2 className="w-3 h-3" /> Live
+                                    </>
+                                  )}
+                                </span>
+                              ) : (
+                                <span className="text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3" /> Live
+                                </span>
+                              )}
+                            </div>
+
+                            <div>
+                              <h4 className="text-xl font-bold text-white font-heading group-hover:text-[#6366f1] transition-colors">{evt.title}</h4>
+                              <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
+                            </div>
+                          </div>
+
+                          <div className="pt-4 border-t border-[#1e2436] space-y-2">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-semibold text-slate-200">{evt.community}</span>
+                              {isAdminMode && isOwnCommunity && (
+                                <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
+                                  {onEditEvent && (
+                                    <button
+                                      onClick={() => onEditEvent(evt)}
+                                      className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                                      title="Edit Event Slot"
+                                    >
+                                      <Edit3 className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                  {onDeleteEvent && (
+                                    <button
+                                      onClick={() => onDeleteEvent(evt.id, evt.community)}
+                                      className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800"
+                                      title="Delete Event Slot"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-between text-xs text-slate-400">
+                              <span className="flex items-center gap-1">
+                                <CalendarIcon className="w-3.5 h-3.5 text-blue-400" /> {evt.date}
+                              </span>
+                              <span className="text-cyan-400 font-mono text-[11px] flex items-center gap-1">
+                                <Clock className="w-3.5 h-3.5 text-cyan-400" /> {evt.time_slot}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ));
+            })()
           )}
         </div>
       )}
