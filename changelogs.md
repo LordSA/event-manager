@@ -1,5 +1,24 @@
 # Changelogs & Version History
 
+## [0.78.0] - 2026-08-06
+
+### 🚀 React Portal Body Mounting & Zero-Flicker Screen Centering
+- **Portal Body Mounting ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx), [app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Wrapped modal dialog overlays (`activeModalEvent` and `showModal`) in React `createPortal(..., document.body)`.
+  - Detaches modal overlays from scrolling/transformed parent containers (`main`, Lenis smooth scroll).
+  - Guarantees modal cards mount directly onto `document.body` and center 100% perfectly in the active viewport screen (`100vh`) regardless of page scroll height or container offset.
+  - Eliminates position flickering and scrolling offset bugs permanently.
+
+---
+
+## [0.77.0] - 2026-08-06
+
+### 🐛 Viewport Modal Dialog Alignment Fix
+- **Modal Centering Alignment ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx), [app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Resolved an issue where flex padding offsets (`md:pl-64`) pushed modal cards down to the bottom right of the viewport when clicking events in Grid View.
+  - Cleaned modal overlay layout to use viewport-wide flex alignment (`fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto`).
+  - Ensures event detail popups (`activeModalEvent`) and slot booking sheets (`showModal`) remain perfectly centered horizontally and vertically across all device viewports.
+
+---
+
 ## [0.76.0] - 2026-08-06
 
 ### 🎨 Grid View Card Selection Lift & Workspace-Centered Modal Popups

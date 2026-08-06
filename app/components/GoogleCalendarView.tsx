@@ -1,7 +1,8 @@
 // Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ChevronLeft,
   ChevronRight,
@@ -149,11 +150,16 @@ export default function GoogleCalendarView({
   onToggleStatus,
   onDeleteEvent,
 }: GoogleCalendarViewProps) {
+  const [mounted, setMounted] = useState(false);
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'day' | 'grid'>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedCommunity, setSelectedCommunity] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [activeModalEvent, setActiveModalEvent] = useState<CalendarEvent | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isSuperAdmin = currentUserRole === 'dev' || currentUserRole === 'admin';
 
@@ -862,16 +868,16 @@ export default function GoogleCalendarView({
         </div>
       )}
 
-      {activeModalEvent && (
+      {activeModalEvent && mounted && typeof document !== 'undefined' && createPortal(
         <div
+          data-lenis-prevent
           onClick={() => setActiveModalEvent(null)}
-          className={`fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-all ${
-            isAdminMode ? 'md:pl-64' : ''
-          }`}
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto"
         >
           <div
+            data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
-            className="brutalist-card p-6 max-w-lg w-full space-y-5 rounded-2xl relative text-white bg-[#0f121d] border-2 border-[#1e2436] shadow-2xl my-auto animate-in fade-in zoom-in-95 duration-200"
+            className="brutalist-card p-6 sm:p-8 max-w-lg w-full space-y-5 rounded-2xl relative text-white bg-[#0f121d] border-2 border-[#1e2436] shadow-2xl my-auto"
           >
             <button
               onClick={() => setActiveModalEvent(null)}
@@ -979,7 +985,8 @@ export default function GoogleCalendarView({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

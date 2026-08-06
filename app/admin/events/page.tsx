@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, AlertCircle, Clock, Upload, Link as LinkIcon, Globe, MapPin, Zap } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
@@ -68,8 +69,13 @@ function parseTimeTo24Hr(timeStr?: string): string {
 }
 
 export default function EventBookingEnginePage() {
+  const [mounted, setMounted] = useState(false);
   const { eventsList, setEventsList, loading: eventsLoading } = useRealtimeEvents();
   const { communities, loading: communitiesLoading } = useCommunities();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const loading = eventsLoading || communitiesLoading;
 
@@ -547,7 +553,7 @@ export default function EventBookingEnginePage() {
         )}
       </div>
 
-      {showModal && (
+      {showModal && mounted && typeof document !== 'undefined' && createPortal(
         <div
           data-lenis-prevent
           onClick={(e) => {
@@ -556,12 +562,12 @@ export default function EventBookingEnginePage() {
               setEditingEvent(null);
             }
           }}
-          className="fixed inset-0 bg-black/85 backdrop-blur-md z-[150] flex items-end sm:items-center justify-center p-0 sm:p-6 md:pl-64 overflow-y-auto"
+          className="fixed inset-0 bg-black/85 backdrop-blur-md z-[99999] flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-y-auto"
         >
           <div
             data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
-            className="brutalist-card p-5 sm:p-8 w-full max-w-3xl rounded-t-2xl sm:rounded-2xl text-white space-y-5 sm:space-y-6 my-0 sm:my-auto max-h-[92vh] sm:max-h-[88vh] overflow-y-auto relative shadow-2xl border-t-2 sm:border-2 border-[#1e2436] bg-[#0f121d] animate-in fade-in zoom-in-95 duration-200"
+            className="brutalist-card p-5 sm:p-8 w-full max-w-3xl rounded-t-2xl sm:rounded-2xl text-white space-y-5 sm:space-y-6 my-0 sm:my-auto max-h-[92vh] sm:max-h-[88vh] overflow-y-auto relative shadow-2xl border-t-2 sm:border-2 border-[#1e2436] bg-[#0f121d]"
           >
             <div className="flex items-center justify-between border-b border-[#1e2436] pb-3.5">
               <h3 className="text-lg sm:text-xl font-bold font-display text-white">
@@ -686,9 +692,9 @@ export default function EventBookingEnginePage() {
                       type="text"
                       value={customCategory}
                       onChange={(e) => setCustomCategory(e.target.value)}
-                      placeholder="Enter custom category name..."
+                      placeholder="Specify custom category name..."
                       required
-                      className="w-full bg-[#161a29] border border-[#1e2436] text-white rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] mt-2 transition-colors"
+                      className="mt-2 w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                     />
                   )}
                 </div>
@@ -917,7 +923,8 @@ export default function EventBookingEnginePage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
