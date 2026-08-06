@@ -44,50 +44,84 @@ export async function convertToWebP(file: File, quality = 0.82): Promise<File> {
 
 export async function uploadImageFile(
   file: File,
-  category: 'posters' | 'logos' | 'avatars' = 'posters'
+  category: 'posters' | 'logos' | 'avatars' = 'posters',
+  onProgress?: (percent: number) => void
 ): Promise<string> {
+  if (onProgress) onProgress(10);
   const webpFile = await convertToWebP(file);
+  if (onProgress) onProgress(25);
 
-  // 1. Try Vercel Blob API
-  try {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
     const formData = new FormData();
     formData.append('file', webpFile);
     formData.append('category', category);
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data.success && data.url) {
-        return data.url;
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && onProgress) {
+        const percent = Math.round(25 + (event.loaded / event.total) * 70);
+        onProgress(Math.min(95, percent));
       }
-    }
-  } catch (err) {
-    console.warn('Vercel Blob upload failed, attempting Supabase Storage fallback...', err);
-  }
+    };
 
-  // 2. Fallback to Supabase Storage bucket
-  try {
-    const supabase = createClient();
-    const fileExt = webpFile.name.split('.').pop() || 'webp';
-    const fileName = `${category}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-
-    const { error: uploadErr } = await supabase.storage
-      .from('posters')
-      .upload(fileName, webpFile, { cacheControl: '3600', upsert: true });
-
-    if (!uploadErr) {
-      const { data: publicUrlData } = supabase.storage.from('posters').getPublicUrl(fileName);
-      if (publicUrlData && publicUrlData.publicUrl) {
-        return publicUrlData.publicUrl;
+    xhr.onload = async () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if (data.success && data.url) {
+            if (onProgress) onProgress(100);
+            return resolve(data.url);
+          }
+        } catch (e) {}
       }
-    }
-  } catch (supaErr) {
-    console.warn('Supabase Storage fallback error:', supaErr);
-  }
 
-  throw new Error('Failed to upload image to storage. Please check connection or paste a direct image URL.');
+      // Fallback to Supabase Storage bucket
+      try {
+        const supabase = createClient();
+        const fileExt = webpFile.name.split('.').pop() || 'webp';
+        const fileName = `${category}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+
+        const { error: uploadErr } = await supabase.storage
+          .from('posters')
+          .upload(fileName, webpFile, { cacheControl: '3600', upsert: true });
+
+        if (!uploadErr) {
+          const { data: publicUrlData } = supabase.storage.from('posters').getPublicUrl(fileName);
+          if (publicUrlData && publicUrlData.publicUrl) {
+            if (onProgress) onProgress(100);
+            return resolve(publicUrlData.publicUrl);
+          }
+        }
+      } catch (supaErr) {
+        console.warn('Supabase Storage fallback error:', supaErr);
+      }
+
+      reject(new Error('Failed to upload image. Please check connection or paste a direct image URL.'));
+    };
+
+    xhr.onerror = async () => {
+      try {
+        const supabase = createClient();
+        const fileExt = webpFile.name.split('.').pop() || 'webp';
+        const fileName = `${category}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+
+        const { error: uploadErr } = await supabase.storage
+          .from('posters')
+          .upload(fileName, webpFile, { cacheControl: '3600', upsert: true });
+
+        if (!uploadErr) {
+          const { data: publicUrlData } = supabase.storage.from('posters').getPublicUrl(fileName);
+          if (publicUrlData && publicUrlData.publicUrl) {
+            if (onProgress) onProgress(100);
+            return resolve(publicUrlData.publicUrl);
+          }
+        }
+      } catch (supaErr) {}
+
+      reject(new Error('Image upload failed. Please try again.'));
+    };
+
+    xhr.open('POST', '/api/upload');
+    xhr.send(formData);
+  });
 }

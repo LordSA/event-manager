@@ -658,58 +658,63 @@ export default function GoogleCalendarView({
 
       {(viewMode === 'week' || viewMode === 'day') && (
         <div className="flex-1 flex flex-col min-h-[520px] bg-[#08090d]">
-          <div className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2`}>
-            <div className="w-16 text-center text-[#94a3b8] font-mono text-[10px]">Time</div>
-            {(viewMode === 'week' ? weekDays : [currentDate]).map((d) => (
-              <div
-                key={d.toISOString()}
-                onClick={() => {
-                  if (viewMode === 'week') {
-                    setCurrentDate(d);
-                    setViewMode('day');
-                  }
-                }}
-                className={`flex flex-col items-center py-0.5 px-1.5 rounded-lg transition-colors ${
-                  viewMode === 'week' ? 'cursor-pointer hover:bg-[#161a29]' : ''
-                }`}
-                title={viewMode === 'week' ? `Click to view Day schedule for ${d.toDateString()}` : undefined}
-              >
-                <span>{daysOfWeek[d.getDay()]}</span>
-                <span className={`text-xs font-bold mt-0.5 ${d.toDateString() === new Date().toDateString() ? 'text-[#6366f1]' : 'text-white'}`}>
-                  {d.getDate()}
-                </span>
-              </div>
-            ))}
+          <div className="flex border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2">
+            <div className="w-16 shrink-0 text-center text-[#94a3b8] font-mono text-[10px]">Time</div>
+            <div className={`flex-1 ${viewMode === 'week' ? 'grid grid-cols-7' : 'flex items-center justify-center'}`}>
+              {(viewMode === 'week' ? weekDays : [currentDate]).map((d) => (
+                <div
+                  key={d.toISOString()}
+                  onClick={() => {
+                    if (viewMode === 'week') {
+                      setCurrentDate(d);
+                      setViewMode('day');
+                    }
+                  }}
+                  className={`flex flex-col items-center py-0.5 px-1.5 rounded-lg transition-colors ${
+                    viewMode === 'week' ? 'cursor-pointer hover:bg-[#161a29]' : ''
+                  }`}
+                  title={viewMode === 'week' ? `Click to view Day schedule for ${d.toDateString()}` : undefined}
+                >
+                  <span>{daysOfWeek[d.getDay()]}</span>
+                  <span className={`text-xs font-bold mt-0.5 ${d.toDateString() === new Date().toDateString() ? 'text-[#6366f1]' : 'text-white'}`}>
+                    {d.getDate()}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto max-h-[480px] relative scrollbar-hide">
             {hours.map((hour) => (
               <div
                 key={hour}
-                className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} border-b border-[#1e2436]/60 min-h-[52px]`}
+                className="flex border-b border-[#1e2436]/60 min-h-[52px]"
               >
-                <div className="w-16 border-r border-[#1e2436] text-[10px] text-[#94a3b8] font-mono p-1.5 text-right select-none">
+                <div className="w-16 shrink-0 border-r border-[#1e2436] text-[10px] text-[#94a3b8] font-mono p-1.5 text-right select-none">
                   {hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
                 </div>
 
-                {(viewMode === 'week' ? weekDays : [currentDate]).map((d) => {
-                  const dayEvents = filteredEvents.filter((evt) => {
-                    if (!isEventOnDate(evt, d)) return false;
-                    const { startHour } = parseTimeSlot(evt.time_slot);
-                    return startHour === hour;
-                  });
+                <div className={`flex-1 ${viewMode === 'week' ? 'grid grid-cols-7' : 'relative'}`}>
+                  {(viewMode === 'week' ? weekDays : [currentDate]).map((d) => {
+                    const dayEvents = filteredEvents.filter((evt) => {
+                      if (!isEventOnDate(evt, d)) return false;
+                      const { startHour } = parseTimeSlot(evt.time_slot);
+                      return startHour === hour;
+                    });
 
-                  return (
-                    <div
-                      key={d.toISOString()}
-                      onClick={() => {
-                        if (isAdminMode && onSelectDateSlot && dayEvents.length === 0) {
-                          const hourStr = hour < 10 ? `0${hour}:00` : `${hour}:00`;
-                          onSelectDateSlot(formatDateForSlot(d), hourStr);
-                        }
-                      }}
-                      className="border-r border-[#1e2436]/40 p-0.5 relative min-h-[52px] cursor-pointer hover:bg-[#161a29]/30 transition-colors"
-                    >
+                    return (
+                      <div
+                        key={d.toISOString()}
+                        onClick={() => {
+                          if (isAdminMode && onSelectDateSlot && dayEvents.length === 0) {
+                            const hourStr = hour < 10 ? `0${hour}:00` : `${hour}:00`;
+                            onSelectDateSlot(formatDateForSlot(d), hourStr);
+                          }
+                        }}
+                        className={`border-r border-[#1e2436]/40 p-0.5 relative min-h-[52px] cursor-pointer hover:bg-[#161a29]/30 transition-colors ${
+                          viewMode === 'day' ? 'w-full h-full' : ''
+                        }`}
+                      >
                       {dayEvents.map((evt) => {
                         const { startHour, endHour, displayTime } = parseTimeSlot(evt.time_slot);
                         const durationHours = Math.max(1, endHour - startHour);
@@ -761,6 +766,7 @@ export default function GoogleCalendarView({
                     </div>
                   );
                 })}
+                </div>
               </div>
             ))}
           </div>

@@ -1,5 +1,13 @@
 # Changelogs & Version History
 
+## [0.86.0] - 2026-08-06
+
+### 📐 Day View Flex Alignment & Real-Time Poster Upload Progress
+- **Day View Grid Realignment ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Replaced `grid-cols-2` 50%/50% layout with a flex container (`w-16 shrink-0` time column + `flex-1` day timeline). Aligned day date header (`Mon 17`) directly over the full-width timeline column and eliminated black empty gaps.
+- **XHR Upload Progress Tracking ([lib/upload.ts](./lib/upload.ts), [app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Upgraded poster upload engine to use `XMLHttpRequest` progress events (`onprogress`), rendering a live percentage counter (`Uploading 65%...`) and an animated glassmorphic progress bar.
+
+---
+
 ## [0.85.0] - 2026-08-06
 
 ### 🏷️ Clean Text Offline / Online Event Mode Badges & Database Migration Script

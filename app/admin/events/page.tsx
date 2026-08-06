@@ -104,6 +104,7 @@ export default function EventBookingEnginePage() {
   const [posterUrl, setPosterUrl] = useState('');
   const [redirectUrl, setRedirectUrl] = useState('');
   const [uploadingPoster, setUploadingPoster] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const handlePosterFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,17 +118,21 @@ export default function EventBookingEnginePage() {
     }
 
     setUploadingPoster(true);
+    setUploadProgress(0);
     setFeedback(null);
 
     try {
-      const publicUrl = await uploadImageFile(file, 'posters');
+      const publicUrl = await uploadImageFile(file, 'posters', (percent) => {
+        setUploadProgress(percent);
+      });
       setPosterUrl(publicUrl);
-      setFeedback({ type: 'success', message: 'Event poster WebP uploaded to Vercel Blob!' });
+      setFeedback({ type: 'success', message: 'Event poster uploaded successfully!' });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to upload poster image';
       setFeedback({ type: 'error', message: msg });
     } finally {
       setUploadingPoster(false);
+      setUploadProgress(0);
     }
   };
 
@@ -815,10 +820,25 @@ export default function EventBookingEnginePage() {
                       />
                       <label
                         htmlFor="poster-file-upload"
-                        className="w-full bg-[#161a29] hover:bg-[#1e2436] text-slate-300 hover:text-white rounded-xl px-3 py-2.5 text-xs border border-[#1e2436] flex items-center justify-center space-x-1.5 cursor-pointer transition-colors"
+                        className="w-full bg-[#161a29] hover:bg-[#1e2436] text-slate-300 hover:text-white rounded-xl px-3 py-2 text-xs border border-[#1e2436] flex flex-col justify-center space-y-1 cursor-pointer transition-colors"
                       >
-                        <Upload className="w-3.5 h-3.5 text-[#6366f1]" />
-                        <span className="truncate">{uploadingPoster ? 'Uploading...' : 'Upload File'}</span>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-1.5 min-w-0">
+                            <Upload className="w-3.5 h-3.5 text-[#6366f1] shrink-0" />
+                            <span className="truncate">{uploadingPoster ? `Uploading...` : 'Upload File'}</span>
+                          </div>
+                          {uploadingPoster && (
+                            <span className="text-[10px] font-mono font-bold text-[#6366f1]">{uploadProgress}%</span>
+                          )}
+                        </div>
+                        {uploadingPoster && (
+                          <div className="w-full h-1 bg-[#0f121d] rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-[#6366f1] transition-all duration-150"
+                              style={{ width: `${uploadProgress}%` }}
+                            />
+                          </div>
+                        )}
                       </label>
                     </div>
 
