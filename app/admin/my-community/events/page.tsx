@@ -24,7 +24,6 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { EventItem, Community, UserRole } from '@/types/database.types';
-import GoogleCalendarView from '@/app/components/GoogleCalendarView';
 import { uploadImageFile } from '@/lib/upload';
 
 export default function MyCommunityEventsPage() {
@@ -36,7 +35,7 @@ export default function MyCommunityEventsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'live' | 'closed'>('all');
   const [formatFilter, setFormatFilter] = useState<'all' | 'offline' | 'online'>('all');
-  const [viewModeTab, setViewModeTab] = useState<'calendar' | 'list'>('calendar');
+  const [viewModeTab, setViewModeTab] = useState<'grid' | 'list'>('grid');
 
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -440,15 +439,15 @@ export default function MyCommunityEventsPage() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#0f121d] p-3 rounded-xl border border-[#1e2436]">
         <div className="flex items-center space-x-1.5 w-full sm:w-auto">
           <button
-            onClick={() => setViewModeTab('calendar')}
+            onClick={() => setViewModeTab('grid')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-              viewModeTab === 'calendar'
+              viewModeTab === 'grid'
                 ? 'bg-[#6366f1] text-white border border-[#4f46e5]'
                 : 'bg-[#161a29] text-[#94a3b8] hover:text-white border border-[#1e2436]'
             }`}
           >
-            <Calendar className="w-3.5 h-3.5" />
-            <span>Calendar View</span>
+            <LayoutGrid className="w-3.5 h-3.5" />
+            <span>Grid View</span>
           </button>
 
           <button
@@ -464,58 +463,179 @@ export default function MyCommunityEventsPage() {
           </button>
         </div>
 
-        {/* Filter Controls for List View */}
-        {viewModeTab === 'list' && (
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 sm:w-48">
-              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
-              <input
-                type="text"
-                placeholder="Search events..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-lg pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:border-[#6366f1]"
-              />
-            </div>
-
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="bg-[#161a29] border border-[#1e2436] text-white text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#6366f1]"
-            >
-              <option value="all">All Statuses</option>
-              <option value="live">Live Only</option>
-              <option value="closed">Closed Only</option>
-            </select>
-
-            <select
-              value={formatFilter}
-              onChange={(e) => setFormatFilter(e.target.value as any)}
-              className="bg-[#161a29] border border-[#1e2436] text-white text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#6366f1]"
-            >
-              <option value="all">All Formats</option>
-              <option value="offline">Offline</option>
-              <option value="online">Online</option>
-            </select>
+        {/* Global Filter Controls */}
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-48">
+            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+            <input
+              type="text"
+              placeholder="Search events..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-lg pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:border-[#6366f1]"
+            />
           </div>
-        )}
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as any)}
+            className="bg-[#161a29] border border-[#1e2436] text-white text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#6366f1]"
+          >
+            <option value="all">All Statuses</option>
+            <option value="live">Live Only</option>
+            <option value="closed">Closed Only</option>
+          </select>
+
+          <select
+            value={formatFilter}
+            onChange={(e) => setFormatFilter(e.target.value as any)}
+            className="bg-[#161a29] border border-[#1e2436] text-white text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#6366f1]"
+          >
+            <option value="all">All Formats</option>
+            <option value="offline">Offline</option>
+            <option value="online">Online</option>
+          </select>
+        </div>
       </div>
 
       {/* Main Content Area */}
-      {viewModeTab === 'calendar' ? (
-        <GoogleCalendarView
-          events={events}
-          communities={communities}
-          isAdminMode={true}
-          currentUserRole={role}
-          currentUserCommunityName={community.name}
-          onSelectDateSlot={(date, startTime) => openAddModal(date, startTime)}
-          onEditEvent={(evt) => {
-            const rawEvent = events.find((e) => e.id === evt.id) || evt;
-            openEditModal(rawEvent as any);
-          }}
-          onToggleStatus={(id, currentStatus) => handleToggleStatus(id, currentStatus)}
-        />
+      {viewModeTab === 'grid' ? (
+        filteredEvents.length === 0 ? (
+          <div className="p-12 text-center text-[#94a3b8] text-xs bg-[#0f121d] border border-[#1e2436] rounded-xl space-y-2">
+            <LayoutGrid className="w-8 h-8 text-slate-600 mx-auto" />
+            <p className="font-bold text-white">No Events Found</p>
+            <p>No events match your current filter parameters for {community.name}.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredEvents.map((evt) => {
+              const isOnline = (evt.venue || '').toLowerCase().includes('online');
+              const isClosed = evt.status === 'closed';
+              const cleanVenue = (evt.venue || '').replace(/^(offline|online)\s*•\s*/i, '');
+
+              return (
+                <div
+                  key={evt.id}
+                  className="brutalist-card p-5 rounded-2xl bg-[#0f121d] border border-[#1e2436] hover:border-[#6366f1]/60 transition-all flex flex-col justify-between space-y-4 shadow-lg group relative"
+                >
+                  <div className="space-y-3">
+                    {/* Poster Thumbnail */}
+                    <div className="relative w-full h-36 rounded-xl overflow-hidden bg-[#161a29] border border-[#1e2436]">
+                      {evt.poster_url ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={evt.poster_url}
+                          alt={evt.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-[#6366f1] space-y-1">
+                          <Sparkles className="w-6 h-6" />
+                          <span className="text-[10px] font-mono font-bold uppercase">{evt.category}</span>
+                        </div>
+                      )}
+
+                      {/* Status Overlay Badge */}
+                      <span
+                        className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 border shadow-md ${
+                          isClosed
+                            ? 'bg-amber-950/90 border-amber-800 text-amber-300'
+                            : 'bg-emerald-950/90 border-emerald-800 text-emerald-300'
+                        }`}
+                      >
+                        {isClosed ? <Lock className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
+                        {isClosed ? 'Closed Draft' : 'Live'}
+                      </span>
+                    </div>
+
+                    {/* Meta Category & Format */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] font-mono font-extrabold uppercase px-2 py-0.5 rounded bg-[#6366f1]/20 text-[#6366f1] border border-[#6366f1]/40">
+                        {evt.category}
+                      </span>
+                      <span
+                        className={`text-[9px] px-2 py-0.5 rounded font-extrabold uppercase ${
+                          isOnline
+                            ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
+                            : 'bg-indigo-950 text-indigo-300 border border-indigo-800'
+                        }`}
+                      >
+                        {isOnline ? 'Online' : 'Offline'}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-base font-bold text-white font-display line-clamp-2 leading-snug">
+                      {evt.title}
+                    </h3>
+
+                    {/* Date, Time & Venue */}
+                    <div className="space-y-1.5 text-xs text-[#94a3b8] font-medium pt-1 border-t border-[#1e2436]">
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="w-3.5 h-3.5 text-[#6366f1] shrink-0" />
+                        <span className="truncate">{evt.event_date}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-3.5 h-3.5 text-[#6366f1] shrink-0" />
+                        <span className="truncate">{evt.time_slot}</span>
+                      </div>
+                      {cleanVenue && (
+                        <div className="flex items-center space-x-2 text-slate-400 text-[11px]">
+                          {isOnline ? <Globe className="w-3.5 h-3.5 text-cyan-400 shrink-0" /> : <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />}
+                          <span className="truncate">{cleanVenue}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="pt-3 border-t border-[#1e2436] flex items-center justify-between gap-2">
+                    <div className="flex items-center space-x-1.5">
+                      <button
+                        onClick={() => handleToggleStatus(evt.id, evt.status || 'live')}
+                        className="px-2.5 py-1.5 rounded-lg bg-[#161a29] border border-[#1e2436] text-xs font-bold text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                        title={isClosed ? 'Publish Live' : 'Unpublish to Draft'}
+                      >
+                        {isClosed ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Lock className="w-3.5 h-3.5 text-amber-400" />}
+                        <span>{isClosed ? 'Publish' : 'Draft'}</span>
+                      </button>
+
+                      <button
+                        onClick={() => openEditModal(evt)}
+                        className="p-1.5 rounded-lg bg-[#161a29] border border-[#1e2436] text-slate-400 hover:text-white transition-colors"
+                        title="Edit Event"
+                      >
+                        <Edit2 className="w-3.5 h-3.5 text-indigo-400" />
+                      </button>
+                    </div>
+
+                    <div className="flex items-center space-x-1.5">
+                      {evt.status === 'live' && (
+                        <a
+                          href={`/events/${evt.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 rounded-lg bg-[#161a29] border border-[#1e2436] text-slate-400 hover:text-white transition-colors"
+                          title="View Public Page"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
+                        </a>
+                      )}
+
+                      <button
+                        onClick={() => setDeleteId(evt.id)}
+                        className="p-1.5 rounded-lg bg-red-950/40 border border-red-900/60 text-red-400 hover:text-red-300 transition-colors"
+                        title="Delete Event"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )
       ) : (
         <div className="bg-[#0f121d] border border-[#1e2436] rounded-xl overflow-hidden shadow-xl">
           {filteredEvents.length === 0 ? (

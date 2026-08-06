@@ -1,5 +1,13 @@
 # Changelogs & Version History
 
+## [0.89.0] - 2026-08-06
+
+### 🎴 Grid & List Views Layout Engine for "My Events" Page
+- **Grid View Cards Layout ([app/admin/my-community/events/page.tsx](./app/admin/my-community/events/page.tsx)):** Replaced calendar view on the "My Events" page with a 3-column responsive **Grid View** featuring poster image thumbnails, category badges, event dates & time slots, venue location, Offline/Online format badges, status overlays (`Live` / `Closed Draft`), and quick action buttons (`Publish`, `Edit`, `Delete`, `Public Page`).
+- **Interactive List View Table:** Retained full-featured searchable and filterable table view (`List View`) with instant tab toggle switching between Grid and List view modes.
+
+---
+
 ## [0.88.0] - 2026-08-06
 
 ### 🏛️ Dedicated "My Events" Management Page under My Community
