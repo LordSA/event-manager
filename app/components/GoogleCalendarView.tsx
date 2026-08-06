@@ -1047,6 +1047,25 @@ export default function GoogleCalendarView({
                 <Clock className="w-4 h-4 text-[#6366f1]" />
                 <span>{parseTimeSlot(activeModalEvent.time_slot).displayTime}</span>
               </div>
+              {(() => {
+                const rawVenue = activeModalEvent.venue || 'Campus Setup / CEV';
+                const isOnline = rawVenue.toLowerCase().startsWith('online') || rawVenue.toLowerCase().includes('online');
+                const formatTag = isOnline ? 'Online' : 'Offline';
+                const cleanLoc = rawVenue.replace(/^(offline|online|hybrid)\s*•\s*/i, '').trim() || rawVenue;
+
+                return (
+                  <div className="flex items-center space-x-2 pt-1">
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-extrabold uppercase ${
+                      isOnline
+                        ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
+                        : 'bg-indigo-950 text-indigo-300 border border-indigo-800'
+                    }`}>
+                      {formatTag}
+                    </span>
+                    <span className="text-white font-semibold">{cleanLoc}</span>
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="pt-3 border-t border-[#1e2436] flex flex-wrap items-center justify-between gap-2">

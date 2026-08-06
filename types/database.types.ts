@@ -36,6 +36,7 @@ export interface EventItem {
   event_date: string;
   time_slot: string;
   venue: string | null;
+  event_format?: 'offline' | 'online';
   redirect_url: string | null;
   status: EventStatus;
   system_prompt: string | null;

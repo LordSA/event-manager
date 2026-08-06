@@ -1,5 +1,13 @@
 # Changelogs & Version History
 
+## [0.85.0] - 2026-08-06
+
+### 🏷️ Clean Text Offline / Online Event Mode Badges & Database Migration Script
+- **Event Popup Detail Modal ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Updated the `activeModalEvent` pop-up dialog to include a prominent, clean text **Offline** (`indigo`) or **Online** (`cyan`) mode badge alongside the venue location string.
+- **Database DDL Migration:** Provided exact SQL commands for updating the `events` table with an `event_format` column in Supabase.
+
+---
+
 ## [0.84.0] - 2026-08-06
 
 ### 📧 SMTP Bug Report Dispatch & Poster Upload Dual Storage Fallback
