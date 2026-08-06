@@ -1,5 +1,16 @@
 # Changelogs & Version History
 
+## [0.75.0] - 2026-08-06
+
+### 📅 Calendar Day Click Navigation & Day View UX Optimization
+- **Day Cell Click Navigation ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Clicking any day cell in Month View or date column header in Week View now directly navigates to **Day Mode** (`viewMode = 'day'`) for that specific date instead of directly opening the add event popup.
+- **Enhanced Day Mode Experience ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):**
+  - Users can view all scheduled events on that specific day in detail across the 24-hour timeline.
+  - Added a prominent **"+ Book Slot"** button in the header toolbar when viewing Day Mode to easily open slot booking for the active date.
+  - Clicking any empty hourly slot row in Day View opens the slot booking modal with the prefilled time slot.
+
+---
+
 ## [0.74.0] - 2026-08-06
 
 ### 🛡️ RBAC Cross-Community Edit Protection & Event Format Selector

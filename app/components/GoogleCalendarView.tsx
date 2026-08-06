@@ -356,11 +356,26 @@ export default function GoogleCalendarView({
             </button>
           </div>
           <h2 className="text-base sm:text-lg font-bold text-white font-display truncate">
-            {monthNames[currentMonth]} {currentYear}
+            {viewMode === 'day'
+              ? `${monthNames[currentMonth]} ${currentDate.getDate()}, ${currentYear}`
+              : viewMode === 'week'
+              ? `Week of ${monthNames[weekDays[0].getMonth()]} ${weekDays[0].getDate()}, ${weekDays[0].getFullYear()}`
+              : `${monthNames[currentMonth]} ${currentYear}`}
           </h2>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 justify-between sm:justify-end">
+          {isAdminMode && onSelectDateSlot && viewMode === 'day' && (
+            <button
+              onClick={() => onSelectDateSlot(formatDateForSlot(currentDate))}
+              className="px-3 py-1.5 bg-[#6366f1] hover:bg-[#4f46e5] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-md shrink-0"
+              title="Book Slot on this Date"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Book Slot</span>
+            </button>
+          )}
+
           <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
             <select
               value={selectedCommunity}
@@ -431,25 +446,25 @@ export default function GoogleCalendarView({
               return (
                 <div
                   key={`day-${dayNum}`}
-                  className="border-r border-b border-[#1e2436] py-1 px-0 min-h-[90px] flex flex-col justify-start hover:bg-[#161a29]/40 transition-colors group relative"
+                  onClick={() => {
+                    setCurrentDate(dateObj);
+                    setViewMode('day');
+                  }}
+                  className="border-r border-b border-[#1e2436] py-1 px-0 min-h-[90px] flex flex-col justify-start hover:bg-[#161a29]/60 cursor-pointer transition-colors group relative"
+                  title={`Click to view Day schedule for ${monthNames[currentMonth]} ${dayNum}`}
                 >
                   <div className="flex items-center justify-between mb-1 px-1.5">
                     <span
-                      className={`text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full ${
-                        isToday ? 'bg-[#6366f1] text-white' : 'text-[#94a3b8]'
+                      className={`text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full transition-transform group-hover:scale-110 ${
+                        isToday ? 'bg-[#6366f1] text-white' : 'text-[#94a3b8] group-hover:text-white'
                       }`}
                     >
                       {dayNum}
                     </span>
-
-                    {isAdminMode && onSelectDateSlot && (
-                      <button
-                        onClick={() => onSelectDateSlot(formatDateForSlot(dateObj))}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 text-[10px] font-bold bg-[#6366f1]/20 hover:bg-[#6366f1] text-[#6366f1] hover:text-white rounded-md transition-all flex items-center gap-0.5"
-                        title="Book Slot on this Date"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
+                    {dayEvents.length > 0 && (
+                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-[#161a29] text-slate-400 border border-[#1e2436]">
+                        {dayEvents.length} {dayEvents.length === 1 ? 'evt' : 'evts'}
+                      </span>
                     )}
                   </div>
 
@@ -588,7 +603,19 @@ export default function GoogleCalendarView({
           <div className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} border-b border-[#1e2436] bg-[#0f121d] text-center text-xs font-bold text-[#94a3b8] py-2`}>
             <div className="w-16 text-center text-[#94a3b8] font-mono text-[10px]">Time</div>
             {(viewMode === 'week' ? weekDays : [currentDate]).map((d) => (
-              <div key={d.toISOString()} className="flex flex-col items-center">
+              <div
+                key={d.toISOString()}
+                onClick={() => {
+                  if (viewMode === 'week') {
+                    setCurrentDate(d);
+                    setViewMode('day');
+                  }
+                }}
+                className={`flex flex-col items-center py-0.5 px-1.5 rounded-lg transition-colors ${
+                  viewMode === 'week' ? 'cursor-pointer hover:bg-[#161a29]' : ''
+                }`}
+                title={viewMode === 'week' ? `Click to view Day schedule for ${d.toDateString()}` : undefined}
+              >
                 <span>{daysOfWeek[d.getDay()]}</span>
                 <span className={`text-xs font-bold mt-0.5 ${d.toDateString() === new Date().toDateString() ? 'text-[#6366f1]' : 'text-white'}`}>
                   {d.getDate()}
