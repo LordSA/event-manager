@@ -1,5 +1,14 @@
 # Changelogs & Version History
 
+## [0.80.0] - 2026-08-06
+
+### 🔢 6-Event Grid View Pagination Engine
+- **6 Events Per Page Limit ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Grid View now limits initial visible event cards to 6 per page (`EVENTS_PER_PAGE = 6`).
+- **Glassmorphic Pagination Toolbar:** Added an interactive footer toolbar with **Prev / Next** buttons, **Numbered Page Pills** (`1`, `2`, `3`...), and a **Range Counter Badge** (e.g. `Showing 1 to 6 of 18 events`).
+- **Filter Reset Integration:** Changing community or publishing status filters automatically resets pagination to Page 1.
+
+---
+
 ## [0.79.0] - 2026-08-06
 
 ### 📅 Chronological Month Grouping & Calendar Order in Grid View
