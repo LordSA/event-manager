@@ -211,7 +211,7 @@ export default function GoogleCalendarView({
 
   const handlePrev = () => {
     const d = new Date(currentDate);
-    if (viewMode === 'month') d.setMonth(d.getMonth() - 1);
+    if (viewMode === 'month' || viewMode === 'grid') d.setMonth(d.getMonth() - 1);
     else if (viewMode === 'week') d.setDate(d.getDate() - 7);
     else d.setDate(d.getDate() - 1);
     setCurrentDate(d);
@@ -219,7 +219,7 @@ export default function GoogleCalendarView({
 
   const handleNext = () => {
     const d = new Date(currentDate);
-    if (viewMode === 'month') d.setMonth(d.getMonth() + 1);
+    if (viewMode === 'month' || viewMode === 'grid') d.setMonth(d.getMonth() + 1);
     else if (viewMode === 'week') d.setDate(d.getDate() + 7);
     else d.setDate(d.getDate() + 1);
     setCurrentDate(d);
@@ -391,13 +391,35 @@ export default function GoogleCalendarView({
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-white font-display truncate">
-            {viewMode === 'day'
-              ? `${monthNames[currentMonth]} ${currentDate.getDate()}, ${currentYear}`
-              : viewMode === 'week'
-              ? `Week of ${monthNames[weekDays[0].getMonth()]} ${weekDays[0].getDate()}, ${weekDays[0].getFullYear()}`
-              : `${monthNames[currentMonth]} ${currentYear}`}
-          </h2>
+          <div className="flex items-center gap-2">
+            <select
+              value={currentMonth}
+              onChange={(e) => {
+                const newD = new Date(currentDate);
+                newD.setMonth(parseInt(e.target.value, 10));
+                setCurrentDate(newD);
+              }}
+              className="bg-[#0f121d] border border-[#1e2436] text-white text-xs font-bold rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-[#6366f1] transition-colors cursor-pointer"
+            >
+              {monthNames.map((m, idx) => (
+                <option key={m} value={idx}>{m}</option>
+              ))}
+            </select>
+
+            <select
+              value={currentYear}
+              onChange={(e) => {
+                const newD = new Date(currentDate);
+                newD.setFullYear(parseInt(e.target.value, 10));
+                setCurrentDate(newD);
+              }}
+              className="bg-[#0f121d] border border-[#1e2436] text-white text-xs font-bold rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-[#6366f1] transition-colors cursor-pointer"
+            >
+              {Array.from({ length: 8 }, (_, i) => 2024 + i).map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 justify-between sm:justify-end">

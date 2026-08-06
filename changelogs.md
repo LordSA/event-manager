@@ -1,5 +1,14 @@
 # Changelogs & Version History
 
+## [0.82.0] - 2026-08-06
+
+### 🌐 Offline & Online Event Mode Streamlining & Grid Month/Year Selectors
+- **Offline / Online Mode Selector ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Removed the `Hybrid` option, streamlining event mode selection to **Offline** (with `MapPin` icon) and **Online** (with `Globe` icon).
+- **Public & Admin Event Format Badges ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Updated venue cards to render crisp **Offline** (`indigo`) and **Online** (`cyan`) badges.
+- **Grid View Toolbar Month/Year Selectors ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Added interactive Month and Year select dropdowns to the top header toolbar next to `< >` arrow controls, enabling direct month and year jumps from Grid View.
+
+---
+
 ## [0.81.0] - 2026-08-06
 
 ### 🗓️ Calendar-Projected Month Grid View Synchronization

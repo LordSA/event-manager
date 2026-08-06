@@ -99,7 +99,7 @@ export default function EventBookingEnginePage() {
   const [desc, setDesc] = useState('');
   const [perks, setPerks] = useState('');
   const [venue, setVenue] = useState('Campus Setup / CEV');
-  const [eventType, setEventType] = useState<'offline' | 'online' | 'hybrid'>('offline');
+  const [eventType, setEventType] = useState<'offline' | 'online'>('offline');
   const [submitting, setSubmitting] = useState(false);
   const [posterUrl, setPosterUrl] = useState('');
   const [redirectUrl, setRedirectUrl] = useState('');
@@ -243,8 +243,6 @@ export default function EventBookingEnginePage() {
     const rawVenue = evt.venue || '';
     if (rawVenue.toLowerCase().startsWith('online') || rawVenue.toLowerCase().includes('online')) {
       setEventType('online');
-    } else if (rawVenue.toLowerCase().startsWith('hybrid') || rawVenue.toLowerCase().includes('hybrid')) {
-      setEventType('hybrid');
     } else {
       setEventType('offline');
     }
@@ -276,7 +274,7 @@ export default function EventBookingEnginePage() {
     const dateRangeString = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
 
     const cleanVenueText = venue.trim().replace(/^(offline|online|hybrid)\s*•\s*/i, '') || (eventType === 'online' ? 'Google Meet / Online Stream' : 'Campus Setup / CEV');
-    const formatLabel = eventType === 'online' ? 'Online' : eventType === 'hybrid' ? 'Hybrid' : 'Offline';
+    const formatLabel = eventType === 'online' ? 'Online' : 'Offline';
     const finalVenue = `${formatLabel} • ${cleanVenueText}`;
 
     const aiSystemPrompt = `You are the official AI Assistant for "${title}", organized by ${commName}.\n\nEVENT DETAILS:\n- Name: ${title}\n- Organizer: ${commName}\n- Format/Mode: ${formatLabel.toUpperCase()}\n- Date: ${dateRangeString}\n- Time: ${formattedTimeSlot}\n- Venue: ${cleanVenueText}\n- Category: ${finalCategory}\n${perks ? `- Highlights/Perks: ${perks}\n` : ''}\nDESCRIPTION & RULES:\n${desc}`;
@@ -605,44 +603,31 @@ export default function EventBookingEnginePage() {
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                     <Globe className="w-3.5 h-3.5 text-[#6366f1]" /> Event Format / Mode *
                   </label>
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setEventType('offline')}
-                      className={`py-2 px-2 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all ${
+                      className={`py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         eventType === 'offline'
                           ? 'bg-indigo-950/80 border-indigo-500 text-indigo-300 shadow-[0_0_10px_rgba(99,102,241,0.3)]'
                           : 'bg-[#161a29] border-[#1e2436] text-slate-400 hover:text-white'
                       }`}
                     >
-                      <MapPin className="w-3 h-3 text-indigo-400 shrink-0" />
-                      <span className="truncate">Offline</span>
+                      <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                      <span>Offline</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setEventType('online')}
-                      className={`py-2 px-2 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all ${
+                      className={`py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         eventType === 'online'
                           ? 'bg-cyan-950/80 border-cyan-500 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
                           : 'bg-[#161a29] border-[#1e2436] text-slate-400 hover:text-white'
                       }`}
                     >
-                      <Globe className="w-3 h-3 text-cyan-400 shrink-0" />
-                      <span className="truncate">Online</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setEventType('hybrid')}
-                      className={`py-2 px-2 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all ${
-                        eventType === 'hybrid'
-                          ? 'bg-amber-950/80 border-amber-500 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
-                          : 'bg-[#161a29] border-[#1e2436] text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      <Zap className="w-3 h-3 text-amber-400 shrink-0" />
-                      <span className="truncate">Hybrid</span>
+                      <Globe className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <span>Online</span>
                     </button>
                   </div>
                 </div>
@@ -657,7 +642,7 @@ export default function EventBookingEnginePage() {
                     type="text"
                     value={venue}
                     onChange={(e) => setVenue(e.target.value)}
-                    placeholder={eventType === 'online' ? "e.g. Google Meet / Zoom Stream" : eventType === 'hybrid' ? "e.g. Main Auditorium & YouTube Stream" : "e.g. Main Auditorium / Lab 2 / CEV"}
+                    placeholder={eventType === 'online' ? "e.g. Google Meet / Zoom Stream" : "e.g. Main Auditorium / Lab 2 / CEV"}
                     required
                     className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                   />

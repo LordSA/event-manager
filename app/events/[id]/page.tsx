@@ -225,10 +225,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 {(() => {
                   const rawVenue = eventData.venue || 'Campus Setup / CEV';
                   const isOnline = rawVenue.toLowerCase().startsWith('online') || rawVenue.toLowerCase().includes('online');
-                  const isHybrid = rawVenue.toLowerCase().startsWith('hybrid') || rawVenue.toLowerCase().includes('hybrid');
-                  const IconComp = isOnline ? Globe : isHybrid ? Zap : MapPin;
-                  const iconColor = isOnline ? 'text-cyan-400' : isHybrid ? 'text-amber-400' : 'text-emerald-400';
-                  const formatTag = isOnline ? 'Online' : isHybrid ? 'Hybrid' : 'Offline';
+                  const IconComp = isOnline ? Globe : MapPin;
+                  const iconColor = isOnline ? 'text-cyan-400' : 'text-indigo-400';
+                  const formatTag = isOnline ? 'Online' : 'Offline';
                   const cleanLoc = rawVenue.replace(/^(offline|online|hybrid)\s*•\s*/i, '').trim() || rawVenue;
 
                   return (
@@ -238,7 +237,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                         <div className="text-[10px] text-[#94a3b8] font-bold uppercase flex items-center gap-1.5">
                           <span>Venue / Location</span>
                           <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase ${
-                            isOnline ? 'bg-cyan-950 text-cyan-300 border border-cyan-800' : isHybrid ? 'bg-amber-950 text-amber-300 border border-amber-800' : 'bg-indigo-950 text-indigo-300 border border-indigo-800'
+                            isOnline ? 'bg-cyan-950 text-cyan-300 border border-cyan-800' : 'bg-indigo-950 text-indigo-300 border border-indigo-800'
                           }`}>
                             {formatTag}
                           </span>
