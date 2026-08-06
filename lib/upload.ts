@@ -1,4 +1,6 @@
 // Created by Shibili Aman TK | GitHub: https://github.com/LordSA
+import { createClient } from '@/lib/supabase/client';
+
 export async function convertToWebP(file: File, quality = 0.82): Promise<File> {
   if (file.type === 'image/webp') return file;
 
@@ -46,19 +48,46 @@ export async function uploadImageFile(
 ): Promise<string> {
   const webpFile = await convertToWebP(file);
 
-  const formData = new FormData();
-  formData.append('file', webpFile);
-  formData.append('category', category);
+  // 1. Try Vercel Blob API
+  try {
+    const formData = new FormData();
+    formData.append('file', webpFile);
+    formData.append('category', category);
 
-  const res = await fetch('/api/upload', {
-    method: 'POST',
-    body: formData,
-  });
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
 
-  const data = await res.json();
-  if (!res.ok || !data.success) {
-    throw new Error(data.error || 'Failed to upload image via Vercel Blob');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.url) {
+        return data.url;
+      }
+    }
+  } catch (err) {
+    console.warn('Vercel Blob upload failed, attempting Supabase Storage fallback...', err);
   }
 
-  return data.url;
+  // 2. Fallback to Supabase Storage bucket
+  try {
+    const supabase = createClient();
+    const fileExt = webpFile.name.split('.').pop() || 'webp';
+    const fileName = `${category}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+
+    const { error: uploadErr } = await supabase.storage
+      .from('posters')
+      .upload(fileName, webpFile, { cacheControl: '3600', upsert: true });
+
+    if (!uploadErr) {
+      const { data: publicUrlData } = supabase.storage.from('posters').getPublicUrl(fileName);
+      if (publicUrlData && publicUrlData.publicUrl) {
+        return publicUrlData.publicUrl;
+      }
+    }
+  } catch (supaErr) {
+    console.warn('Supabase Storage fallback error:', supaErr);
+  }
+
+  throw new Error('Failed to upload image to storage. Please check connection or paste a direct image URL.');
 }

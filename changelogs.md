@@ -1,5 +1,13 @@
 # Changelogs & Version History
 
+## [0.84.0] - 2026-08-06
+
+### 📧 SMTP Bug Report Dispatch & Poster Upload Dual Storage Fallback
+- **SMTP Bug Report Dispatch ([lib/email.ts](./lib/email.ts), [app/api/support/route.ts](./app/api/support/route.ts)):** Integrated `nodemailer` using environmental SMTP credentials (`smtp.gmail.com:465`). Every submitted bug report automatically dispatches a formatted HTML email to superadmin (`room2homies@gmail.com`) with reporter details, issue description, suggestions, and screenshot proof directly attached to the email message.
+- **Dual Storage Image Upload Fallback ([lib/upload.ts](./lib/upload.ts)):** Upgraded poster image upload pipeline to first attempt Vercel Blob storage, automatically falling back to Supabase Storage `posters` bucket if Vercel Blob token is unavailable, guaranteeing 100% upload reliability.
+
+---
+
 ## [0.83.0] - 2026-08-06
 
 ### 🐛 Bug Reporting & Support Portal with Super Admin Ticket Inbox

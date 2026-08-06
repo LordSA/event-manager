@@ -70,28 +70,26 @@ export default function SupportPage() {
     setFeedback(null);
 
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from('support_tickets')
-        .insert([
-          {
-            name: name.trim(),
-            email: email.trim(),
-            phone: phone.trim() || null,
-            issue: issue.trim(),
-            screenshot_url: screenshotUrl.trim() || null,
-            suggestions: suggestions.trim() || null,
-            status: 'open',
-          },
-        ])
-        .select();
+      const res = await fetch('/api/support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim() || null,
+          issue: issue.trim(),
+          screenshot_url: screenshotUrl.trim() || null,
+          suggestions: suggestions.trim() || null,
+        }),
+      });
 
-      if (error) {
-        throw new Error(error.message);
+      const resData = await res.json();
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.error || 'Failed to submit support ticket.');
       }
 
-      if (data && data[0]) {
-        setSubmittedId(data[0].id);
+      if (resData.data && resData.data.id) {
+        setSubmittedId(resData.data.id);
       } else {
         setSubmittedId(`TICK-${Date.now().toString().slice(-6)}`);
       }
