@@ -883,7 +883,7 @@ export default function GoogleCalendarView({
             </div>
 
             <div className="pt-3 border-t border-[#1e2436] flex flex-wrap items-center justify-between gap-2">
-              {isAdminMode && (
+              {isAdminMode && (isSuperAdmin || (currentUserCommunityName && activeModalEvent && (activeModalEvent.community || '').toLowerCase() === currentUserCommunityName.toLowerCase())) && (
                 <div className="flex items-center gap-2">
                   {onToggleStatus && (
                     <button

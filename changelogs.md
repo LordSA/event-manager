@@ -1,5 +1,16 @@
 # Changelogs & Version History
 
+## [0.74.0] - 2026-08-06
+
+### 🛡️ RBAC Cross-Community Edit Protection & Event Format Selector
+- **RBAC Cross-Community Edit Guard ([app/admin/events/page.tsx](./app/admin/events/page.tsx), [app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Resolved a security bug where non-superadmin leads could view and trigger edit/delete controls for events owned by other communities.
+  - Enforced `isOwnCommunity` verification in `openEditModal`, `handleBookSlot`, and `GoogleCalendarView` active modal popup controls.
+  - Prevents unauthorized cross-community slot modification or status toggling.
+- **Event Format / Mode Selector ([app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Added a 3-option format selector (**Offline**, **Online**, **Hybrid**) with interactive badges and icons (`MapPin`, `Globe`, `Zap`) in the slot booking form.
+- **Public Format Display ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Rendered styled **Online**, **Offline**, or **Hybrid** venue badges and icons on public event pages.
+
+---
+
 ## [0.73.0] - 2026-08-05
 
 ### 🔗 Custom Registration Link & Conditional "Register Now" Button

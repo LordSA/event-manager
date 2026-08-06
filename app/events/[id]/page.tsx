@@ -4,7 +4,7 @@
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Award, ExternalLink, MessageSquare, Sparkles, Users, Globe, Zap } from 'lucide-react';
 import EventAiDrawer from '@/app/components/EventAiDrawer';
 import { createClient } from '@/lib/supabase/client';
 
@@ -222,13 +222,32 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">
-                  <MapPin className="w-5 h-5 text-emerald-400" />
-                  <div>
-                    <div className="text-[10px] text-[#94a3b8] font-bold uppercase">Venue</div>
-                    <div className="font-bold text-white text-sm">{eventData.venue || 'Campus Setup / CEV'}</div>
-                  </div>
-                </div>
+                {(() => {
+                  const rawVenue = eventData.venue || 'Campus Setup / CEV';
+                  const isOnline = rawVenue.toLowerCase().startsWith('online') || rawVenue.toLowerCase().includes('online');
+                  const isHybrid = rawVenue.toLowerCase().startsWith('hybrid') || rawVenue.toLowerCase().includes('hybrid');
+                  const IconComp = isOnline ? Globe : isHybrid ? Zap : MapPin;
+                  const iconColor = isOnline ? 'text-cyan-400' : isHybrid ? 'text-amber-400' : 'text-emerald-400';
+                  const formatTag = isOnline ? 'Online' : isHybrid ? 'Hybrid' : 'Offline';
+                  const cleanLoc = rawVenue.replace(/^(offline|online|hybrid)\s*•\s*/i, '').trim() || rawVenue;
+
+                  return (
+                    <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">
+                      <IconComp className={`w-5 h-5 ${iconColor}`} />
+                      <div>
+                        <div className="text-[10px] text-[#94a3b8] font-bold uppercase flex items-center gap-1.5">
+                          <span>Venue / Location</span>
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase ${
+                            isOnline ? 'bg-cyan-950 text-cyan-300 border border-cyan-800' : isHybrid ? 'bg-amber-950 text-amber-300 border border-amber-800' : 'bg-indigo-950 text-indigo-300 border border-indigo-800'
+                          }`}>
+                            {formatTag}
+                          </span>
+                        </div>
+                        <div className="font-bold text-white text-sm">{cleanLoc}</div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {eventData.perks && eventData.perks.trim() !== '' && (
                   <div className="p-4 rounded-xl bg-[#161a29] border border-[#1e2436] flex items-center space-x-3">

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, AlertCircle, Clock, Upload, Link as LinkIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Lock, CheckCircle2, Trash2, Edit3, AlertCircle, Clock, Upload, Link as LinkIcon, Globe, MapPin, Zap } from 'lucide-react';
 import { UserRole } from '@/types/database.types';
 import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 import { useCommunities } from '@/lib/hooks/useCommunities';
@@ -93,6 +93,7 @@ export default function EventBookingEnginePage() {
   const [desc, setDesc] = useState('');
   const [perks, setPerks] = useState('');
   const [venue, setVenue] = useState('Campus Setup / CEV');
+  const [eventType, setEventType] = useState<'offline' | 'online' | 'hybrid'>('offline');
   const [submitting, setSubmitting] = useState(false);
   const [posterUrl, setPosterUrl] = useState('');
   const [redirectUrl, setRedirectUrl] = useState('');
@@ -179,6 +180,7 @@ export default function EventBookingEnginePage() {
     setStatus('closed');
     setDesc('');
     setPerks('');
+    setEventType('offline');
     setVenue('Campus Setup / CEV');
     setPosterUrl('');
     setRedirectUrl('');
@@ -186,6 +188,17 @@ export default function EventBookingEnginePage() {
   };
 
   const openEditModal = (evt: any) => {
+    const isOwnCommunity = isSuperAdmin || (
+      currentUserCommunityName &&
+      (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
+    );
+
+    if (!isOwnCommunity) {
+      setFeedback({ type: 'error', message: 'RBAC Violation: You are only permitted to edit events belonging to your own community.' });
+      setTimeout(() => setFeedback(null), 4000);
+      return;
+    }
+
     setEditingEvent(evt);
     setTitle(evt.title || '');
     setStartDate(evt.event_date || evt.date?.split('T')[0] || new Date().toISOString().split('T')[0]);
@@ -220,7 +233,18 @@ export default function EventBookingEnginePage() {
     setStatus(evt.status || 'closed');
     setDesc(evt.description || '');
     setPerks(evt.perks || '');
-    setVenue(evt.venue || 'Campus Setup / CEV');
+
+    const rawVenue = evt.venue || '';
+    if (rawVenue.toLowerCase().startsWith('online') || rawVenue.toLowerCase().includes('online')) {
+      setEventType('online');
+    } else if (rawVenue.toLowerCase().startsWith('hybrid') || rawVenue.toLowerCase().includes('hybrid')) {
+      setEventType('hybrid');
+    } else {
+      setEventType('offline');
+    }
+
+    const cleanedVenue = rawVenue.replace(/^(offline|online|hybrid)\s*•\s*/i, '').trim() || 'Campus Setup / CEV';
+    setVenue(cleanedVenue);
     setPosterUrl(evt.poster_url || evt.image || '');
     setRedirectUrl(evt.redirect_url || '');
     setShowModal(true);
@@ -244,9 +268,12 @@ export default function EventBookingEnginePage() {
     const formattedEndTime = formatSingleTime12(endTime);
     const formattedTimeSlot = `${formattedStartTime} - ${formattedEndTime}`;
     const dateRangeString = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
-    const finalVenue = venue.trim() || 'Campus Setup / CEV';
 
-    const aiSystemPrompt = `You are the official AI Assistant for "${title}", organized by ${commName}.\n\nEVENT DETAILS:\n- Name: ${title}\n- Organizer: ${commName}\n- Date: ${dateRangeString}\n- Time: ${formattedTimeSlot}\n- Venue: ${finalVenue}\n- Category: ${finalCategory}\n${perks ? `- Highlights/Perks: ${perks}\n` : ''}\nDESCRIPTION & RULES:\n${desc}`;
+    const cleanVenueText = venue.trim().replace(/^(offline|online|hybrid)\s*•\s*/i, '') || (eventType === 'online' ? 'Google Meet / Online Stream' : 'Campus Setup / CEV');
+    const formatLabel = eventType === 'online' ? 'Online' : eventType === 'hybrid' ? 'Hybrid' : 'Offline';
+    const finalVenue = `${formatLabel} • ${cleanVenueText}`;
+
+    const aiSystemPrompt = `You are the official AI Assistant for "${title}", organized by ${commName}.\n\nEVENT DETAILS:\n- Name: ${title}\n- Organizer: ${commName}\n- Format/Mode: ${formatLabel.toUpperCase()}\n- Date: ${dateRangeString}\n- Time: ${formattedTimeSlot}\n- Venue: ${cleanVenueText}\n- Category: ${finalCategory}\n${perks ? `- Highlights/Perks: ${perks}\n` : ''}\nDESCRIPTION & RULES:\n${desc}`;
 
     try {
       const supabase = createClient();
@@ -254,6 +281,17 @@ export default function EventBookingEnginePage() {
       const uniqueSuffix = Math.random().toString(36).substring(2, 7);
 
       if (editingEvent) {
+        const isOwnCommunity = isSuperAdmin || (
+          currentUserCommunityName &&
+          (editingEvent.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
+        );
+
+        if (!isOwnCommunity) {
+          setFeedback({ type: 'error', message: 'RBAC Violation: You can only modify events belonging to your own community.' });
+          setSubmitting(false);
+          setTimeout(() => setFeedback(null), 4000);
+          return;
+        }
         const generatedSlug = (editingEvent.slug && editingEvent.title === title)
           ? editingEvent.slug
           : `${baseSlug}-${uniqueSuffix}`;
@@ -551,21 +589,67 @@ export default function EventBookingEnginePage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Venue / Location *
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <Globe className="w-3.5 h-3.5 text-[#6366f1]" /> Event Format / Mode *
+                  </label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setEventType('offline')}
+                      className={`py-2 px-2 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all ${
+                        eventType === 'offline'
+                          ? 'bg-indigo-950/80 border-indigo-500 text-indigo-300 shadow-[0_0_10px_rgba(99,102,241,0.3)]'
+                          : 'bg-[#161a29] border-[#1e2436] text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <MapPin className="w-3 h-3 text-indigo-400 shrink-0" />
+                      <span className="truncate">Offline</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEventType('online')}
+                      className={`py-2 px-2 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all ${
+                        eventType === 'online'
+                          ? 'bg-cyan-950/80 border-cyan-500 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
+                          : 'bg-[#161a29] border-[#1e2436] text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <Globe className="w-3 h-3 text-cyan-400 shrink-0" />
+                      <span className="truncate">Online</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEventType('hybrid')}
+                      className={`py-2 px-2 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all ${
+                        eventType === 'hybrid'
+                          ? 'bg-amber-950/80 border-amber-500 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
+                          : 'bg-[#161a29] border-[#1e2436] text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <Zap className="w-3 h-3 text-amber-400 shrink-0" />
+                      <span className="truncate">Hybrid</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-400" /> Venue / Stream Link *
                   </label>
                   <input
                     type="text"
                     value={venue}
                     onChange={(e) => setVenue(e.target.value)}
-                    placeholder="e.g. Main Auditorium / CEV"
+                    placeholder={eventType === 'online' ? "e.g. Google Meet / Zoom Stream" : eventType === 'hybrid' ? "e.g. Main Auditorium & YouTube Stream" : "e.g. Main Auditorium / Lab 2 / CEV"}
                     required
                     className="w-full bg-[#161a29] border border-[#1e2436] text-white placeholder-slate-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#6366f1] transition-colors"
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
                     Category *
