@@ -772,7 +772,7 @@ export default function GoogleCalendarView({
                       backgroundColor: '#0f121d',
                       borderColor: hexToRgba(commColor, 0.4),
                     }}
-                    className="p-6 rounded-2xl border space-y-4 flex flex-col justify-between cursor-pointer hover:shadow-lg transition-all"
+                    className="p-6 rounded-2xl border space-y-4 flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.5)] hover:border-[#6366f1] transition-all duration-300 group relative z-0 hover:z-10"
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
@@ -813,7 +813,7 @@ export default function GoogleCalendarView({
                       </div>
 
                       <div>
-                        <h4 className="text-xl font-bold text-white font-heading">{evt.title}</h4>
+                        <h4 className="text-xl font-bold text-white font-heading group-hover:text-[#6366f1] transition-colors">{evt.title}</h4>
                         <p className="text-xs text-slate-400 mt-1 line-clamp-2">{evt.description}</p>
                       </div>
                     </div>
@@ -863,8 +863,16 @@ export default function GoogleCalendarView({
       )}
 
       {activeModalEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="brutalist-card p-6 max-w-md w-full space-y-5 rounded-2xl relative text-white bg-[#0f121d] border-2 border-[#1e2436] shadow-2xl">
+        <div
+          onClick={() => setActiveModalEvent(null)}
+          className={`fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-all ${
+            isAdminMode ? 'md:pl-64' : ''
+          }`}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="brutalist-card p-6 max-w-lg w-full space-y-5 rounded-2xl relative text-white bg-[#0f121d] border-2 border-[#1e2436] shadow-2xl my-auto animate-in fade-in zoom-in-95 duration-200"
+          >
             <button
               onClick={() => setActiveModalEvent(null)}
               className="absolute top-4 right-4 text-[#94a3b8] hover:text-white p-1 rounded-lg hover:bg-[#161a29] transition-colors"

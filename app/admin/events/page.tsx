@@ -550,11 +550,18 @@ export default function EventBookingEnginePage() {
       {showModal && (
         <div
           data-lenis-prevent
-          className="fixed inset-0 bg-black/85 backdrop-blur-md z-[150] flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowModal(false);
+              setEditingEvent(null);
+            }
+          }}
+          className="fixed inset-0 bg-black/85 backdrop-blur-md z-[150] flex items-end sm:items-center justify-center p-0 sm:p-6 md:pl-64 overflow-y-auto"
         >
           <div
             data-lenis-prevent
-            className="brutalist-card p-5 sm:p-8 w-full max-w-3xl rounded-t-2xl sm:rounded-2xl text-white space-y-5 sm:space-y-6 my-0 sm:my-auto max-h-[92vh] sm:max-h-[88vh] overflow-y-auto relative shadow-2xl border-t-2 sm:border-2 border-[#1e2436] bg-[#0f121d]"
+            onClick={(e) => e.stopPropagation()}
+            className="brutalist-card p-5 sm:p-8 w-full max-w-3xl rounded-t-2xl sm:rounded-2xl text-white space-y-5 sm:space-y-6 my-0 sm:my-auto max-h-[92vh] sm:max-h-[88vh] overflow-y-auto relative shadow-2xl border-t-2 sm:border-2 border-[#1e2436] bg-[#0f121d] animate-in fade-in zoom-in-95 duration-200"
           >
             <div className="flex items-center justify-between border-b border-[#1e2436] pb-3.5">
               <h3 className="text-lg sm:text-xl font-bold font-display text-white">

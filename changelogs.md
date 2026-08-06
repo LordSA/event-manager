@@ -1,5 +1,14 @@
 # Changelogs & Version History
 
+## [0.76.0] - 2026-08-06
+
+### 🎨 Grid View Card Selection Lift & Workspace-Centered Modal Popups
+- **Grid View Card Elevation ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx)):** Selected/hovered cards in Grid View now elevate smoothly above surrounding cards (`hover:-translate-y-1.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.5)] z-10`) without shifting grid layout or affecting adjacent div centers.
+- **Main Workspace Modal Centering ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx), [app/admin/events/page.tsx](./app/admin/events/page.tsx)):** Added desktop sidebar offset (`md:pl-64`) to modal overlays (`activeModalEvent` and `showModal`), centering modal popups perfectly relative to the main screen content area (without the left sidebar).
+- **Backdrop Click Dismiss:** Clicking the backdrop background outside of modal dialog cards now smoothly dismisses active popups.
+
+---
+
 ## [0.75.0] - 2026-08-06
 
 ### 📅 Calendar Day Click Navigation & Day View UX Optimization
