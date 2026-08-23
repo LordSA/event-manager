@@ -18,45 +18,25 @@ function getOrderedSchedules(eventsList: any[]): any[] {
 
   const todayStr = new Date().toISOString().split('T')[0];
   const currentYrMo = todayStr.slice(0, 7);
-
   const getEventDate = (e: any) => e.event_date || e.date;
 
-  const currentMonthEvents = published.filter((e) =>
-    getEventDate(e).startsWith(currentYrMo)
-  );
-
-  const currentMonthUpcoming = currentMonthEvents.filter(
-    (e) => getEventDate(e) >= todayStr
-  );
+  const currentMonthUpcoming = published
+    .filter((e) => getEventDate(e).startsWith(currentYrMo) && getEventDate(e) >= todayStr)
+    .sort((a, b) => getEventDate(a).localeCompare(getEventDate(b)));
 
   if (currentMonthUpcoming.length > 0) {
-    return currentMonthUpcoming.sort((a, b) => {
-      const dateA = getEventDate(a);
-      const dateB = getEventDate(b);
-
-      const isTodayA = dateA === todayStr;
-      const isTodayB = dateB === todayStr;
-
-      if (isTodayA && !isTodayB) return -1;
-      if (!isTodayA && isTodayB) return 1;
-
-      return dateA.localeCompare(dateB);
-    });
+    return currentMonthUpcoming;
   }
 
-  const nextMonthsUpcoming = published.filter(
-    (e) => getEventDate(e) >= todayStr
-  );
+  const upcomingNextMonths = published
+    .filter((e) => getEventDate(e) >= todayStr)
+    .sort((a, b) => getEventDate(a).localeCompare(getEventDate(b)));
 
-  if (nextMonthsUpcoming.length > 0) {
-    return nextMonthsUpcoming.sort((a, b) =>
-      getEventDate(a).localeCompare(getEventDate(b))
-    );
+  if (upcomingNextMonths.length > 0) {
+    return upcomingNextMonths;
   }
 
-  return published.sort((a, b) =>
-    getEventDate(a).localeCompare(getEventDate(b))
-  );
+  return published.sort((a, b) => getEventDate(b).localeCompare(getEventDate(a)));
 }
 
 export default function LandingHomePage() {
@@ -226,7 +206,7 @@ export default function LandingHomePage() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-300 pb-6">
             <div>
               <span className="text-xs font-mono text-neutral-500 uppercase font-bold tracking-widest">
-                002 / Upcoming Timeline
+                Upcoming
               </span>
 
               <h2 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#0a0a0a] font-display mt-1 tracking-tight">
@@ -238,7 +218,7 @@ export default function LandingHomePage() {
               href="/calendar"
               className="text-xs text-[#0a0a0a] hover:underline font-bold flex items-center gap-1 mb-1"
             >
-              <span>Open Master Calendar</span>
+              <span>View Calendar</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

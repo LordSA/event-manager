@@ -1,5 +1,14 @@
 # Changelogs & Version History
 
+## [2.8.1] - 2026-08-23
+
+### 📅 Main Page & Events Page Schedule Ordering Logic ([app/page.tsx](./app/page.tsx), [app/components/MasterCalendar.tsx](./app/components/MasterCalendar.tsx))
+- **Main Page Schedules Ordering:** Updated `getOrderedSchedules()` in `app/page.tsx` to filter strictly live events (`status === 'live'`), prioritizing current month upcoming events ordered by date nearest to today (`dateA.localeCompare(dateB)`). Falls back to live events from upcoming future months if no current month live events exist.
+- **Events Discovery Page 3-Section Layout:** Structured `MasterCalendar.tsx` into 3 chronological sections:
+  1. **Current Month Events:** Live events in the current month ordered by date nearest to today.
+  2. **Upcoming (Next Months):** Live events in future months ordered nearest date first.
+  3. **Past Events:** Events whose date has passed ordered descending (`dateB.localeCompare(dateA)`).
+
 ## [2.8.0] - 2026-08-23
 
 ### 🔔 Top Floating Toast Notification Overlay ([app/admin/profile/page.tsx](./app/admin/profile/page.tsx))

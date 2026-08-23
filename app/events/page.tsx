@@ -19,10 +19,10 @@ export default function EventsDiscoveryPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-neutral-300 pb-6">
           <div className="space-y-3 max-w-2xl">
             <span className="text-xs font-mono text-neutral-500 uppercase font-bold tracking-widest">
-              001 / Campus Event Directory
+              Discover Campus
             </span>
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#0a0a0a] font-display leading-[0.95]">
-              DISCOVER CAMPUS INITIATIVES
+              EVENTS
             </h1>
             <p className="text-neutral-600 text-xs sm:text-sm leading-relaxed font-sans">
               Explore live workshops, hackathons, guest lectures, and technical sessions organized by student chapters across CE Vadakara.
