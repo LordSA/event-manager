@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -51,7 +50,6 @@ export interface CommunityOption {
   initials: string;
 }
 
-// Calculate high contrast text color (dark #0a0a0a vs white #ffffff) based on YIQ relative luminance
 const getContrastTextColor = (hexColor?: string | null): string => {
   if (!hexColor || !hexColor.startsWith('#')) return '#ffffff';
   let c = hexColor.substring(1);
@@ -232,21 +230,18 @@ export default function GoogleCalendarView({
     return { displayTime: cleanSlot, startHour: 9, endHour: 17 };
   };
 
-  // Robust date range parser that detects explicit start/end dates or range strings in date/event_date/description/title
   const getEventStartEndIso = (evt: CalendarEvent): { startIso: string; endIso: string } => {
     const cleanDateStr = (s?: string | null) => {
       if (!s) return '';
       return s.split('T')[0].trim();
     };
 
-    // 1. Explicit start_date and end_date
     const explicitStart = cleanDateStr(evt.start_date);
     const explicitEnd = cleanDateStr(evt.end_date);
     if (explicitStart && explicitEnd && explicitEnd >= explicitStart) {
       return { startIso: explicitStart, endIso: explicitEnd };
     }
 
-    // 2. Scan text fields (date, event_date, description, title) for date range pattern (YYYY-MM-DD to YYYY-MM-DD)
     const allTexts = [evt.date, evt.event_date, evt.description, evt.title].filter(Boolean).join(' ');
     const rangeMatch = allTexts.match(/(\d{4}-\d{2}-\d{2})\s*(?:to|-|->|–)\s*(\d{4}-\d{2}-\d{2})/i);
     if (rangeMatch && rangeMatch[1] && rangeMatch[2]) {
@@ -257,7 +252,6 @@ export default function GoogleCalendarView({
       }
     }
 
-    // 3. Fallback single date
     const iso = cleanDateStr(evt.start_date || evt.event_date || evt.date);
     const cleanIso = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso : '';
     const cleanEnd = explicitEnd || cleanIso;
@@ -301,7 +295,6 @@ export default function GoogleCalendarView({
 
   const { miniYear, miniMonth, miniTotalDays, miniStartDay } = getMiniDays();
 
-  // Build week rows for Month View (Google Calendar Architecture)
   interface DayCellData {
     dateObj: Date;
     isCurrentMonth: boolean;
@@ -321,13 +314,11 @@ export default function GoogleCalendarView({
     const weeks: MonthWeekRow[] = [];
     let currentWeek: DayCellData[] = [];
 
-    // Trailing days from previous month
     for (let i = firstDayIndex - 1; i >= 0; i--) {
       const d = new Date(year, month - 1, prevMonthDays - i);
       currentWeek.push({ dateObj: d, isCurrentMonth: false, dayNum: d.getDate(), iso: formatYmd(d) });
     }
 
-    // Days in current month
     for (let day = 1; day <= daysInMonth; day++) {
       const d = new Date(year, month, day);
       currentWeek.push({ dateObj: d, isCurrentMonth: true, dayNum: day, iso: formatYmd(d) });
@@ -337,7 +328,6 @@ export default function GoogleCalendarView({
       }
     }
 
-    // Leading days for next month to complete final week row
     if (currentWeek.length > 0) {
       let nextMonthDay = 1;
       while (currentWeek.length < 7) {
@@ -352,7 +342,6 @@ export default function GoogleCalendarView({
 
   const monthWeekRows = getMonthWeekRows(currentYear, currentMonth);
 
-  // Helper for week view range computation
   const getStartOfWeek = (d: Date) => {
     const res = new Date(d);
     const day = res.getDay();
@@ -369,7 +358,6 @@ export default function GoogleCalendarView({
 
   return (
     <div className="rounded-2xl overflow-hidden flex flex-col font-sans border border-[#28292c] bg-[#131314] text-white shadow-2xl w-full">
-      {/* 1. Google Calendar Top Navigation Header */}
       <header className="px-3 sm:px-6 py-3 border-b border-[#28292c] flex flex-wrap items-center justify-between gap-3 bg-[#1e1f21]">
         <div className="flex items-center space-x-2 sm:space-x-4">
           <button
@@ -428,7 +416,6 @@ export default function GoogleCalendarView({
             </button>
           )}
 
-          {/* View Mode Selector Dropdown */}
           <div className="relative">
             <select
               value={viewMode}
@@ -445,12 +432,9 @@ export default function GoogleCalendarView({
         </div>
       </header>
 
-      {/* 2. Main Calendar Workspace (Sidebar + Grid Layout) */}
       <div className="flex flex-1 min-h-[550px] sm:min-h-[600px] overflow-hidden relative w-full">
-        {/* Left Sidebar Panel */}
         {showSidebar && (
           <aside className="w-64 shrink-0 border-r border-[#28292c] bg-[#1e1f21] p-4 flex flex-col space-y-6 hidden md:flex">
-            {/* Create / Book Slot Button */}
             {isAdminMode && onSelectDateSlot && (
               <button
                 onClick={() => onSelectDateSlot(formatDateForSlot(currentDate))}
@@ -461,7 +445,6 @@ export default function GoogleCalendarView({
               </button>
             )}
 
-            {/* Mini Month Datepicker Widget */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs font-bold text-white px-1">
                 <span>{monthNames[miniMonth]} {miniYear}</span>
@@ -525,7 +508,6 @@ export default function GoogleCalendarView({
               </div>
             </div>
 
-            {/* Search Input */}
             <div className="relative">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -537,7 +519,6 @@ export default function GoogleCalendarView({
               />
             </div>
 
-            {/* My Calendars (Community Filters) */}
             <div className="space-y-2 flex-1 overflow-y-auto">
               <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">
                 My Calendars
@@ -578,26 +559,21 @@ export default function GoogleCalendarView({
           </aside>
         )}
 
-        {/* Right Main Calendar View Container */}
         <div className="flex-1 min-w-0 flex flex-col bg-[#131314] overflow-hidden w-full">
           
-          {/* A. MONTH VIEW (Google Calendar Continuous Multi-Day Banner Architecture) */}
           {viewMode === 'month' && (
             <div className="flex-1 min-w-0 flex flex-col w-full h-full">
-              {/* Day Header Row */}
               <div className="grid grid-cols-7 border-b border-[#28292c] bg-[#1e1f21] text-center text-[11px] sm:text-xs font-bold text-slate-400 py-2.5 uppercase tracking-wider w-full">
                 {daysOfWeek.map((day) => (
                   <div key={day} className="truncate px-1">{day}</div>
                 ))}
               </div>
 
-              {/* Month Week Rows Container */}
               <div className="flex-1 flex flex-col divide-y divide-[#28292c] bg-[#131314] w-full">
                 {monthWeekRows.map((weekRow, weekIdx) => {
                   const weekStartIso = weekRow.days[0].iso;
                   const weekEndIso = weekRow.days[6].iso;
 
-                  // Find all events intersecting this week row
                   const intersectingEvents = filteredEvents.filter((evt) => {
                     const { startIso, endIso } = getEventStartEndIso(evt);
                     if (!startIso || !endIso) return false;
@@ -606,7 +582,6 @@ export default function GoogleCalendarView({
 
                   return (
                     <div key={`week-row-${weekIdx}`} className="flex-1 min-h-[100px] relative flex flex-col justify-start">
-                      {/* Background Day Cells */}
                       <div className="absolute inset-0 grid grid-cols-7 divide-x divide-[#28292c] pointer-events-none">
                         {weekRow.days.map((dayCell, dIdx) => {
                           const isToday =
@@ -643,12 +618,10 @@ export default function GoogleCalendarView({
                         })}
                       </div>
 
-                      {/* Foreground Continuous Event Banners Layer */}
                       <div className="grid grid-cols-7 gap-y-1 relative z-10 pt-7 pb-1 px-0.5 font-sans">
                         {intersectingEvents.map((evt) => {
                           const { startIso, endIso } = getEventStartEndIso(evt);
 
-                          // Calculate start and end column indices in this 7-day week row (0 = Sun, 6 = Sat)
                           let startIndex = 0;
                           let endIndex = 6;
 
@@ -675,7 +648,6 @@ export default function GoogleCalendarView({
                             (evt.community || '').toLowerCase() === currentUserCommunityName.toLowerCase()
                           );
 
-                          // If confidential reserved slot
                           if (isAdminMode && !isOwnCommunity && isClosed) {
                             return (
                               <div
@@ -737,7 +709,6 @@ export default function GoogleCalendarView({
             </div>
           )}
 
-          {/* B. WEEK VIEW */}
           {viewMode === 'week' && (
             <div className="flex-1 min-w-0 flex flex-col w-full h-full">
               <div className="grid grid-cols-7 border-b border-[#28292c] bg-[#1e1f21] text-center text-xs font-bold text-slate-400 py-3 uppercase tracking-wider w-full">
@@ -806,7 +777,6 @@ export default function GoogleCalendarView({
             </div>
           )}
 
-          {/* C. DAY VIEW */}
           {viewMode === 'day' && (
             <div className="p-4 sm:p-6 space-y-6 flex-1 overflow-y-auto w-full">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#28292c] pb-4">
@@ -889,7 +859,6 @@ export default function GoogleCalendarView({
             </div>
           )}
 
-          {/* D. GRID VIEW MODE (Full Responsive Cards Grid) */}
           {viewMode === 'grid' && (
             <div className="p-4 sm:p-6 space-y-6 flex-1 overflow-y-auto w-full">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#28292c] pb-4">
@@ -997,7 +966,6 @@ export default function GoogleCalendarView({
         </div>
       </div>
 
-      {/* Modal Popup Portal for Event Details / Slot Confidentiality Shield */}
       {activeModalEvent && mounted && typeof document !== 'undefined' && createPortal(
         <div
           data-lenis-prevent

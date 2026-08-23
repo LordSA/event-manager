@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -78,7 +77,6 @@ export default function LandingHomePage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Filter out college entity so it is not listed as a student community
   const filteredCommunities = communities.filter(
     (c) => c.slug !== 'college' && c.name.toLowerCase() !== 'college'
   );
@@ -87,37 +85,30 @@ export default function LandingHomePage() {
     <div className="min-h-screen bg-[#f5f5f5] text-[#0a0a0a] flex flex-col font-sans">
       <main className="flex-1 w-full pb-24 space-y-5">
 
-        {/* Full-Screen Nixtio-Style Hero Header Card Container (All 4 Corners Rounded in State 1) */}
         <div className={`mx-auto pt-1 transition-none md:transition-all duration-300 md:duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${scrolled ? "w-[92%] sm:w-[94%] lg:w-[95%]" : "w-[99%]"}`}>
           <section
             id="hero-section"
             className={`relative w-full overflow-hidden bg-[#0a0a0a] text-white flex flex-col justify-between shadow-2xl border border-neutral-800/80 transition-none md:transition-all duration-300 md:duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled
               ? `min-h-[70vh] sm:min-h-[72vh] lg:min-h-[75vh] rounded-[0.8rem] sm:rounded-[0.9rem] lg:rounded-[1rem] p-4 sm:p-7 lg:p-9` : `min-h-[92vh] sm:min-h-[95vh] lg:min-h-[99vh] rounded-[0.9rem] sm:rounded-[1.1rem] lg:rounded-[1.3rem] p-6 sm:p-12 lg:p-16`}`}
           >
-            {/* Animated Header GIF Background */}
             <img
               src="/header.gif"
               alt="CEV Header Background"
               className="absolute inset-0 w-full h-full object-cover opacity-45 mix-blend-screen pointer-events-none z-0"
             />
 
-            {/* Gradient Overlay for Text Legibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-[#0a0a0a]/70 z-[1] pointer-events-none" />
 
-            {/* Top Filler Spacing for Layered Floating Navbar */}
             <div className={`relative z-10 transition-none md:transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "pt-8 sm:pt-10" : "pt-24 sm:pt-28"}`} />
 
-            {/* Hero Oversized Display Title matching Nixtio reference */}
             <div className={`relative z-10 my-auto transition-none md:transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "pt-1" : "pt-4"}`}>
               <h1 className={`font-extrabold font-display leading-[0.82] tracking-tight text-white select-none transition-none md:transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "text-5xl sm:text-7xl md:text-[8rem] lg:text-[9rem] xl:text-[10rem]" : "text-7xl sm:text-9xl md:text-[11rem] lg:text-[13rem] xl:text-[15rem]"}`} >
                 CEV EVENTS
               </h1>
             </div>
 
-            {/* Alignment of Title and Content of Header matching Nixtio Web */}
             <div className={`relative z-10 grid grid-cols-1 md:grid-cols-12 items-end border-t border-neutral-800/80 mt-auto transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "gap-5 pt-4 sm:pt-5" : "gap-8 pt-8"}`}>
 
-              {/* Left Column: Stats Line & Subtext */}
               <div className="md:col-span-7 space-y-4">
                 <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm font-bold text-neutral-300">
                   <span>50+ Campus Events</span>
@@ -132,7 +123,6 @@ export default function LandingHomePage() {
                 </p>
               </div>
 
-              {/* Right Column: Hero Action CTAs & Bottom Corner Widget */}
               <div className="md:col-span-5 flex flex-col items-start md:items-end justify-end space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <Link
@@ -158,10 +148,8 @@ export default function LandingHomePage() {
           </section>
         </div>
 
-        {/* Nixtio "Our Clients" Style Clubs / Communities Grid Cards */}
         <section className="space-y-8 pt-8 px-4 sm:px-8 max-w-[1800px] mx-auto">
 
-          {/* Section Header */}
           <div className="flex items-center justify-between border-b border-neutral-200 pb-4">
             <span className="text-xs font-mono text-neutral-500 uppercase font-bold tracking-widest">
               Our Communities
@@ -172,7 +160,6 @@ export default function LandingHomePage() {
             </span>
           </div>
 
-          {/* Community Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1.5 sm:gap-2">
 
             {communitiesLoading ? (
@@ -207,10 +194,8 @@ export default function LandingHomePage() {
           </div>
         </section>
 
-        {/* Upcoming Schedules Section */}
         <section className="space-y-8 pt-4 px-4 sm:px-8 max-w-[1800px] mx-auto">
 
-          {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-300 pb-6">
             <div>
               <span className="text-xs font-mono text-neutral-500 uppercase font-bold tracking-widest">
@@ -245,7 +230,6 @@ export default function LandingHomePage() {
                     href={`/events/${evt.slug || evt.id}`}
                     className="group relative bg-white rounded-[24px] overflow-hidden min-h-[520px] sm:min-h-[600px] lg:min-h-[680px] flex flex-col justify-between p-6 sm:p-8 transition-all duration-500 hover:scale-[0.99] hover:shadow-xl"
                   >
-                    {/* Poster */}
                     <div className="absolute inset-0 overflow-hidden">
                       <img
                         src={evt.poster_url || "/images/poster.webp"}
@@ -257,11 +241,9 @@ export default function LandingHomePage() {
                         }}
                       />
 
-                      {/* Image overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/20" />
                     </div>
 
-                    {/* Top information */}
                     <div className="relative z-10 flex items-start justify-between gap-4">
                       <span className="text-[10px] font-mono uppercase font-extrabold text-white bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full">
                         {evt.category}
@@ -272,7 +254,6 @@ export default function LandingHomePage() {
                       </span>
                     </div>
 
-                    {/* Bottom information */}
                     <div className="relative z-10 text-white space-y-4">
                       <div className="flex items-center gap-3 text-xs font-mono text-white/70">
                         <span>{evt.date || evt.event_date}</span>

@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendSupportTicketEmail } from '@/lib/email';
@@ -39,7 +38,6 @@ export async function POST(req: NextRequest) {
 
     const ticketRecord = data && data[0] ? data[0] : { id: `TICK-${Date.now()}`, name, email, phone, issue, screenshot_url, suggestions };
 
-    // Fetch superadmin email addresses from DB profiles table
     let recipientEmails: string[] = [];
     try {
       const { data: superadmins } = await supabase
@@ -61,7 +59,6 @@ export async function POST(req: NextRequest) {
       recipientEmails.push(fallbackEmail);
     }
 
-    // Send email notification to all superadmins via SMTP in the background
     try {
       await sendSupportTicketEmail(
         {

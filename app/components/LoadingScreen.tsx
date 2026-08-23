@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -34,7 +33,6 @@ export default function LoadingScreen() {
       }`}
     >
       <div className="max-w-md w-full flex flex-col items-center justify-center space-y-10 text-center">
-        {/* Centered Brand Logo */}
         <div className="relative">
           <Image
             src="/cev_logo.svg"
@@ -46,7 +44,6 @@ export default function LoadingScreen() {
           />
         </div>
 
-        {/* Progress Bar & Percentage */}
         <div className="w-full space-y-3">
           <div className="flex items-center justify-between font-mono text-xs text-neutral-400">
             <span>Loading...</span>

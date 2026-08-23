@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 

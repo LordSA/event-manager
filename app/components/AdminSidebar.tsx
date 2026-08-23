@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -43,14 +42,12 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
 
   return (
     <>
-      {/* Desktop Sidebar (Dark Charcoal Container) */}
       <aside
         suppressHydrationWarning
         className="hidden md:flex w-64 lg:w-72 h-screen sticky top-0 overflow-y-auto bg-[#18191c] text-white p-6 flex-col justify-between shrink-0 select-none border-r border-[#24262b] z-40"
       >
         <div className="space-y-8">
 
-          {/* Brand Logo */}
           <div className="flex items-center justify-between px-2 pt-2">
             <Link href="/" className="flex items-center space-x-3 group">
               <img src="/cev_logo.svg" alt="CEV Logo" className="h-7 w-auto object-contain transition-transform group-hover:scale-105" />
@@ -58,7 +55,6 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
             </Link>
           </div>
 
-          {/* Navigation Menu */}
           <nav className="space-y-2">
             {navItems.map((item) => {
               if (!item.roleRequired.includes(currentRole)) return null;
@@ -66,7 +62,6 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
               const Icon = item.icon;
 
               if (isActive) {
-                // Active State: White Rounded Pill Container with Dark Active Dot
                 return (
                   <Link
                     key={item.href}
@@ -83,7 +78,6 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
                 );
               }
 
-              // Inactive State: Dark text link with soft hover rounded pill
               return (
                 <Link
                   key={item.href}
@@ -98,7 +92,6 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
           </nav>
         </div>
 
-        {/* Bottom Section: Back to Home Button & Sign Out */}
         <div className="space-y-4 pt-4 border-t border-[#24262b]">
           <Link
             href="/"
@@ -126,7 +119,6 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
         </div>
       </aside>
 
-      {/* Mobile Top Bar */}
       <div className="flex md:hidden items-center justify-between px-4 py-3 border-b border-neutral-300 bg-white shrink-0 sticky top-0 z-40 shadow-sm">
         <div className="flex items-center space-x-2.5">
           <img src="/cev_logo_b.svg" alt="CEV Logo" className="h-6 w-auto object-contain" />
@@ -153,7 +145,6 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
         </div>
       </div>
 
-      {/* Mobile Bottom Glass Floating Navigation Bar */}
       {mounted &&
         createPortal(
           <nav className="fixed bottom-3 left-3 right-3 z-40 md:hidden bg-[#18191c]/90 backdrop-blur-2xl border border-neutral-800 rounded-full p-1.5 shadow-2xl flex items-center justify-between gap-1 select-none">

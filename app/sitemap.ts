@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/client';
 import { getValidSiteUrl } from '@/lib/siteUrl';
@@ -73,7 +72,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
   } catch {
-    // Graceful fallback
   }
 
   return routes;

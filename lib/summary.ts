@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 export function generate2LineSummary(text: string | null | undefined): string {
   if (!text) return 'Discover event details, schedule, and venue setup for this campus session.';
 

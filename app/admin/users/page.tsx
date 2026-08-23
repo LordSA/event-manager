@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -130,17 +129,14 @@ export default function UserManagementPage() {
   }, []);
 
   const displayedProfiles = profiles.filter((p) => {
-    // 1. Dev (Superadmin) can see ALL profiles
     if (currentUserRole === 'dev') {
       return true;
     }
 
-    // 2. Admin can see ALL profiles EXCEPT Dev (Superadmin is strictly hidden)
     if (currentUserRole === 'admin') {
       return p.role !== 'dev';
     }
 
-    // 3. Manager can ONLY see managers and editors in THEIR OWN community
     if (currentUserRole === 'manager') {
       const isOwnCommunity = !currentUserCommunityId || p.community_id === currentUserCommunityId;
       const isManagerOrEditor = p.role === 'manager' || p.role === 'editor';
@@ -330,7 +326,6 @@ export default function UserManagementPage() {
 
   return (
     <div className="space-y-8 pb-20 md:pb-12">
-      {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#141518] font-display">
@@ -369,7 +364,6 @@ export default function UserManagementPage() {
         </div>
       )}
 
-      {/* Profiles Cards Grid */}
       {loading ? (
         <div className="p-8 text-center text-neutral-500 text-xs bg-white border border-neutral-200/60 rounded-[28px]">
           Loading user profiles...
@@ -441,7 +435,6 @@ export default function UserManagementPage() {
         </div>
       )}
 
-      {/* Add / Edit User Modal */}
       {modalOpen && mounted && typeof document !== 'undefined' && createPortal(
         <div
           data-lenis-prevent

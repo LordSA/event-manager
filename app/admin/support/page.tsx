@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -190,7 +189,6 @@ export default function AdminSupportPage() {
         </div>
       )}
 
-      {/* Metric Counters Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-6 rounded-[28px] bg-white border border-neutral-200/60 shadow-sm space-y-2">
           <div className="text-xs text-neutral-500 font-extrabold uppercase tracking-wider">Total Tickets</div>
@@ -219,7 +217,6 @@ export default function AdminSupportPage() {
         </div>
       </div>
 
-      {/* Search & Status Filters Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-[28px] border border-neutral-200/60 shadow-sm">
         <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -250,7 +247,6 @@ export default function AdminSupportPage() {
         </div>
       </div>
 
-      {/* Tickets List */}
       {loading ? (
         <div className="p-8 text-center text-neutral-500 text-xs bg-white border border-neutral-200/60 rounded-[28px]">
           Loading support tickets...

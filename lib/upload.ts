@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import { createClient } from '@/lib/supabase/client';
 
 export async function convertToWebP(file: File, quality = 0.82): Promise<File> {
@@ -75,7 +74,6 @@ export async function uploadImageFile(
         } catch (e) {}
       }
 
-      // Fallback to Supabase Storage bucket
       try {
         const supabase = createClient();
         const fileExt = webpFile.name.split('.').pop() || 'webp';

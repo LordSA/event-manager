@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
@@ -360,7 +359,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            {/* Event Poster Image Container - 3:4 Aspect Ratio (1080:1440 portrait) */}
             <div className="order-1 lg:order-2 lg:col-span-5 relative w-full aspect-[3/4] rounded-xl overflow-hidden border border-neutral-200 bg-neutral-900 shadow-2xl">
               <img
                 src={posterSrc}

@@ -9,6 +9,9 @@
   2. **Upcoming (Next Months):** Live events in future months ordered nearest date first.
   3. **Past Events:** Events whose date has passed ordered descending (`dateB.localeCompare(dateA)`).
 
+### 🧹 Zero Comment Production Codebase Cleanup
+- **Source Code Comments Removed:** Cleaned all explanatory inline comments and JSX header/block comments across `.ts`, `.tsx`, `.js`, and `.css` source files in `app/` and `lib/` in accordance with repository clean code guidelines.
+
 ## [2.8.0] - 2026-08-23
 
 ### 🔔 Top Floating Toast Notification Overlay ([app/admin/profile/page.tsx](./app/admin/profile/page.tsx))

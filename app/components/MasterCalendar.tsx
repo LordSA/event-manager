@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: [https://github.com/LordSA](https://github.com/LordSA)
 'use client';
 
 import React, { useState } from 'react';
@@ -333,7 +332,6 @@ export default function MasterCalendar({
         </div>
       ) : (
         <div className="space-y-12">
-          {/* Section 1: Current Month Events */}
           <section className="space-y-4">
             <div className="flex items-center justify-between border-b border-neutral-200 pb-2">
               <h3 className="text-sm font-extrabold text-[#0a0a0a] uppercase tracking-wider font-display flex items-center gap-2">
@@ -355,7 +353,6 @@ export default function MasterCalendar({
             )}
           </section>
 
-          {/* Section 2: Upcoming Events (Next Months) */}
           {upcomingNextMonthsEvents.length > 0 && (
             <section className="space-y-4 pt-2">
               <div className="flex items-center justify-between border-b border-neutral-200 pb-2">
@@ -373,7 +370,6 @@ export default function MasterCalendar({
             </section>
           )}
 
-          {/* Section 3: Past Events */}
           {pastEvents.length > 0 && (
             <section className="space-y-4 pt-2">
               <div className="flex items-center justify-between border-b border-neutral-200 pb-2">

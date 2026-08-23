@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -58,12 +57,10 @@ export default function MyCommunityEventsPage() {
 
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Modal State for Booking / Editing Events
   const [showModal, setShowModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Form Fields
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -96,7 +93,6 @@ export default function MyCommunityEventsPage() {
         return;
       }
 
-      // 1. Fetch user profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('role, community_id')
@@ -110,7 +106,6 @@ export default function MyCommunityEventsPage() {
 
       setRole(profile.role);
 
-      // 2. Fetch community details
       const { data: commData } = await supabase
         .from('communities')
         .select('*')
@@ -121,13 +116,11 @@ export default function MyCommunityEventsPage() {
         setCommunity(commData);
       }
 
-      // 3. Fetch all communities for calendar reference
       const { data: allComms } = await supabase.from('communities').select('*');
       if (allComms) {
         setCommunities(allComms);
       }
 
-      // 4. Fetch events belonging strictly to this community
       const { data: eventData } = await supabase
         .from('events')
         .select('*, community:communities(name, color, initials)')
@@ -359,7 +352,6 @@ export default function MyCommunityEventsPage() {
     }
   };
 
-  // Filtered Events for List View
   const filteredEvents = events.filter((evt) => {
     const matchesSearch =
       evt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -401,7 +393,6 @@ export default function MyCommunityEventsPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
-      {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-4">
           {community.logo_url ? (
@@ -455,7 +446,6 @@ export default function MyCommunityEventsPage() {
         </div>
       )}
 
-      {/* Metrics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="p-5 rounded-[28px] bg-white border border-neutral-200/60 shadow-sm space-y-1">
           <div className="text-xs font-extrabold uppercase tracking-wider text-neutral-400">Total Events</div>
@@ -475,7 +465,6 @@ export default function MyCommunityEventsPage() {
         </div>
       </div>
 
-      {/* View Switcher & Toolbar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-[28px] border border-neutral-200/60 shadow-sm">
         <div className="flex items-center space-x-2 w-full sm:w-auto">
           <button
@@ -503,7 +492,6 @@ export default function MyCommunityEventsPage() {
           </button>
         </div>
 
-        {/* Global Filter Controls */}
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-48">
             <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -538,7 +526,6 @@ export default function MyCommunityEventsPage() {
         </div>
       </div>
 
-      {/* Main Content Area */}
       {viewModeTab === 'grid' ? (
         filteredEvents.length === 0 ? (
           <div className="p-8 text-center text-neutral-500 text-xs bg-white border border-neutral-200/60 rounded-[28px] space-y-2">
@@ -702,7 +689,6 @@ export default function MyCommunityEventsPage() {
         </div>
       )}
 
-      {/* Booking / Editing Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
           <div className="p-6 sm:p-8 max-w-xl w-full space-y-6 rounded-[28px] relative text-[#141518] bg-white border border-neutral-200/80 shadow-2xl my-auto">
@@ -985,7 +971,6 @@ export default function MyCommunityEventsPage() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="p-6 max-w-sm w-full space-y-4 rounded-[28px] text-[#141518] bg-white border border-neutral-200/80 shadow-2xl">

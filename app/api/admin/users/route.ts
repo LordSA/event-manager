@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
@@ -90,17 +89,14 @@ export async function GET(req: NextRequest) {
     }
 
     const filteredProfiles = profiles.filter((p: any) => {
-      // 1. Superadmin (dev) can see ALL profiles
       if (requester.role === 'dev') {
         return true;
       }
 
-      // 2. Admin can see ALL profiles EXCEPT dev (dev is strictly hidden from Admin)
       if (requester.role === 'admin') {
         return p.role !== 'dev';
       }
 
-      // 3. Manager can ONLY see managers and editors in THEIR OWN community
       if (requester.role === 'manager') {
         const isSameCommunity = Boolean(requester.community_id) && p.community_id === requester.community_id;
         const isManagerOrEditor = p.role === 'manager' || p.role === 'editor';

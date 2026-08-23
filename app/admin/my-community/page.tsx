@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -161,7 +160,6 @@ export default function MyCommunityPage() {
       )}
 
       <section className="h-full grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-        {/* Left Dark Card - Community Brand Overview */}
         <div className="lg:col-span-4 h-full min-h-0 bg-[#141518] text-white rounded-[28px] p-6 sm:p-8 flex flex-col justify-between overflow-hidden relative shadow-xl">
           <div className="absolute -right-24 -top-24 w-64 h-64 rounded-full border border-white/10" />
           <div className="absolute -right-12 -top-12 w-40 h-40 rounded-full border border-white/10" />
@@ -218,7 +216,6 @@ export default function MyCommunityPage() {
           </div>
         </div>
 
-        {/* Right White Card - Form Controls */}
         <div className="lg:col-span-8 h-full min-h-0 bg-white border border-neutral-200 rounded-[28px] p-6 sm:p-8 overflow-y-auto shadow-sm">
           <form onSubmit={handleUpdateCommunity} className="h-full flex flex-col space-y-6">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-5">
@@ -294,7 +291,6 @@ export default function MyCommunityPage() {
               </div>
             </div>
 
-            {/* Logo Media Upload */}
             <div className="border-t border-neutral-100 pt-5 space-y-3">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-400">
@@ -341,7 +337,6 @@ export default function MyCommunityPage() {
               </div>
             </div>
 
-            {/* Bio Description */}
             <div className="border-t border-neutral-100 pt-5 space-y-3">
               <label className="text-[10px] font-extrabold uppercase tracking-widest text-neutral-500">
                 Community Description / Mission
@@ -355,7 +350,6 @@ export default function MyCommunityPage() {
               />
             </div>
 
-            {/* Submit Action */}
             {isEditable && (
               <div className="mt-auto pt-4 border-t border-neutral-100 flex justify-end">
                 <button

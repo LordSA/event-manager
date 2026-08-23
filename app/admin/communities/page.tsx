@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -278,7 +277,6 @@ export default function CommunitiesManagementPage() {
                 <p className="text-xs text-neutral-500 line-clamp-2 font-medium">{c.description}</p>
               </div>
 
-              {/* Slug & Logo Info Footer */}
               <div className="pt-3 border-t border-neutral-100 text-[11px] text-neutral-400 flex items-center justify-between font-mono">
                 <span className="truncate max-w-[150px]">slug: {c.slug || c.name.toLowerCase().replace(/\s+/g, '-')}</span>
                 {c.logo_url && (
@@ -292,7 +290,6 @@ export default function CommunitiesManagementPage() {
         </div>
       )}
 
-      {/* Modal for Creating Community */}
       {showAddModal && mounted && typeof document !== 'undefined' && createPortal(
         <div
           data-lenis-prevent
@@ -459,7 +456,6 @@ export default function CommunitiesManagementPage() {
         document.body
       )}
 
-      {/* Modal for Editing Community (Dev/Admin) */}
       {editingCommunity && mounted && typeof document !== 'undefined' && createPortal(
         <div
           data-lenis-prevent

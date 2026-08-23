@@ -1,4 +1,3 @@
-// Created by Shibili Aman TK | GitHub: https://github.com/LordSA
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -57,7 +56,6 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8 pb-10">
-      {/* Page Header */}
       <div className="space-y-1">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#141518] font-display">
           {isScoped ? `${communityName} Overview` : 'Dashboard Overview'}
@@ -69,10 +67,8 @@ export default function AdminDashboardPage() {
         </p>
       </div>
 
-      {/* White Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
 
-        {/* Metric 1: Live Events */}
         <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-neutral-700">
@@ -94,7 +90,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Metric 2: Draft Slots */}
         <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-neutral-700">
@@ -116,7 +111,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Metric 3: Communities */}
         <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-neutral-700">
@@ -141,10 +135,8 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Main Feature Layout Grid (Dark Feature Card + White Quick Cards) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
-        {/* Left: Dark Feature Card */}
         <div className="lg:col-span-7 bg-[#18191c] text-white rounded-[28px] p-6 sm:p-8 shadow-xl flex flex-col justify-between space-y-6 relative overflow-hidden">
           <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center space-x-2.5">
@@ -196,10 +188,8 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Right: Quick Action Cards */}
         <div className="lg:col-span-5 space-y-6 flex flex-col justify-between">
 
-          {/* Quick Action 1: Event Slot Booking */}
           <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-extrabold text-[#141518] font-display flex items-center gap-2">
@@ -224,7 +214,6 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
 
-          {/* Quick Action 2: Community / Profile */}
           {role !== 'editor' ? (
             <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
