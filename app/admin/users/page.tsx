@@ -22,8 +22,10 @@ import {
   CheckCircle2,
   AlertCircle,
   ShieldAlert,
+  Upload,
 } from 'lucide-react';
 import Image from 'next/image';
+import { uploadImageFile } from '@/lib/upload';
 
 export default function UserManagementPage() {
   const { communities } = useCommunities();
@@ -46,6 +48,36 @@ export default function UserManagementPage() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [role, setRole] = useState<UserRole>('manager');
   const [communityId, setCommunityId] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    if (file.size > 5 * 1024 * 1024) {
+      setToastMsg({ type: 'error', text: 'Image file size must be under 5MB.' });
+      return;
+    }
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const publicUrl = await uploadImageFile(file, 'avatars', (percent) => {
+        setUploadProgress(percent);
+      });
+      setAvatarUrl(publicUrl);
+      setToastMsg({ type: 'success', text: 'Profile avatar uploaded successfully!' });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to upload image';
+      setToastMsg({ type: 'error', text: msg });
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -505,20 +537,51 @@ export default function UserManagementPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                  Profile Picture URL (Avatar)
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider">
+                  Profile Picture (Avatar)
                 </label>
-                <div className="relative">
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <input
-                    type="text"
-                    value={avatarUrl}
-                    onChange={(e) => setAvatarUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/photo-..."
-                    className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full pl-9 pr-3 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    disabled={uploading}
+                    id="user-avatar-upload"
+                    className="hidden"
                   />
-                  <ImageIcon className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-2.5" />
+
+                  <label
+                    htmlFor="user-avatar-upload"
+                    className="flex-1 py-2 px-4 rounded-full bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 text-[#141518] text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
+                    <span>{uploading ? `Uploading ${uploadProgress}%` : 'Upload WebP Image'}</span>
+                  </label>
+
+                  <span className="text-[10px] text-neutral-400 font-mono text-center shrink-0 font-bold">OR</span>
+
+                  <div className="relative flex-[2]">
+                    <input
+                      type="text"
+                      value={avatarUrl}
+                      onChange={(e) => setAvatarUrl(e.target.value)}
+                      placeholder="Paste image URL (https://...)"
+                      className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full pl-9 pr-3 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                    <ImageIcon className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-2.5" />
+                  </div>
                 </div>
+
+                {uploading && (
+                  <div className="w-full bg-neutral-100 rounded-full h-1.5 overflow-hidden mt-1">
+                    <div
+                      className="bg-[#141518] h-full transition-all duration-300 rounded-full"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

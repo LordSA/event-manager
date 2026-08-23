@@ -52,9 +52,10 @@ The design language of **CEV EVENTS** is governed by the **Nixtio-Inspired Edito
 * **Mode 1 (Initial Top State over Dark Hero, `scrollY < 40`):** Transparent container (`bg-transparent border-transparent shadow-none`), standalone white logo (`/cev_logo.svg`), spaced-out text links (`text-white/85 hover:text-white`), and solid white CTA button (`bg-white text-black font-extrabold hover:bg-neutral-200`).
 * **Mode 2 (Scrolled Over Dark Hero, `scrollY >= 40`):** Compact floating white glass pill (`bg-white/70 backdrop-blur-2xl border border-white/70 shadow-[0_8px_35px_rgba(0,0,0,0.10)] rounded-full px-2 py-1.5`), black active tab indicator (`bg-black text-white rounded-full`), white CTA button.
 * **Mode 3 (Scrolled Over Light Page Content):** Standalone black logo (`/cev_logo_b.svg`), floating white glass pill center navigation, black CTA button (`bg-black text-white font-extrabold hover:bg-neutral-800`).
+* **Mobile Scroll Optimization (`window.innerWidth < 768`):** Header size and layout scroll transitions are bypassed on mobile viewports (`transition-none md:transition-all`) to freeze element dimensions and maintain 60fps smooth touch scrolling.
 
 ### Full-Screen Hero Card Scroll Shrink Animation ([app/page.tsx](./app/page.tsx))
-* **Hero Container Shrink (`scrollY > 40`):** Hero width shrinks from `w-[99%]` to `w-[95%]`, height shrinks from `min-h-[99vh]` to `min-h-[75vh]`, and corner radius scales from `rounded-[1.3rem]` to `rounded-[1rem]`.
+* **Hero Container Shrink (`scrollY > 40`):** On desktop viewports (`>= 768px`), hero width shrinks from `w-[99%]` to `w-[95%]`, height shrinks from `min-h-[99vh]` to `min-h-[75vh]`, and corner radius scales from `rounded-[1.3rem]` to `rounded-[1rem]`. Bypassed on mobile devices for smooth touch scrolling.
 * **Timing & Cubic-Bezier Easing:** `transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)]` for fluid high-end motion.
 * **Title Dynamic Scaling:** Oversized display headline (`CEV EVENTS`) scales dynamically from `text-[15rem]` to `text-[10rem]` on scroll.
 

@@ -22,6 +22,26 @@ export default function Navbar() {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
+          if (window.innerWidth < 768) {
+            setScrolled(false);
+            if (pathname === "/calendar") {
+              setIsOverDark(true);
+            } else if (pathname === "/") {
+              const hero = document.getElementById("hero-section");
+              if (hero) {
+                const rect = hero.getBoundingClientRect();
+                const navbarPoint = 70;
+                setIsOverDark(rect.top <= navbarPoint && rect.bottom > navbarPoint);
+              } else {
+                setIsOverDark(false);
+              }
+            } else {
+              setIsOverDark(false);
+            }
+            ticking = false;
+            return;
+          }
+
           const y = window.scrollY;
           const isNowScrolled = y >= 40;
 
@@ -139,9 +159,9 @@ export default function Navbar() {
       className={`
         fixed top-0 inset-x-0 z-[100]
         pointer-events-none
-        transition-all duration-300 md:duration-[900ms]
+        transition-none md:transition-all duration-300 md:duration-[900ms]
         ease-[cubic-bezier(0.16,1,0.3,1)]
-        will-change-[padding,background-color]
+        md:will-change-[padding,background-color]
         ${isInitial
           ? "px-5 sm:px-14 lg:px-16 py-5 sm:py-9"
           : "px-4 sm:px-10 lg:px-14 py-3 sm:py-5"
@@ -161,7 +181,7 @@ export default function Navbar() {
               alt="CEV Logo"
               className={`
                 w-auto object-contain
-                transition-all duration-300 md:duration-[900ms]
+                transition-none md:transition-all duration-300 md:duration-[900ms]
                 ease-[cubic-bezier(0.16,1,0.3,1)]
                 ${isInitial
                   ? "h-8 sm:h-10 lg:h-11"

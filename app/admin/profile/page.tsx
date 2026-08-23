@@ -13,6 +13,13 @@ export default function MyProfilePage() {
   const [uploading, setUploading] = useState(false);
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  useEffect(() => {
+    if (toastMsg) {
+      const timer = setTimeout(() => setToastMsg(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMsg]);
+
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
@@ -108,21 +115,29 @@ export default function MyProfilePage() {
   }
 
   return (
-    <div className="w-full min-h-[calc(100vh-7rem)] lg:h-[calc(100vh-7rem)] lg:overflow-hidden">
+    <div className="w-full min-h-[calc(100vh-7rem)] lg:h-[calc(100vh-7rem)] lg:overflow-hidden relative">
       {toastMsg && (
         <div
-          className={`flex items-center gap-3 rounded-2xl px-5 py-4 border text-xs font-semibold ${toastMsg.type === 'success'
-            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-            : 'bg-rose-50 border-rose-200 text-rose-800'
-            }`}
+          className={`fixed top-6 left-1/2 -translate-x-1/2 sm:right-6 sm:left-auto sm:translate-x-0 z-[100] flex items-center gap-3 rounded-2xl px-5 py-3.5 border text-xs font-semibold shadow-2xl backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-top-4 ${
+            toastMsg.type === 'success'
+              ? 'bg-[#141518]/95 border-emerald-500/50 text-white'
+              : 'bg-[#141518]/95 border-rose-500/50 text-white'
+          }`}
         >
           {toastMsg.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
           )}
 
           <span>{toastMsg.text}</span>
+
+          <button
+            onClick={() => setToastMsg(null)}
+            className="ml-2 text-white/40 hover:text-white transition-colors text-xs"
+          >
+            ✕
+          </button>
         </div>
       )}
 

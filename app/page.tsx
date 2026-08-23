@@ -70,6 +70,11 @@ export default function LandingHomePage() {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
+          if (window.innerWidth < 768) {
+            setScrolled(false);
+            ticking = false;
+            return;
+          }
           const isNowScrolled = window.scrollY > 40;
           setScrolled((prev) => (prev !== isNowScrolled ? isNowScrolled : prev));
           ticking = false;
@@ -95,10 +100,10 @@ export default function LandingHomePage() {
       <main className="flex-1 w-full pb-24 space-y-5">
 
         {/* Full-Screen Nixtio-Style Hero Header Card Container (All 4 Corners Rounded in State 1) */}
-        <div className={`mx-auto pt-1 transition-all duration-300 md:duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${scrolled ? "w-[92%] sm:w-[94%] lg:w-[95%]" : "w-[99%]"}`}>
+        <div className={`mx-auto pt-1 transition-none md:transition-all duration-300 md:duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${scrolled ? "w-[92%] sm:w-[94%] lg:w-[95%]" : "w-[99%]"}`}>
           <section
             id="hero-section"
-            className={`relative w-full overflow-hidden bg-[#0a0a0a] text-white flex flex-col justify-between shadow-2xl border border-neutral-800/80 transition-all duration-300 md:duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled
+            className={`relative w-full overflow-hidden bg-[#0a0a0a] text-white flex flex-col justify-between shadow-2xl border border-neutral-800/80 transition-none md:transition-all duration-300 md:duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled
               ? `min-h-[70vh] sm:min-h-[72vh] lg:min-h-[75vh] rounded-[0.8rem] sm:rounded-[0.9rem] lg:rounded-[1rem] p-4 sm:p-7 lg:p-9` : `min-h-[92vh] sm:min-h-[95vh] lg:min-h-[99vh] rounded-[0.9rem] sm:rounded-[1.1rem] lg:rounded-[1.3rem] p-6 sm:p-12 lg:p-16`}`}
           >
             {/* Animated Header GIF Background */}
@@ -112,11 +117,11 @@ export default function LandingHomePage() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-[#0a0a0a]/70 z-[1] pointer-events-none" />
 
             {/* Top Filler Spacing for Layered Floating Navbar */}
-            <div className={`relative z-10 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "pt-8 sm:pt-10" : "pt-24 sm:pt-28"}`} />
+            <div className={`relative z-10 transition-none md:transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "pt-8 sm:pt-10" : "pt-24 sm:pt-28"}`} />
 
             {/* Hero Oversized Display Title matching Nixtio reference */}
-            <div className={`relative z-10 my-auto transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "pt-1" : "pt-4"}`}>
-              <h1 className={`font-extrabold font-display leading-[0.82] tracking-tight text-white select-none transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "text-5xl sm:text-7xl md:text-[8rem] lg:text-[9rem] xl:text-[10rem]" : "text-7xl sm:text-9xl md:text-[11rem] lg:text-[13rem] xl:text-[15rem]"}`} >
+            <div className={`relative z-10 my-auto transition-none md:transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "pt-1" : "pt-4"}`}>
+              <h1 className={`font-extrabold font-display leading-[0.82] tracking-tight text-white select-none transition-none md:transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "text-5xl sm:text-7xl md:text-[8rem] lg:text-[9rem] xl:text-[10rem]" : "text-7xl sm:text-9xl md:text-[11rem] lg:text-[13rem] xl:text-[15rem]"}`} >
                 CEV EVENTS
               </h1>
             </div>

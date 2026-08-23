@@ -1,5 +1,16 @@
 # Changelogs & Version History
 
+## [2.8.0] - 2026-08-23
+
+### 🔔 Top Floating Toast Notification Overlay ([app/admin/profile/page.tsx](./app/admin/profile/page.tsx))
+- **PC & Mobile Toast Overlay:** Converted profile update notification from an inline content block into a top floating toast notification (`fixed top-6 left-1/2 -translate-x-1/2 z-[100]`) with slide-down animation and 4-second auto-dismissal, preventing layout reflows on the profile page.
+
+### 📱 Mobile Header Smooth Scroll Optimization ([app/components/Navbar.tsx](./app/components/Navbar.tsx), [app/page.tsx](./app/page.tsx))
+- **Scroll Transition Bypass:** Disabled scroll-triggered header resize and height/padding transitions on mobile viewports (`window.innerWidth < 768`) to eliminate layout recalculations and ensure 60fps smooth touch scrolling on mobile devices.
+
+### 🖼️ User Roles WebP Avatar Upload & Progress Bar ([app/admin/users/page.tsx](./app/admin/users/page.tsx))
+- **Direct Avatar Upload Button & Progress Tracking:** Replaced plain text URL input in the Add/Edit User Lead modal with a direct WebP image upload button (`uploadImageFile`) equipped with real-time percentage progress bar tracking (0–100%) and instant Vercel Blob / Supabase Storage hosting alongside direct URL fallbacks.
+
 ## [2.7.1] - 2026-08-16
 
 ### 🛡️ Navbar & Footer Suppression on 404 & Offline Pages
