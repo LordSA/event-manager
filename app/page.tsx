@@ -10,9 +10,17 @@ import { useRealtimeEvents } from '@/lib/hooks/useRealtimeEvents';
 function getOrderedSchedules(eventsList: any[]): any[] {
   if (!eventsList || eventsList.length === 0) return [];
 
-  const published = eventsList.filter(
-    (evt) => evt.status === 'live' && (evt.event_date || evt.date)
-  );
+  const published = eventsList.filter((evt) => {
+    if (evt.status !== 'live' || (!evt.event_date && !evt.date)) return false;
+    const cat = (evt.category || '').trim().toLowerCase();
+    const comm = (evt.community || '').trim().toLowerCase();
+    const commSlug = (evt.community_slug || '').trim().toLowerCase();
+
+    if (['college schedule', 'exam'].includes(cat)) return false;
+    if (comm === 'college' || commSlug === 'college') return false;
+
+    return true;
+  });
 
   if (published.length === 0) return [];
 
@@ -228,7 +236,7 @@ export default function LandingHomePage() {
               Loading campus schedules...
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5 sm:gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0.7 sm:gap-1">
               {getOrderedSchedules(eventsList)
                 .slice(0, 3)
                 .map((evt, index) => (
