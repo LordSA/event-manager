@@ -252,19 +252,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 <p className="text-sm text-neutral-600 leading-relaxed line-clamp-3">
                   {publicDescription}
                 </p>
-
-                <div className="p-3.5 rounded-xl bg-indigo-50/80 border border-indigo-100 flex items-center justify-between gap-3 text-xs text-indigo-950">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-[#6366f1] shrink-0" />
-                    <span className="font-medium">Need full guidelines, timeline, or FAQs?</span>
-                  </div>
-                  <button
-                    onClick={() => setAiDrawerOpen(true)}
-                    className="text-[#6366f1] hover:text-indigo-800 font-bold uppercase tracking-wider text-[11px] underline shrink-0"
-                  >
-                    Ask Assistant &rarr;
-                  </button>
-                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-neutral-600">
@@ -298,9 +285,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                       <div>
                         <div className="text-[10px] text-neutral-500 font-bold uppercase flex items-center gap-1.5">
                           <span>Venue / Location</span>
-                          <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase ${
-                            isOnline ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
-                          }`}>
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase ${isOnline ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                            }`}>
                             {formatTag}
                           </span>
                         </div>
