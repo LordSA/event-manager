@@ -250,11 +250,8 @@ export default function EventAiDrawer({
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm sm:text-base font-extrabold text-white font-display tracking-tight truncate">
-                      Event Assistant
+                      Nora
                     </h3>
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 shrink-0">
-                      Live
-                    </span>
                   </div>
                   <p className="text-xs text-slate-400 truncate max-w-[210px] sm:max-w-[260px]">
                     {cleanTitle}
@@ -287,9 +284,8 @@ export default function EventAiDrawer({
                   key={msg.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`flex gap-3 ${
-                    msg.sender === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
+                  className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'
+                    }`}
                 >
                   {msg.sender === 'ai' && (
                     <div className="w-8 h-8 rounded-xl bg-[#6366f1]/20 border border-[#6366f1]/40 flex items-center justify-center text-[#818cf8] shrink-0 mt-1 shadow-sm">
@@ -298,17 +294,15 @@ export default function EventAiDrawer({
                   )}
 
                   <div
-                    className={`max-w-[86%] sm:max-w-[82%] rounded-2xl p-4 shadow-md ${
-                      msg.sender === 'user'
-                        ? 'bg-white text-[#0a0a0a] font-medium rounded-tr-sm'
-                        : 'bg-[#141724] text-slate-200 border border-white/10 rounded-tl-sm'
-                    }`}
+                    className={`max-w-[86%] sm:max-w-[82%] rounded-2xl p-4 shadow-md ${msg.sender === 'user'
+                      ? 'bg-white text-[#0a0a0a] font-medium rounded-tr-sm'
+                      : 'bg-[#141724] text-slate-200 border border-white/10 rounded-tl-sm'
+                      }`}
                   >
                     <div>{renderFormattedMessage(msg.text)}</div>
                     <div
-                      className={`mt-2 text-[10px] font-mono text-right ${
-                        msg.sender === 'user' ? 'text-slate-500' : 'text-slate-400'
-                      }`}
+                      className={`mt-2 text-[10px] font-mono text-right ${msg.sender === 'user' ? 'text-slate-500' : 'text-slate-400'
+                        }`}
                     >
                       {msg.timestamp}
                     </div>

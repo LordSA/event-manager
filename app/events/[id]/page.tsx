@@ -239,7 +239,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                   {eventData.category || 'Workshop'}
                 </span>
                 <span className="text-xs font-semibold px-2.5 py-1 rounded bg-neutral-100 border border-neutral-200 text-neutral-800 flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-[#6366f1]" />
+                  {/* <Users className="w-3.5 h-3.5 text-[#6366f1]" /> */}
                   {communityName}
                 </span>
               </div>
@@ -266,7 +266,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 flex items-center space-x-3">
                   <Clock className="w-5 h-5 text-purple-600" />
                   <div>
-                    <div className="text-[10px] text-neutral-500 font-bold uppercase">Time Slot</div>
+                    <div className="text-[10px] text-neutral-500 font-bold uppercase">Time</div>
                     <div className="font-bold text-[#0a0a0a] text-sm">{formatTimeSlotTo12Hr(eventData.time_slot)}</div>
                   </div>
                 </div>
@@ -298,7 +298,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
                 {eventData.perks && eventData.perks.trim() !== '' && (
                   <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 flex items-center space-x-3">
-                    <Award className="w-5 h-5 text-amber-600" />
+                    {/* <Award className="w-5 h-5 text-amber-600" /> */}
                     <div>
                       <div className="text-[10px] text-neutral-500 font-bold uppercase">Highlights / Perks</div>
                       <div className="font-bold text-[#0a0a0a] text-sm">{eventData.perks}</div>
@@ -319,7 +319,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                         className="flex-1 brutalist-btn-primary py-4 px-8 rounded-full font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 text-center"
                       >
                         <span>Register Now</span>
-                        <ExternalLink className="w-4 h-4" />
+                        {/* <ExternalLink className="w-4 h-4" /> */}
                       </a>
                     );
                   }
@@ -330,7 +330,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                       className="flex-1 py-4 px-8 rounded-full bg-neutral-200 text-neutral-400 border border-neutral-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 text-center cursor-not-allowed opacity-70"
                     >
                       <span>Register Now</span>
-                      <ExternalLink className="w-4 h-4" />
+                      {/* <ExternalLink className="w-4 h-4" /> */}
                     </button>
                   );
                 })()}
@@ -339,7 +339,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                   onClick={() => setAiDrawerOpen(true)}
                   className="flex-1 py-4 px-8 rounded-full bg-[#0a0a0a] hover:bg-neutral-800 text-white font-bold text-xs border border-black flex items-center justify-center space-x-2 transition-all uppercase tracking-wider shadow-md hover:shadow-lg"
                 >
-                  <MessageSquare className="w-4 h-4 text-[#6366f1]" />
+                  {/* <MessageSquare className="w-4 h-4 text-[#6366f1]" /> */}
                   <span>Ask Assistant</span>
                 </button>
               </div>
