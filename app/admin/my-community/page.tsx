@@ -498,83 +498,69 @@ export default function MyCommunityPage() {
         </div>
       )}
 
-      <section className="bg-white rounded-[28px] border border-neutral-200/80 p-6 sm:p-8 shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          <div className="md:col-span-4 lg:col-span-3 flex items-center justify-center self-stretch">
-            <div className="w-full h-full min-h-[190px] sm:min-h-[210px] bg-[#141518] text-white rounded-[24px] p-6 flex items-center justify-center relative overflow-hidden shadow-md">
-              <div className="absolute -right-20 -top-20 w-56 h-56 rounded-full border border-white/10 pointer-events-none" />
-              <div className="absolute -right-10 -top-10 w-36 h-36 rounded-full border border-white/10 pointer-events-none" />
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch">
+        <div className="lg:col-span-4 min-h-[200px] sm:min-h-[220px] bg-[#141518] text-white rounded-[28px] p-6 sm:p-8 flex items-center justify-center relative overflow-hidden shadow-sm">
+          <div className="absolute -right-24 -top-24 w-64 h-64 rounded-full border border-white/10 pointer-events-none" />
+          <div className="absolute -right-12 -top-12 w-40 h-40 rounded-full border border-white/10 pointer-events-none" />
 
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[20px] overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center shadow-lg relative z-10">
-                {community.logo_url ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={community.logo_url}
-                    alt={community.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <span className="text-3xl font-extrabold font-display text-white">
-                    {community.initials || community.name.substring(0, 2).toUpperCase()}
-                  </span>
-                )}
-              </div>
+          <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-[24px] overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center shadow-lg relative z-10">
+            {community.logo_url ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={community.logo_url}
+                alt={community.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            ) : (
+              <span className="text-3xl font-extrabold font-display text-white">
+                {community.initials || community.name.substring(0, 2).toUpperCase()}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="lg:col-span-8 bg-white border border-neutral-200/80 rounded-[28px] p-6 sm:p-8 shadow-sm flex flex-col justify-between space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-[#141518]">
+              {community.name}
+            </h1>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={() => setEditCommModalOpen(true)}
+                className="py-2.5 px-5 rounded-full bg-[#141518] hover:bg-black text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all"
+              >
+                <Edit2 className="w-3.5 h-3.5 text-white" />
+                <span>Edit Community Details</span>
+              </button>
             </div>
           </div>
 
-          <div className="md:col-span-8 lg:col-span-9 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-[#141518]">
-                {community.name}
-              </h1>
+          <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+            {community.description || 'No community description provided yet. Click "Edit Community Details" to add a bio and guidelines.'}
+          </p>
 
-              <div className="flex items-center gap-3 shrink-0">
-                <Link
-                  href={`/community/${community.slug}`}
-                  target="_blank"
-                  className="py-2.5 px-4 rounded-full bg-neutral-100 hover:bg-neutral-200 text-[#141518] text-xs font-bold flex items-center gap-1.5 transition-colors"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>Public View</span>
-                  <ExternalLink className="w-3 h-3 text-neutral-400" />
-                </Link>
-
-                <button
-                  onClick={() => setEditCommModalOpen(true)}
-                  className="py-2.5 px-5 rounded-full bg-[#141518] hover:bg-black text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all"
-                >
-                  <Edit2 className="w-3.5 h-3.5 text-white" />
-                  <span>Edit Community Details</span>
-                </button>
-              </div>
+          <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
+              <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Initials:</span>
+              <span className="font-extrabold text-[#141518] font-mono">{community.initials || '—'}</span>
             </div>
 
-            <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-              {community.description || 'No community description provided yet. Click "Edit Community Details" to add a bio and guidelines.'}
-            </p>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
+              <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Slug:</span>
+              <span className="font-mono text-[#141518] font-bold">/community/{community.slug}</span>
+            </div>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
-                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Initials:</span>
-                <span className="font-extrabold text-[#141518] font-mono">{community.initials || '—'}</span>
-              </div>
-
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
-                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Slug:</span>
-                <span className="font-mono text-[#141518] font-bold">/community/{community.slug}</span>
-              </div>
-
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
-                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Brand Accent:</span>
-                <span
-                  className="w-3.5 h-3.5 rounded-full border border-neutral-300 shrink-0"
-                  style={{ backgroundColor: community.color || '#6366f1' }}
-                />
-                <span className="font-mono font-bold text-[#141518]">{community.color || '#6366f1'}</span>
-              </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
+              <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Brand Accent:</span>
+              <span
+                className="w-3.5 h-3.5 rounded-full border border-neutral-300 shrink-0"
+                style={{ backgroundColor: community.color || '#6366f1' }}
+              />
+              <span className="font-mono font-bold text-[#141518]">{community.color || '#6366f1'}</span>
             </div>
           </div>
         </div>

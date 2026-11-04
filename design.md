@@ -99,9 +99,9 @@ The design language of **CEV EVENTS** is governed by the **Nixtio-Inspired Edito
 
 ### View-First Community Entity Presentation
 * **Read-Only Default State:** Community details are presented as immutable display cards by default to prevent unintentional edits during day-to-day operations.
-* **Branding Showcase Card:** 
-  - **Left Column:** Signature dark box (`bg-[#141518] text-white rounded-[24px] relative overflow-hidden shadow-md`) featuring concentric circular watermark lines (`border border-white/10`) with the community logo centered vertically and horizontally.
-  - **Right Column:** Community Name title positioned prominently above the description, accompanied by "Public View" and "Edit Community Details" action pills on the right, with description and badges (`INITIALS`, `SLUG`, `BRAND ACCENT`) placed directly underneath.
+* **Dual Side-by-Side Card Architecture:** 
+  - **Left Box (Card 1):** Standalone signature dark box (`bg-[#141518] text-white rounded-[28px] relative overflow-hidden shadow-sm p-6 sm:p-8 flex items-center justify-center`) featuring concentric circular watermark lines (`border border-white/10`) with the community logo centered vertically and horizontally.
+  - **Right Box (Card 2):** Standalone white card (`bg-white border border-neutral-200/80 rounded-[28px] p-6 sm:p-8 shadow-sm flex flex-col justify-between space-y-4`) displaying the Community Name title on top alongside "Public View" and "Edit Community Details" action pills, with the description and badges (`INITIALS`, `SLUG`, `BRAND ACCENT`) placed cleanly underneath.
 
 ### Dedicated Edit Community Details Modal
 * **Modal Overlay:** React Portal mounted to `document.body` with `z-[99999]`, backdrop blur (`bg-black/60 backdrop-blur-sm`), and `data-lenis-prevent` scroll lock.
