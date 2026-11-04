@@ -15,6 +15,7 @@
 - **Merged Single Page:** Consolidated community entity branding and full community event management into a single, cohesive dashboard at `/admin/my-community`.
 - **View-First Presentation Mode:** Community details are now rendered in clean read-only display cards by default to protect against unintended edits.
 - **Dedicated Edit Modal:** Added an "Edit Community Details" action button opening a dedicated modal for editing name, initials, brand accent color, description, and WebP logo upload.
+- **Signature Dark Logo Card & Header Reorganization:** Updated the left column to feature the signature dark container with concentric watermark rings and vertically centered logo (matching the profile page aesthetic). Moved the Community Name title directly above the description, positioned alongside action buttons.
 - **Embedded Community Events Suite:** Integrated full event management below community branding, featuring search, status filter (`all`, `live`, `closed`), format filter (`all`, `offline`, `online`), view toggles (Grid/List), quick status toggle (`live`/`closed`), and create/edit/delete modals.
 - **Events Route Redirect ([app/admin/my-community/events/page.tsx](./app/admin/my-community/events/page.tsx)):** Configured automatic redirection from `/admin/my-community/events` to `/admin/my-community`.
 

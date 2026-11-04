@@ -97,10 +97,11 @@ The design language of **CEV EVENTS** is governed by the **Nixtio-Inspired Edito
 
 ## 6. Unified Community Workspace & View-First Architecture ([app/admin/my-community/page.tsx](./app/admin/my-community/page.tsx))
 
-### View-First Community Entity Presentation (`001 / COMMUNITY ENTITY`)
+### View-First Community Entity Presentation
 * **Read-Only Default State:** Community details are presented as immutable display cards by default to prevent unintentional edits during day-to-day operations.
-* **Branding Showcase Card:** Features the community logo image container (`w-28 h-28 sm:w-32 sm:h-32 rounded-[24px] bg-neutral-100 border border-neutral-200`), initials badge chip, public slug route preview (`/community/[slug]`), brand accent preview swatch with hex code, and community description paragraph.
-* **Header Actions:** Contains direct "Public View" link pill (`bg-neutral-100 hover:bg-neutral-200 text-[#141518]`) and "Edit Community Details" pill button (`bg-[#141518] hover:bg-black text-white px-5 py-2.5 rounded-full text-xs font-bold`).
+* **Branding Showcase Card:** 
+  - **Left Column:** Signature dark box (`bg-[#141518] text-white rounded-[24px] relative overflow-hidden shadow-md`) featuring concentric circular watermark lines (`border border-white/10`) with the community logo centered vertically and horizontally.
+  - **Right Column:** Community Name title positioned prominently above the description, accompanied by "Public View" and "Edit Community Details" action pills on the right, with description and badges (`INITIALS`, `SLUG`, `BRAND ACCENT`) placed directly underneath.
 
 ### Dedicated Edit Community Details Modal
 * **Modal Overlay:** React Portal mounted to `document.body` with `z-[99999]`, backdrop blur (`bg-black/60 backdrop-blur-sm`), and `data-lenis-prevent` scroll lock.

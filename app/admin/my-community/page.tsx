@@ -499,58 +499,62 @@ export default function MyCommunityPage() {
       )}
 
       <section className="bg-white rounded-[28px] border border-neutral-200/80 p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-100">
-          <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-[#141518]">
-              {community.name}
-            </h1>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div className="md:col-span-4 lg:col-span-3 flex items-center justify-center self-stretch">
+            <div className="w-full h-full min-h-[190px] sm:min-h-[210px] bg-[#141518] text-white rounded-[24px] p-6 flex items-center justify-center relative overflow-hidden shadow-md">
+              <div className="absolute -right-20 -top-20 w-56 h-56 rounded-full border border-white/10 pointer-events-none" />
+              <div className="absolute -right-10 -top-10 w-36 h-36 rounded-full border border-white/10 pointer-events-none" />
 
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/community/${community.slug}`}
-              target="_blank"
-              className="py-2.5 px-4 rounded-full bg-neutral-100 hover:bg-neutral-200 text-[#141518] text-xs font-bold flex items-center gap-1.5 transition-colors"
-            >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Public View</span>
-              <ExternalLink className="w-3 h-3 text-neutral-400" />
-            </Link>
-
-            <button
-              onClick={() => setEditCommModalOpen(true)}
-              className="py-2.5 px-5 rounded-full bg-[#141518] hover:bg-black text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all"
-            >
-              <Edit2 className="w-3.5 h-3.5 text-white" />
-              <span>Edit Community Details</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-6 items-center">
-          <div className="md:col-span-3 flex items-center justify-center">
-            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-[24px] bg-neutral-100 border border-neutral-200 flex items-center justify-center overflow-hidden shadow-sm relative group">
-              {community.logo_url ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={community.logo_url}
-                  alt={community.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-3xl font-extrabold font-display text-[#141518]">
-                  {community.initials || community.name.substring(0, 2).toUpperCase()}
-                </span>
-              )}
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[20px] overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center shadow-lg relative z-10">
+                {community.logo_url ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={community.logo_url}
+                    alt={community.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <span className="text-3xl font-extrabold font-display text-white">
+                    {community.initials || community.name.substring(0, 2).toUpperCase()}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="md:col-span-9 space-y-4">
-            <div>
-              <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-                {community.description || 'No community description provided yet. Click "Edit Community Details" to add a bio and guidelines.'}
-              </p>
+          <div className="md:col-span-8 lg:col-span-9 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-[#141518]">
+                {community.name}
+              </h1>
+
+              <div className="flex items-center gap-3 shrink-0">
+                <Link
+                  href={`/community/${community.slug}`}
+                  target="_blank"
+                  className="py-2.5 px-4 rounded-full bg-neutral-100 hover:bg-neutral-200 text-[#141518] text-xs font-bold flex items-center gap-1.5 transition-colors"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Public View</span>
+                  <ExternalLink className="w-3 h-3 text-neutral-400" />
+                </Link>
+
+                <button
+                  onClick={() => setEditCommModalOpen(true)}
+                  className="py-2.5 px-5 rounded-full bg-[#141518] hover:bg-black text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all"
+                >
+                  <Edit2 className="w-3.5 h-3.5 text-white" />
+                  <span>Edit Community Details</span>
+                </button>
+              </div>
             </div>
+
+            <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+              {community.description || 'No community description provided yet. Click "Edit Community Details" to add a bio and guidelines.'}
+            </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
@@ -580,10 +584,10 @@ export default function MyCommunityPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-[#141518]">
-              Events & Slot Bookings
+              Events
             </h2>
             <p className="text-xs sm:text-sm text-neutral-500 font-medium">
-              Create, publish, and manage campus events specifically for {community.name}.
+              Manage events of  {community.name}.
             </p>
           </div>
 
