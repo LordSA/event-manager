@@ -177,7 +177,7 @@ export default function LandingHomePage() {
                     <img
                       src={c.logo_url}
                       alt={c.name}
-                      className="max-h-14 sm:max-h-24 max-w-[150px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                      className="max-h-20 sm:max-h-24 max-w-[150px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
                         (e.currentTarget as HTMLImageElement).style.display = "none";
                       }}
