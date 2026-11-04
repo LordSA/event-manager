@@ -96,6 +96,25 @@ export default function MyCommunityPage() {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (toastMsg) {
+      const timer = setTimeout(() => {
+        setToastMsg(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMsg]);
+
+  useEffect(() => {
+    if (editCommModalOpen || eventModalOpen || Boolean(deleteId)) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [editCommModalOpen, eventModalOpen, deleteId]);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -482,21 +501,7 @@ export default function MyCommunityPage() {
 
   return (
     <div className="space-y-10 pb-20 md:pb-12 text-[#141518]">
-      {toastMsg && (
-        <div
-          className={`flex items-center gap-3 rounded-2xl px-5 py-4 border text-xs font-semibold ${toastMsg.type === 'success'
-            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-            : 'bg-rose-50 border-rose-200 text-rose-800'
-            }`}
-        >
-          {toastMsg.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          ) : (
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-          )}
-          <span>{toastMsg.text}</span>
-        </div>
-      )}
+
 
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch">
         <div className="lg:col-span-4 min-h-[200px] sm:min-h-[220px] bg-[#141518] text-white rounded-[28px] p-6 sm:p-8 flex items-center justify-center relative overflow-hidden shadow-sm">
@@ -719,7 +724,7 @@ export default function MyCommunityPage() {
                             : 'bg-amber-500 text-white border-amber-600'
                             }`}
                         >
-                          {isLive ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                          {/* {isLive ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-3 h-3" />} */}
                           <span>{isLive ? 'Live' : 'Draft'}</span>
                         </button>
                       </div>
@@ -766,21 +771,21 @@ export default function MyCommunityPage() {
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => setDeleteId(evt.id)}
-                        className="p-2 text-neutral-400 hover:text-rose-600 rounded-full hover:bg-rose-50 transition-colors"
-                        title="Delete Event"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </div>
-
                     <button
+                      onClick={() => setDeleteId(evt.id)}
+                      className="p-2 text-neutral-400 hover:text-rose-600 rounded-full hover:bg-rose-50 transition-colors"
+                      title="Delete Event"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+
+                    {/* <button
                       onClick={() => handleToggleStatus(evt.id, evt.status)}
                       className="text-[11px] font-bold text-neutral-500 hover:text-[#141518] transition-colors"
                     >
                       {isLive ? 'Unpublish' : 'Publish'}
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               );
@@ -872,10 +877,13 @@ export default function MyCommunityPage() {
           onClick={(e) => {
             if (e.target === e.currentTarget) setEditCommModalOpen(false);
           }}
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm"
         >
-          <div className="w-full max-w-xl bg-white border border-neutral-200/80 rounded-[28px] p-5 sm:p-7 space-y-4 my-auto max-h-[90vh] overflow-y-auto shadow-2xl relative text-[#141518]">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3 sticky top-0 bg-white z-10">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xl bg-white border border-neutral-200/80 rounded-[28px] shadow-2xl relative text-[#141518] flex flex-col max-h-[90vh] overflow-hidden"
+          >
+            <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 bg-white shrink-0">
               <h2 className="text-lg sm:text-xl font-extrabold text-[#141518] flex items-center gap-2 font-display">
                 <Building className="w-5 h-5 text-[#141518]" />
                 Edit Community Details
@@ -888,118 +896,120 @@ export default function MyCommunityPage() {
               </button>
             </div>
 
-            <form onSubmit={handleUpdateCommunity} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Community Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={commName}
-                    onChange={(e) => setCommName(e.target.value)}
-                    required
-                    className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    URL Slug {isSlugEditable ? '(Editable)' : '(Read-Only)'}
-                  </label>
-                  <input
-                    type="text"
-                    disabled={!isSlugEditable}
-                    value={commSlug}
-                    onChange={(e) => setCommSlug(e.target.value)}
-                    className="w-full bg-neutral-100 text-neutral-500 rounded-full px-4 py-2 text-xs border border-neutral-200 font-mono disabled:cursor-not-allowed"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Initials Badge
-                  </label>
-                  <input
-                    type="text"
-                    value={commInitials}
-                    onChange={(e) => setCommInitials(e.target.value)}
-                    placeholder="e.g. IEEE"
-                    className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Brand Accent Color (Hex)
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={commColor.startsWith('#') ? commColor : '#6366f1'}
-                      onChange={(e) => setCommColor(e.target.value)}
-                      className="w-8 h-8 rounded-full border border-neutral-300 p-0 cursor-pointer overflow-hidden"
-                    />
+            <form onSubmit={handleUpdateCommunity} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4 [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      Community Name *
+                    </label>
                     <input
                       type="text"
-                      value={commColor}
-                      onChange={(e) => setCommColor(e.target.value)}
-                      placeholder="#6366f1"
-                      className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 font-mono focus:outline-none focus:ring-2 focus:ring-black"
+                      value={commName}
+                      onChange={(e) => setCommName(e.target.value)}
+                      required
+                      className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      URL Slug {isSlugEditable ? '(Editable)' : '(Read-Only)'}
+                    </label>
+                    <input
+                      type="text"
+                      disabled={!isSlugEditable}
+                      value={commSlug}
+                      onChange={(e) => setCommSlug(e.target.value)}
+                      className="w-full bg-neutral-100 text-neutral-500 rounded-full px-4 py-2 text-xs border border-neutral-200 font-mono disabled:cursor-not-allowed"
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider">
-                  Community Logo Image
-                </label>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoFileUpload}
-                    disabled={uploadingLogo}
-                    id="comm-logo-upload"
-                    className="hidden"
-                  />
-                  <label
-                    htmlFor="comm-logo-upload"
-                    className="flex-1 py-2 px-4 rounded-full bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 text-[#141518] text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
-                  >
-                    <Upload className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
-                    <span>{uploadingLogo ? 'Uploading Logo...' : 'Upload Logo WebP'}</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      Initials Badge
+                    </label>
+                    <input
+                      type="text"
+                      value={commInitials}
+                      onChange={(e) => setCommInitials(e.target.value)}
+                      placeholder="e.g. IEEE"
+                      className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      Brand Accent Color (Hex)
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={commColor.startsWith('#') ? commColor : '#6366f1'}
+                        onChange={(e) => setCommColor(e.target.value)}
+                        className="w-8 h-8 rounded-full border border-neutral-300 p-0 cursor-pointer overflow-hidden"
+                      />
+                      <input
+                        type="text"
+                        value={commColor}
+                        onChange={(e) => setCommColor(e.target.value)}
+                        placeholder="#6366f1"
+                        className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 font-mono focus:outline-none focus:ring-2 focus:ring-black"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider">
+                    Community Logo Image
                   </label>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoFileUpload}
+                      disabled={uploadingLogo}
+                      id="comm-logo-upload"
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="comm-logo-upload"
+                      className="flex-1 py-2 px-4 rounded-full bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 text-[#141518] text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
+                      <span>{uploadingLogo ? 'Uploading Logo...' : 'Upload Logo WebP'}</span>
+                    </label>
 
-                  <span className="text-[10px] text-neutral-400 font-mono text-center shrink-0 font-bold">OR</span>
+                    <span className="text-[10px] text-neutral-400 font-mono text-center shrink-0 font-bold">OR</span>
 
-                  <input
-                    type="text"
-                    value={commLogoUrl}
-                    onChange={(e) => setCommLogoUrl(e.target.value)}
-                    placeholder="Paste image URL (https://...)"
-                    className="flex-[2] bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    <input
+                      type="text"
+                      value={commLogoUrl}
+                      onChange={(e) => setCommLogoUrl(e.target.value)}
+                      placeholder="Paste image URL (https://...)"
+                      className="flex-[2] bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                    Community Description / Bio
+                  </label>
+                  <textarea
+                    value={commDescription}
+                    onChange={(e) => setCommDescription(e.target.value)}
+                    placeholder="Tell students what your community represents, activities, and vision..."
+                    rows={4}
+                    className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-2xl p-3 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                  Community Description / Bio
-                </label>
-                <textarea
-                  value={commDescription}
-                  onChange={(e) => setCommDescription(e.target.value)}
-                  placeholder="Tell students what your community represents, activities, and vision..."
-                  rows={4}
-                  className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-2xl p-3 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-neutral-100 flex items-center justify-end space-x-3">
+              <div className="px-6 py-4 border-t border-neutral-100 flex items-center justify-end space-x-3 bg-white shrink-0">
                 <button
                   type="button"
                   onClick={() => setEditCommModalOpen(false)}
@@ -1027,10 +1037,13 @@ export default function MyCommunityPage() {
           onClick={(e) => {
             if (e.target === e.currentTarget) setEventModalOpen(false);
           }}
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm"
         >
-          <div className="w-full max-w-2xl bg-white border border-neutral-200/80 rounded-[28px] p-5 sm:p-7 space-y-4 my-auto max-h-[90vh] overflow-y-auto shadow-2xl relative text-[#141518]">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3 sticky top-0 bg-white z-10">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-2xl bg-white border border-neutral-200/80 rounded-[28px] shadow-2xl relative text-[#141518] flex flex-col max-h-[90vh] overflow-hidden"
+          >
+            <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 bg-white shrink-0">
               <h2 className="text-lg sm:text-xl font-extrabold text-[#141518] flex items-center gap-2 font-display">
                 <Calendar className="w-5 h-5 text-[#141518]" />
                 {editingEvent ? 'Modify Community Event' : 'Create New Community Event'}
@@ -1043,237 +1056,239 @@ export default function MyCommunityPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveEvent} className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                  Event Title *
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. AI & Robotics Bootcamp"
-                  required
-                  className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <form onSubmit={handleSaveEvent} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4 [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
                 <div>
                   <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Event Category
+                    Event Title *
                   </label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                  >
-                    <option value="Workshop">Workshop</option>
-                    <option value="Hackathon">Hackathon</option>
-                    <option value="Competition">Competition</option>
-                    <option value="Seminar">Seminar</option>
-                    <option value="Meetup">Meetup</option>
-                    <option value="Cultural">Cultural</option>
-                    <option value="Other">Other (Custom)</option>
-                  </select>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g. AI & Robotics Bootcamp"
+                    required
+                    className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                  />
                 </div>
 
-                {category === 'Other' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                      Custom Category Name *
+                      Event Category
+                    </label>
+                    <select
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    >
+                      <option value="Workshop">Workshop</option>
+                      <option value="Hackathon">Hackathon</option>
+                      <option value="Competition">Competition</option>
+                      <option value="Seminar">Seminar</option>
+                      <option value="Meetup">Meetup</option>
+                      <option value="Cultural">Cultural</option>
+                      <option value="Other">Other (Custom)</option>
+                    </select>
+                  </div>
+
+                  {category === 'Other' && (
+                    <div>
+                      <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                        Custom Category Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={customCategory}
+                        onChange={(e) => setCustomCategory(e.target.value)}
+                        placeholder="e.g. Ideathon"
+                        required
+                        className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      Initial Status
+                    </label>
+                    <select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value as 'live' | 'closed')}
+                      className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    >
+                      <option value="closed">Closed (Draft Slot)</option>
+                      <option value="live">Live (Published Publicly)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      Start Date *
+                    </label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      required
+                      className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      End Date (For Multi-Day)
+                    </label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      Start Time
+                    </label>
+                    <input
+                      type="time"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      End Time
+                    </label>
+                    <input
+                      type="time"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      Format
+                    </label>
+                    <select
+                      value={eventType}
+                      onChange={(e) => setEventType(e.target.value as 'offline' | 'online')}
+                      className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                    >
+                      <option value="offline">Offline (In-Person)</option>
+                      <option value="online">Online (Virtual)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                      Venue / Link
                     </label>
                     <input
                       type="text"
-                      value={customCategory}
-                      onChange={(e) => setCustomCategory(e.target.value)}
-                      placeholder="e.g. Ideathon"
+                      value={venue}
+                      onChange={(e) => setVenue(e.target.value)}
+                      placeholder={eventType === 'online' ? 'Google Meet / Zoom URL' : 'Auditorium / Lab 3'}
                       required
                       className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
                     />
                   </div>
-                )}
-
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Initial Status
-                  </label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value as 'live' | 'closed')}
-                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                  >
-                    <option value="closed">Closed (Draft Slot)</option>
-                    <option value="live">Live (Published Publicly)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Start Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    required
-                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black font-mono"
-                  />
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    End Date (For Multi-Day)
+                <div className="space-y-1.5">
+                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider">
+                    Event Poster (WebP)
                   </label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black font-mono"
-                  />
-                </div>
-              </div>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePosterFileUpload}
+                      disabled={uploadingPoster}
+                      id="event-poster-upload"
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="event-poster-upload"
+                      className="flex-1 py-2 px-4 rounded-full bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 text-[#141518] text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
+                      <span>{uploadingPoster ? `Uploading ${uploadProgress}%` : 'Upload Poster Image'}</span>
+                    </label>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Start Time
-                  </label>
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black font-mono"
-                  />
-                </div>
+                    <span className="text-[10px] text-neutral-400 font-mono text-center shrink-0 font-bold">OR</span>
 
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    End Time
-                  </label>
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Format
-                  </label>
-                  <select
-                    value={eventType}
-                    onChange={(e) => setEventType(e.target.value as 'offline' | 'online')}
-                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                  >
-                    <option value="offline">Offline (In-Person)</option>
-                    <option value="online">Online (Virtual)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                    Venue / Link
-                  </label>
-                  <input
-                    type="text"
-                    value={venue}
-                    onChange={(e) => setVenue(e.target.value)}
-                    placeholder={eventType === 'online' ? 'Google Meet / Zoom URL' : 'Auditorium / Lab 3'}
-                    required
-                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-4 py-2.5 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider">
-                  Event Poster (WebP)
-                </label>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePosterFileUpload}
-                    disabled={uploadingPoster}
-                    id="event-poster-upload"
-                    className="hidden"
-                  />
-                  <label
-                    htmlFor="event-poster-upload"
-                    className="flex-1 py-2 px-4 rounded-full bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 text-[#141518] text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
-                  >
-                    <Upload className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
-                    <span>{uploadingPoster ? `Uploading ${uploadProgress}%` : 'Upload Poster Image'}</span>
-                  </label>
-
-                  <span className="text-[10px] text-neutral-400 font-mono text-center shrink-0 font-bold">OR</span>
-
-                  <input
-                    type="text"
-                    value={posterUrl}
-                    onChange={(e) => setPosterUrl(e.target.value)}
-                    placeholder="Paste image URL (https://...)"
-                    className="flex-[2] bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                  />
-                </div>
-
-                {uploadingPoster && (
-                  <div className="w-full bg-neutral-100 rounded-full h-1.5 overflow-hidden mt-1">
-                    <div
-                      className="bg-[#141518] h-full transition-all duration-300 rounded-full"
-                      style={{ width: `${uploadProgress}%` }}
+                    <input
+                      type="text"
+                      value={posterUrl}
+                      onChange={(e) => setPosterUrl(e.target.value)}
+                      placeholder="Paste image URL (https://...)"
+                      className="flex-[2] bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
                     />
                   </div>
-                )}
+
+                  {uploadingPoster && (
+                    <div className="w-full bg-neutral-100 rounded-full h-1.5 overflow-hidden mt-1">
+                      <div
+                        className="bg-[#141518] h-full transition-all duration-300 rounded-full"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                    Registration / Redirect Link (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={redirectUrl}
+                    onChange={(e) => setRedirectUrl(e.target.value)}
+                    placeholder="https://forms.google.com/..."
+                    className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                    Event Description & Guidelines
+                  </label>
+                  <textarea
+                    value={desc}
+                    onChange={(e) => setDesc(e.target.value)}
+                    placeholder="Detail schedule, requirements, rules, coordinator contacts..."
+                    rows={3}
+                    className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-2xl p-3 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
+                    Highlights / Perks (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={perks}
+                    onChange={(e) => setPerks(e.target.value)}
+                    placeholder="e.g. KTU Activity Points, Certificates, Refreshments"
+                    className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                  Registration / Redirect Link (Optional)
-                </label>
-                <input
-                  type="url"
-                  value={redirectUrl}
-                  onChange={(e) => setRedirectUrl(e.target.value)}
-                  placeholder="https://forms.google.com/..."
-                  className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                  Event Description & Guidelines
-                </label>
-                <textarea
-                  value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
-                  placeholder="Detail schedule, requirements, rules, coordinator contacts..."
-                  rows={3}
-                  className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-2xl p-3 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
-                  Highlights / Perks (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={perks}
-                  onChange={(e) => setPerks(e.target.value)}
-                  placeholder="e.g. KTU Activity Points, Certificates, Refreshments"
-                  className="w-full bg-neutral-100 text-[#141518] placeholder-neutral-400 rounded-full px-4 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-neutral-100 flex items-center justify-end space-x-3">
+              <div className="px-6 py-4 border-t border-neutral-100 flex items-center justify-end space-x-3 bg-white shrink-0">
                 <button
                   type="button"
                   onClick={() => setEventModalOpen(false)}
@@ -1303,7 +1318,10 @@ export default function MyCommunityPage() {
           }}
           className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
         >
-          <div className="w-full max-w-sm bg-white border border-neutral-200 rounded-[28px] p-6 space-y-4 shadow-2xl text-center">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm bg-white border border-neutral-200 rounded-[28px] p-6 space-y-4 shadow-2xl text-center"
+          >
             <div className="p-3 rounded-full bg-rose-50 text-rose-600 w-fit mx-auto border border-rose-100">
               <Trash2 className="w-6 h-6" />
             </div>
@@ -1326,6 +1344,32 @@ export default function MyCommunityPage() {
               </button>
             </div>
           </div>
+        </div>,
+        document.body
+      )}
+
+      {toastMsg && mounted && typeof document !== 'undefined' && createPortal(
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-4 inset-x-4 sm:top-6 sm:right-6 sm:left-auto sm:w-auto sm:max-w-md z-[100000] flex items-center justify-between gap-3 rounded-2xl px-5 py-3.5 border shadow-2xl backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-top-4 bg-[#141518]/95 text-white border-neutral-700/80"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            {toastMsg.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            ) : (
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            )}
+            <span className="text-xs font-semibold tracking-tight truncate">{toastMsg.text}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setToastMsg(null)}
+            className="text-white/40 hover:text-white transition-colors p-1 rounded-full shrink-0 ml-2"
+            aria-label="Close notification"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>,
         document.body
       )}

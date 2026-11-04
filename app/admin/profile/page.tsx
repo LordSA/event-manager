@@ -117,11 +117,10 @@ export default function MyProfilePage() {
     <div className="w-full min-h-[calc(100vh-7rem)] lg:h-[calc(100vh-7rem)] lg:overflow-hidden relative">
       {toastMsg && (
         <div
-          className={`fixed top-6 left-1/2 -translate-x-1/2 sm:right-6 sm:left-auto sm:translate-x-0 z-[100] flex items-center gap-3 rounded-2xl px-5 py-3.5 border text-xs font-semibold shadow-2xl backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-top-4 ${
-            toastMsg.type === 'success'
-              ? 'bg-[#141518]/95 border-emerald-500/50 text-white'
-              : 'bg-[#141518]/95 border-rose-500/50 text-white'
-          }`}
+          className={`fixed top-6 left-1/2 -translate-x-1/2 sm:right-6 sm:left-auto sm:translate-x-0 z-[100] flex items-center gap-3 rounded-2xl px-5 py-3.5 border text-xs font-semibold shadow-2xl backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-top-4 ${toastMsg.type === 'success'
+            ? 'bg-[#141518]/95 border-emerald-500/50 text-white'
+            : 'bg-[#141518]/95 border-rose-500/50 text-white'
+            }`}
         >
           {toastMsg.type === 'success' ? (
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -185,12 +184,9 @@ export default function MyProfilePage() {
 
           <div className="relative z-10 flex flex-wrap gap-2">
             <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-white text-[#141518] flex items-center gap-1.5">
-              <Shield className="w-3 h-3" />
               {profile?.role || 'manager'}
             </span>
-
             <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/10 text-white/70 border border-white/10 flex items-center gap-1.5">
-              <Building className="w-3 h-3" />
               {profile?.community?.name || 'Super Admin'}
             </span>
           </div>
@@ -200,12 +196,8 @@ export default function MyProfilePage() {
           <form onSubmit={handleUpdateProfile} className="h-full flex flex-col space-y-5">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-5">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-400">
-                  Personal Information
-                </span>
-
                 <h2 className="text-xl sm:text-2xl font-extrabold font-display tracking-tight mt-1">
-                  Identity
+                  Profile
                 </h2>
               </div>
 
@@ -252,10 +244,6 @@ export default function MyProfilePage() {
 
             <div className="border-t border-neutral-100 pt-5 space-y-3">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-400">
-                  Profile Media
-                </span>
-
                 <h2 className="text-xl sm:text-2xl font-extrabold font-display tracking-tight mt-1">
                   Profile Picture
                 </h2>
@@ -290,10 +278,6 @@ export default function MyProfilePage() {
 
             <div className="border-t border-neutral-100 pt-7 space-y-4">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-400">
-                  Security
-                </span>
-
                 <h2 className="text-xl sm:text-2xl font-extrabold font-display tracking-tight mt-1">
                   Password
                 </h2>

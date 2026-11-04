@@ -103,10 +103,19 @@ The design language of **CEV EVENTS** is governed by the **Nixtio-Inspired Edito
   - **Left Box (Card 1):** Standalone signature dark box (`bg-[#141518] text-white rounded-[28px] relative overflow-hidden shadow-sm p-6 sm:p-8 flex items-center justify-center`) featuring concentric circular watermark lines (`border border-white/10`) with the community logo centered vertically and horizontally.
   - **Right Box (Card 2):** Standalone white card (`bg-white border border-neutral-200/80 rounded-[28px] p-6 sm:p-8 shadow-sm flex flex-col justify-between space-y-4`) displaying the Community Name title on top alongside "Public View" and "Edit Community Details" action pills, with the description and badges (`INITIALS`, `SLUG`, `BRAND ACCENT`) placed cleanly underneath.
 
-### Dedicated Edit Community Details Modal
-* **Modal Overlay:** React Portal mounted to `document.body` with `z-[99999]`, backdrop blur (`bg-black/60 backdrop-blur-sm`), and `data-lenis-prevent` scroll lock.
+### Dedicated Edit Modals & 3-Part Architecture
+* **Modal Overlay & Body Scroll Lock:** React Portal mounted to `document.body` with `z-[99999]`, backdrop blur (`bg-black/60 backdrop-blur-sm`), `data-lenis-prevent`, and automatic background body scroll lock (`document.body.style.overflow = 'hidden'`).
+* **3-Part Non-Bleeding Scroll Architecture:**
+  - **Fixed Header (`shrink-0`):** Pinned at the top of the modal card (`border-b border-neutral-100 px-6 py-4 bg-white`), ensuring inputs never scroll above or leak past the title and close button.
+  - **Scrollable Body (`flex-1 overflow-y-auto`):** Features custom minimal 6px thin scrollbars (`[scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full`).
+  - **Fixed Docked Footer (`shrink-0`):** Pinned at the bottom of the modal card (`border-t border-neutral-100 px-6 py-4 bg-white`), ensuring action buttons ("Cancel" and "Save Changes" / "Create Event") remain permanently accessible without full scrolling.
 * **Form Controls:** Clean input fields for Community Name, Initials, Brand Accent Color (HTML5 color picker + hex input), Description textarea, and direct WebP logo file upload via `uploadImageFile()` alongside direct image URL fallbacks.
 * **Slug Protection:** URL slug is rendered read-only for `manager` roles, editable only by `dev` and `admin`.
+
+### Floating Toaster Notification Overlay
+* **Positioning:** Fixed at the top-right corner on desktop (`sm:top-6 sm:right-6 sm:left-auto sm:max-w-md`) and top center on mobile (`top-4 inset-x-4`) with ultra-high z-index (`z-[100000]`).
+* **Visual Styling:** Restrained dark theme pill (`bg-[#141518]/95 backdrop-blur-md text-white border border-neutral-700/80 rounded-2xl px-5 py-3.5 shadow-2xl`), green emerald check icon for success, rose alert icon for errors, and manual close button.
+* **Auto-Dismissal:** Automatically fades and unmounts after 4 seconds without causing in-page layout shifts.
 
 ### Integrated Community Events Suite (`002 / COMMUNITY EVENTS`)
 * **Embedded Workspace:** Embedded directly below community branding on the same page, eliminating the need for a separate `/admin/my-community/events` route.

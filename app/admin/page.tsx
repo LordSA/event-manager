@@ -72,12 +72,8 @@ export default function AdminDashboardPage() {
         <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-neutral-700">
-              <CheckCircle2 className="w-4 h-4 text-[#141518]" />
-              <span className="text-xs font-extrabold uppercase tracking-wider">Live Events</span>
+              <span className="text-xs font-extrabold uppercase tracking-wider">Published Slots</span>
             </div>
-            <span className="bg-[#141518] text-white font-extrabold text-[11px] px-3 py-1 rounded-full shadow-sm">
-              Published
-            </span>
           </div>
 
           <div className="space-y-1">
@@ -85,7 +81,7 @@ export default function AdminDashboardPage() {
               {liveCount}
             </div>
             <p className="text-xs text-neutral-500 font-medium">
-              {isScoped ? `Live events hosted by ${communityName}` : 'Publicly visible across CE Vadakara'}
+              {isScoped ? `Published Slots of ${communityName}` : 'Publicly visible across CE Vadakara'}
             </p>
           </div>
         </div>
@@ -93,12 +89,9 @@ export default function AdminDashboardPage() {
         <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-neutral-700">
-              <Lock className="w-4 h-4 text-neutral-600" />
-              <span className="text-xs font-extrabold uppercase tracking-wider">Draft Slots</span>
+              <span className="text-xs font-extrabold uppercase tracking-wider">Reserved Slots</span>
             </div>
-            <span className="bg-neutral-100 text-neutral-800 font-extrabold text-[11px] px-3 py-1 rounded-full shadow-sm border border-neutral-200">
-              Reserved
-            </span>
+            
           </div>
 
           <div className="space-y-1">
@@ -106,7 +99,7 @@ export default function AdminDashboardPage() {
               {draftCount}
             </div>
             <p className="text-xs text-neutral-500 font-medium">
-              Upcoming reserved date slots
+              Reserved Slots
             </p>
           </div>
         </div>
@@ -116,12 +109,10 @@ export default function AdminDashboardPage() {
             <div className="flex items-center space-x-2 text-neutral-700">
               <Building className="w-4 h-4 text-[#141518]" />
               <span className="text-xs font-extrabold uppercase tracking-wider">
-                {isScoped ? 'Organization' : 'Communities'}
+                {isScoped ? 'Community/Club' : 'Communities'}
               </span>
             </div>
-            <span className="bg-neutral-100 text-neutral-800 font-extrabold text-[11px] px-3 py-1 rounded-full shadow-sm border border-neutral-200">
-              {isScoped ? 'Assigned' : `${communities.length} Active`}
-            </span>
+            
           </div>
 
           <div className="space-y-1">
@@ -129,7 +120,7 @@ export default function AdminDashboardPage() {
               {isScoped ? communityName : 'Campus Network'}
             </div>
             <p className="text-xs text-neutral-500 font-medium truncate">
-              {isScoped ? 'Assigned student community' : 'IEEE, IEDC, TinkerHub, FOSS, MuLearn'}
+              {isScoped ? 'Your community' : 'IEEE, IEDC, TinkerHub, FOSS, MuLearn'}
             </p>
           </div>
         </div>
@@ -161,7 +152,7 @@ export default function AdminDashboardPage() {
             <div className="bg-[#24262b] rounded-2xl p-4 space-y-1">
               <div className="flex items-center space-x-2 text-neutral-400 text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-neutral-400" />
-                <span>Total Bookings</span>
+                <span>Total Reserved</span>
               </div>
               <p className="text-2xl font-extrabold text-white font-display">
                 {eventsList.length} Events
@@ -174,7 +165,7 @@ export default function AdminDashboardPage() {
               href="/admin/events"
               className="inline-flex items-center space-x-2 py-3 px-6 rounded-full bg-white hover:bg-neutral-200 text-[#141518] text-xs font-extrabold transition-all shadow-md"
             >
-              <span>Open Slot Booking Calendar</span>
+              <span>Open Calendar</span>
               <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
@@ -186,13 +177,9 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-base font-extrabold text-[#141518] font-display flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-[#141518]" />
-                Event Slot Booking
+                Slot Booking
               </h3>
-              <span className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-700 font-bold text-xs">
-                01
-              </span>
             </div>
-
             <p className="text-xs text-neutral-500 font-medium leading-relaxed">
               Reserve dates and time slots for community events to prevent scheduling overlaps.
             </p>
@@ -213,20 +200,17 @@ export default function AdminDashboardPage() {
                 <Building className="w-4 h-4 text-[#141518]" />
                 My Community
               </h3>
-              <span className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-700 font-bold text-xs">
-                02
-              </span>
             </div>
 
             <p className="text-xs text-neutral-500 font-medium leading-relaxed">
-              Update community profile bio, logo image, initials badge, and theme details.
+              Manage your Community
             </p>
 
             <Link
               href="/admin/my-community"
               className="py-2.5 px-5 rounded-full bg-neutral-100 hover:bg-neutral-200 text-[#141518] text-xs font-bold inline-flex items-center justify-between w-full transition-all"
             >
-              <span>Community Workspace</span>
+              <span>Community</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-[#141518]" />
             </Link>
           </div>

@@ -120,7 +120,7 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
       <div className="flex md:hidden items-center justify-between px-4 py-3 border-b border-neutral-300 bg-white shrink-0 sticky top-0 z-40 shadow-sm">
         <div className="flex items-center space-x-2.5">
           <img src="/cev_logo_b.svg" alt="CEV Logo" className="h-6 w-auto object-contain" />
-          <span className="font-extrabold text-sm text-[#141518] font-display">Admin Panel</span>
+          <span className="font-extrabold text-sm text-[#141518] font-display">Dashboard</span>
         </div>
 
         <div className="flex items-center space-x-2">

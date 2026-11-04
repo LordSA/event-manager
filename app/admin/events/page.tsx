@@ -102,6 +102,16 @@ export default function EventBookingEnginePage() {
   const [showModal, setShowModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<any | null>(null);
 
+  useEffect(() => {
+    if (showModal) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [showModal]);
+
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
@@ -602,7 +612,7 @@ export default function EventBookingEnginePage() {
           <div
             data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-3xl rounded-t-[28px] sm:rounded-[28px] text-[#141518] space-y-5 sm:space-y-6 my-0 sm:my-auto max-h-[92vh] sm:max-h-[88vh] overflow-y-auto relative shadow-2xl border border-neutral-200/80 bg-white p-6 sm:p-8"
+            className="w-full max-w-3xl rounded-t-[28px] sm:rounded-[28px] text-[#141518] space-y-5 sm:space-y-6 my-0 sm:my-auto max-h-[92vh] sm:max-h-[88vh] overflow-y-auto relative shadow-2xl border border-neutral-200/80 bg-white p-6 sm:p-8 [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
           >
             <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
               <h3 className="text-xl sm:text-2xl font-extrabold font-display text-[#141518]">
