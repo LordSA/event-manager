@@ -82,6 +82,12 @@ The design language of **CEV EVENTS** is governed by the **Nixtio-Inspired Edito
 * **Gemini Mobile UI & Animations:** On mobile viewports (`< sm`), opens as a bottom sheet (`h-[92dvh] rounded-t-3xl border-t border-white/10`) with top grab indicator bar. On desktop viewports (`>= sm`), slides in as a right drawer (`w-[480px] h-full border-l border-white/10`).
 * **Gemini Input Bar & Branding:** Features Gemini Sparkles branding, floating rounded input pill bar (`rounded-2xl border border-white/15 bg-[#141724] shadow-xl`), and full Markdown formatting parser.
 
+### NeoLeaf-Inspired Preloader UI & Liquid Fill Reveal ([app/components/LoadingScreen.tsx](./app/components/LoadingScreen.tsx))
+* **Visual Atmosphere:** Centered dark matte card (`bg-[#121316] border border-neutral-800/80 rounded-[28px] sm:rounded-[36px] max-w-5xl shadow-[0_30px_90px_rgba(0,0,0,0.85)]`) surrounded by ambient violet/indigo lighting.
+* **Dual-Layer Liquid Fill:** Centered display title `CEV EVENTS` rendered with dual layers: base dark text (`#26282e`) and foreground white text clipped dynamically via `clipPath: inset(${100 - progress}% 0 0 0)` as progress climbs from 0% to 100%.
+* **Progress Tracking:** Lowercase monospace counter (`loading... {progress}%`) positioned beneath the right edge of the title text.
+* **Exit Zoom Reveal:** Upon reaching 100%, pauses briefly (240ms) before dramatically scaling up the card and typography (`scale-[2.1] opacity-0 blur-sm duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]`), seamlessly revealing the matching `CEV EVENTS` landing hero.
+
 ---
 
 ## 5. Modal Window Sizing, Production Code & Clean Standards

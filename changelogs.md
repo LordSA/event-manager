@@ -21,6 +21,12 @@
 - **Embedded Community Events Suite:** Integrated full event management below community branding, featuring search, status filter (`all`, `live`, `closed`), format filter (`all`, `offline`, `online`), view toggles (Grid/List), quick status toggle (`live`/`closed`), and create/edit/delete modals.
 - **Events Route Redirect ([app/admin/my-community/events/page.tsx](./app/admin/my-community/events/page.tsx)):** Configured automatic redirection from `/admin/my-community/events` to `/admin/my-community`.
 
+### 💫 NeoLeaf-Inspired Liquid Fill Loading Screen ([app/components/LoadingScreen.tsx](./app/components/LoadingScreen.tsx))
+- **Agency Reference Replication:** Overhauled the global preloader to match the Awwwards-honored NeoLeaf (`neoleaf.bytetown.agency`) agency loading sequence.
+- **Dual-Layer Typography & Liquid Reveal:** Set the centered title `CEV EVENTS` (`Quera` display font) with dual-layer text: an underlying muted base (`#26282e`) and a foreground white text layer progressively revealed from bottom to top using `clipPath: inset(${100 - progress}% 0 0 0)`.
+- **Right-Aligned Progress Counter:** Positioned a clean lowercase monospace counter (`loading... {progress}%`) beneath the right edge of the title text.
+- **Cinematic Zoom Exit Transition:** Configured smooth 0%–100% progress increments, followed by a brief 240ms hold and an explosive zoom-in scale animation (`scale-[2.1] opacity-0 blur-sm`) with cubic-bezier easing to fluidly unveil the matching hero section.
+
 ### 🤖 Fast AI Engine Model Upgrade & Public Event Polish
 - **Model Upgrade ([app/api/chat/route.ts](./app/api/chat/route.ts)):** Upgraded default chat provider model to `gemini-3.6-flash` and updated OpenRouter referer to `https://whatsatcev.shibili.xyz`.
 - **Event Detail Cleanup ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Removed inline assistant callout card from event details page for an uncluttered presentation.
