@@ -124,7 +124,7 @@ async function callOpenRouter(message: string, systemPrompt: string): Promise<st
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://whatsatcev.shibili.tech',
+        'HTTP-Referer': 'https://whatsatcev.shibili.xyz',
         'X-Title': 'CEV EVENTS Manager',
       },
       signal: controller.signal,
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
 
     try {
       reply = await callGemini(message, systemPrompt);
-      providerUsed = 'gemini-1.5-flash';
+      providerUsed = 'gemini-3.6-flash';
     } catch {
       try {
         reply = await callGrok(message, systemPrompt);

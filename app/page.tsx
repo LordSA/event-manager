@@ -221,7 +221,7 @@ export default function LandingHomePage() {
               Loading campus schedules...
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0.7 sm:gap-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-1 sm:gap-1">
               {getOrderedSchedules(eventsList)
                 .slice(0, 3)
                 .map((evt, index) => (
