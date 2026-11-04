@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
         </h1>
         <p className="text-xs sm:text-sm text-neutral-500 font-medium">
           {isScoped
-            ? `Take control of slot reservations and event publishing for ${communityName} today!`
+            ? `Check out What happening here!!`
             : 'Take control of all campus events, slot reservations, and communities today!'}
         </p>
       </div>
@@ -91,7 +91,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center space-x-2 text-neutral-700">
               <span className="text-xs font-extrabold uppercase tracking-wider">Reserved Slots</span>
             </div>
-            
+
           </div>
 
           <div className="space-y-1">
@@ -112,7 +112,7 @@ export default function AdminDashboardPage() {
                 {isScoped ? 'Community/Club' : 'Communities'}
               </span>
             </div>
-            
+
           </div>
 
           <div className="space-y-1">

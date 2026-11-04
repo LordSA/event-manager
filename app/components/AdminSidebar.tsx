@@ -49,7 +49,7 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
           <div className="flex items-center justify-between px-2 pt-2">
             <Link href="/" className="flex items-center space-x-3 group">
               <img src="/cev_logo.svg" alt="CEV Logo" className="h-7 w-auto object-contain transition-transform group-hover:scale-105" />
-              <span className="font-extrabold text-xl text-white tracking-tight font-display">Admin Panel</span>
+              <span className="font-extrabold text-xl text-white tracking-tight font-display">Dashboard</span>
             </Link>
           </div>
 
