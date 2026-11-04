@@ -18,7 +18,9 @@ A modern, high-performance event management, slot booking, and public discovery 
 - **Standalone Viewport-Sticky Admin Sidebar & Glassmorphism Mobile Bottom Navbar:** Extracted navigation sidebar with `sticky top-0 h-screen` desktop layout and a floating glassmorphic bottom navigation bar (`backdrop-blur-2xl bg-[#0f121d]/75`) with glowing active tab indicators for mobile touch screens (`< md`).
 - **Closed Slot View Page Privacy Guard:** Public view page links (`/events/[id]`) are strictly suppressed for draft (`closed`) slots to protect unpublished reservations from being previewed until officially released to `live` status.
 - **Vercel Blob Storage Integration:** Direct client-side WebP image conversion and asset uploading for event posters (`posters/*.webp`), community logos (`logos/*.webp`), and user avatars (`avatars/*.webp`).
-- **Fast AI Event Assistant Drawer:** Multi-provider fallback AI chat engine (`gemini-1.5-flash` with Grok & OpenRouter fallbacks) delivering direct answers for event schedules, venues, rules, and registration guidance. Features modern dark glassmorphic UI, dynamic mobile viewport height (`100dvh`), mobile safe-area insets (`pb-safe`), live status pulse badge, conversation reset, and full Markdown formatting.
+- **Streamlined Role Architecture & Access Safeguards:** Role permissions strictly consolidated to **`Developer`**, **`Admin`**, and **`Manager`** (legacy `editor` role fully removed). Community Managers cannot access the User Roles console or manage team leads, with `/admin/users` secured strictly for Developers and Admins.
+- **Unified My Community Workspace & Events Management:** Integrated `/admin/my-community` dashboard combining community branding and event slot management. Details are displayed in read-only presentation by default with an "Edit Community Details" modal, while events are managed directly below with search, status filters, and creation/deletion modals.
+- **Fast AI Event Assistant Drawer:** Multi-provider fallback AI chat engine (`gemini-3.6-flash` with Grok & OpenRouter fallbacks) delivering direct answers for event schedules, venues, rules, and registration guidance. Features modern dark glassmorphic UI, dynamic mobile viewport height (`100dvh`), mobile safe-area insets (`pb-safe`), live status pulse badge, conversation reset, and full Markdown formatting.
 - **Mobile Public Event Slug Poster Layout:** Responsive CSS grid reordering on `/events/[id]` placing 3:4 aspect poster image at the top of the screen (`order-1`) on mobile viewports (`< lg`), and event content below (`order-2`), while preserving 7-col content / 5-col poster layout on desktop (`>= lg`).
 - **Mobile Lenis Scroll Bypass:** Bypasses Lenis scroll loop on mobile viewports (`< 768px`) for 100% smooth, native touch scrolling performance.
 - **Custom Font Optimization (`next/font/local`):** Zero Cumulative Layout Shift (CLS) font engine featuring `Quera` (Display Headlines), `Gued` (Section Headings), and `Rondured` (Body Copy).
@@ -92,9 +94,9 @@ event-manager/
 ├── app/
 │   ├── api/
 │   │   ├── admin/
-│   │   │   ├── my-community/route.ts # Manager level community update API
+│   │   │   ├── my-community/route.ts # Community entity update API
 │   │   │   └── users/route.ts     # Admin users management API with Dev role guards
-│   │   ├── chat/route.ts          # Fast AI assistant endpoint (gemini-1.5-flash)
+│   │   ├── chat/route.ts          # Fast AI assistant endpoint (gemini-3.6-flash)
 │   │   ├── profile/route.ts       # Self profile update API
 │   │   └── upload/route.ts        # Vercel Blob storage upload route
 │   ├── admin/                     # Protected Admin Console (/admin, /events, /communities, /users, /my-community)

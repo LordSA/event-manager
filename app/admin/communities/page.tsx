@@ -23,7 +23,7 @@ const COLOR_PRESETS = [
 
 export default function CommunitiesManagementPage() {
   const { communities, setCommunities, loading } = useCommunities();
-  const [userRole, setUserRole] = useState<UserRole>('editor');
+  const [userRole, setUserRole] = useState<UserRole>('manager');
   const [mounted, setMounted] = useState(false);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -193,7 +193,7 @@ export default function CommunitiesManagementPage() {
     }
   };
 
-  if (userRole === 'manager' || userRole === 'editor') {
+  if (userRole === 'manager') {
     return (
       <div className="p-8 rounded-[28px] bg-white border border-neutral-200/80 text-center space-y-4 max-w-2xl mx-auto my-12 shadow-sm">
         <div className="p-3 rounded-full bg-rose-50 border border-rose-200 text-rose-600 w-fit mx-auto">
@@ -201,7 +201,7 @@ export default function CommunitiesManagementPage() {
         </div>
         <h2 className="text-xl font-bold text-[#141518] font-display">Access Restricted</h2>
         <p className="text-xs text-neutral-500 leading-relaxed font-medium">
-          Community Management is restricted to Super Admins and Developers. Community Managers and Editors do not have permission to add, edit, or delete campus community entities.
+          Community Management is restricted to Super Admins and Developers. Community Managers do not have permission to add, edit, or delete campus community entities.
         </p>
       </div>
     );

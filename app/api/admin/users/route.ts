@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 function getAdminSupabaseClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
-  
+
   return createClient(supabaseUrl, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
@@ -75,8 +75,8 @@ export async function GET(req: NextRequest) {
     const supabase = getAdminSupabaseClient();
     const requester = await getRequesterProfile(req, supabase);
 
-    if (requester.role === 'editor') {
-      return NextResponse.json({ profiles: [] }, { status: 403 });
+    if (requester.role !== 'dev' && requester.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Only Developers and Admins can view user management.' }, { status: 403 });
     }
 
     const { data: profiles, error } = await supabase
@@ -95,12 +95,6 @@ export async function GET(req: NextRequest) {
 
       if (requester.role === 'admin') {
         return p.role !== 'dev';
-      }
-
-      if (requester.role === 'manager') {
-        const isSameCommunity = Boolean(requester.community_id) && p.community_id === requester.community_id;
-        const isManagerOrEditor = p.role === 'manager' || p.role === 'editor';
-        return isSameCommunity && isManagerOrEditor;
       }
 
       return false;
@@ -124,23 +118,16 @@ export async function POST(req: NextRequest) {
     const supabase = getAdminSupabaseClient();
     const requester = await getRequesterProfile(req, supabase);
 
-    if (requester.role === 'editor') {
-      return NextResponse.json({ error: 'Forbidden: Editors are not permitted to manage user roles.' }, { status: 403 });
+    if (requester.role !== 'dev' && requester.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Only Developers and Admins can create user accounts.' }, { status: 403 });
+    }
+
+    if (role === 'editor') {
+      return NextResponse.json({ error: 'Invalid role: editor role has been decommissioned.' }, { status: 400 });
     }
 
     if (role === 'dev' && requester.role !== 'dev') {
       return NextResponse.json({ error: 'Forbidden: Only Dev users can create Dev accounts.' }, { status: 403 });
-    }
-
-    if (requester.role === 'admin' && role === 'dev') {
-      return NextResponse.json({ error: 'Forbidden: Admins cannot create Dev accounts.' }, { status: 403 });
-    }
-
-    if (requester.role === 'manager') {
-      if (role === 'dev' || role === 'admin') {
-        return NextResponse.json({ error: 'Forbidden: Managers can only create Manager or Editor accounts.' }, { status: 403 });
-      }
-      community_id = requester.community_id;
     }
 
     let userId = `usr_${Date.now()}`;
@@ -208,31 +195,22 @@ export async function PUT(req: NextRequest) {
     const supabase = getAdminSupabaseClient();
     const requester = await getRequesterProfile(req, supabase);
 
-    if (requester.role === 'editor') {
-      return NextResponse.json({ error: 'Forbidden: Editors are not permitted to modify user roles.' }, { status: 403 });
+    if (requester.role !== 'dev' && requester.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Only Developers and Admins can modify user accounts.' }, { status: 403 });
+    }
+
+    if (role === 'editor') {
+      return NextResponse.json({ error: 'Invalid role: editor role has been decommissioned.' }, { status: 400 });
     }
 
     const { data: existingProfile } = await supabase.from('profiles').select('role, community_id').eq('id', id).single();
-    
+
     if ((existingProfile?.role === 'dev' || role === 'dev') && requester.role !== 'dev') {
       return NextResponse.json({ error: 'Forbidden: Dev accounts can only be modified by Dev users.' }, { status: 403 });
     }
 
     if (requester.role === 'admin' && existingProfile?.role === 'dev') {
       return NextResponse.json({ error: 'Forbidden: Admins cannot modify Dev accounts.' }, { status: 403 });
-    }
-
-    if (requester.role === 'manager') {
-      if (existingProfile?.community_id !== requester.community_id) {
-        return NextResponse.json({ error: 'Forbidden: Managers can only modify team members in their assigned community.' }, { status: 403 });
-      }
-      if (existingProfile?.role !== 'manager' && existingProfile?.role !== 'editor') {
-        return NextResponse.json({ error: 'Forbidden: Managers can only modify Manager or Editor roles.' }, { status: 403 });
-      }
-      if (role && role !== 'manager' && role !== 'editor') {
-        return NextResponse.json({ error: 'Forbidden: Managers cannot promote users to Admin or Dev roles.' }, { status: 403 });
-      }
-      community_id = requester.community_id;
     }
 
     if (email || password) {
@@ -292,27 +270,18 @@ export async function DELETE(req: NextRequest) {
     const supabase = getAdminSupabaseClient();
     const requester = await getRequesterProfile(req, supabase);
 
-    if (requester.role === 'editor') {
-      return NextResponse.json({ error: 'Forbidden: Editors cannot delete users.' }, { status: 403 });
+    if (requester.role !== 'dev' && requester.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Only Developers and Admins can delete users.' }, { status: 403 });
     }
 
     const { data: targetProfile } = await supabase.from('profiles').select('role, community_id').eq('id', id).single();
-    
+
     if (targetProfile?.role === 'dev' && requester.role !== 'dev') {
       return NextResponse.json({ error: 'Forbidden: Dev accounts can only be deleted by Dev users.' }, { status: 403 });
     }
 
     if (requester.role === 'admin' && targetProfile?.role === 'dev') {
       return NextResponse.json({ error: 'Forbidden: Admins cannot delete Dev accounts.' }, { status: 403 });
-    }
-
-    if (requester.role === 'manager') {
-      if (targetProfile?.community_id !== requester.community_id) {
-        return NextResponse.json({ error: 'Forbidden: Managers can only delete team members in their assigned community.' }, { status: 403 });
-      }
-      if (targetProfile?.role !== 'manager' && targetProfile?.role !== 'editor') {
-        return NextResponse.json({ error: 'Forbidden: Managers can only delete Manager or Editor roles.' }, { status: 403 });
-      }
     }
 
     try {

@@ -1,5 +1,28 @@
 # Changelogs & Version History
 
+## [2.9.0] - 2026-11-04
+
+### 👥 Role System Streamlining & Editor Role Decommissioning
+- **Editor Role Removed:** Completely decommissioned the legacy `editor` role from all types ([types/database.types.ts](./types/database.types.ts)), database profiles, RBAC permission matrices ([lib/auth/rbac.ts](./lib/auth/rbac.ts)), and navigation sidebars ([app/components/AdminSidebar.tsx](./app/components/AdminSidebar.tsx)).
+- **Active Roles:** Consolidated system roles to strictly **`Developer` (`dev`)**, **`Admin` (`admin`)**, and **`Manager` (`manager`)**.
+- **User Roles Form Options:** Updated role selection dropdowns in user management to offer only `Developer` (for dev users), `Admin`, and `Manager`.
+
+### 🛡️ Manager Permission Safeguards & User Management Access Restriction
+- **Navigation & Middleware Shielding:** Removed the "User Roles" item from `AdminSidebar.tsx` for `manager` roles (`roleRequired: ['dev', 'admin']`) and restricted route access in [lib/supabase/middleware.ts](./lib/supabase/middleware.ts) and [app/admin/users/page.tsx](./app/admin/users/page.tsx).
+- **API Authorization Guard ([app/api/admin/users/route.ts](./app/api/admin/users/route.ts)):** Enforced strict backend authorization across `GET`, `POST`, `PUT`, and `DELETE` handlers, returning `403 Forbidden` for non-admin callers. Managers can no longer add, promote, demote, or delete other managers or users.
+
+### 🏢 Unified Community Workspace & Events Management ([app/admin/my-community/page.tsx](./app/admin/my-community/page.tsx))
+- **Merged Single Page:** Consolidated community entity branding and full community event management into a single, cohesive dashboard at `/admin/my-community`.
+- **View-First Presentation Mode:** Community details are now rendered in clean read-only display cards by default to protect against unintended edits.
+- **Dedicated Edit Modal:** Added an "Edit Community Details" action button opening a dedicated modal for editing name, initials, brand accent color, description, and WebP logo upload.
+- **Embedded Community Events Suite:** Integrated full event management below community branding, featuring search, status filter (`all`, `live`, `closed`), format filter (`all`, `offline`, `online`), view toggles (Grid/List), quick status toggle (`live`/`closed`), and create/edit/delete modals.
+- **Events Route Redirect ([app/admin/my-community/events/page.tsx](./app/admin/my-community/events/page.tsx)):** Configured automatic redirection from `/admin/my-community/events` to `/admin/my-community`.
+
+### 🤖 Fast AI Engine Model Upgrade & Public Event Polish
+- **Model Upgrade ([app/api/chat/route.ts](./app/api/chat/route.ts)):** Upgraded default chat provider model to `gemini-3.6-flash` and updated OpenRouter referer to `https://whatsatcev.shibili.xyz`.
+- **Event Detail Cleanup ([app/events/[id]/page.tsx](./app/events/[id]/page.tsx)):** Removed inline assistant callout card from event details page for an uncluttered presentation.
+- **Schedule Grid Spacing ([app/page.tsx](./app/page.tsx)):** Normalized grid gap spacing on campus schedules.
+
 ## [2.8.1] - 2026-08-23
 
 ### 📅 Main Page & Events Page Schedule Ordering Logic ([app/page.tsx](./app/page.tsx), [app/components/MasterCalendar.tsx](./app/components/MasterCalendar.tsx))

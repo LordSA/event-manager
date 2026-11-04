@@ -95,7 +95,7 @@ export default function EventBookingEnginePage() {
 
   const loading = eventsLoading || communitiesLoading;
 
-  const [currentUserRole, setCurrentUserRole] = useState<UserRole>('editor');
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole>('manager');
   const [currentUserCommunityId, setCurrentUserCommunityId] = useState<string | null>(null);
   const [currentUserCommunityName, setCurrentUserCommunityName] = useState<string>('');
 
@@ -512,11 +512,7 @@ export default function EventBookingEnginePage() {
   };
 
   const handleDelete = async (id: string, evtCommunity: string) => {
-    if (currentUserRole === 'editor') {
-      setFeedback({ type: 'error', message: 'RBAC Violation: Editors are not permitted to delete events.' });
-      setTimeout(() => setFeedback(null), 4000);
-      return;
-    }
+    
 
     const isOwnCommunity = isSuperAdmin || (
       currentUserCommunityName &&

@@ -15,7 +15,6 @@ export interface RBACPermissions {
 export function getPermissions(role: UserRole | null, userCommunityId: string | null = null): RBACPermissions {
   const isSuperAdmin = role === 'dev' || role === 'admin';
   const isManager = role === 'manager';
-  const isEditor = role === 'editor';
 
   return {
     canViewPublic: true,
@@ -29,12 +28,12 @@ export function getPermissions(role: UserRole | null, userCommunityId: string | 
     },
     canCreateEvents: (communityId: string) => {
       if (isSuperAdmin) return true;
-      if ((isManager || isEditor) && userCommunityId === communityId) return true;
+      if (isManager && userCommunityId === communityId) return true;
       return false;
     },
     canEditEvents: (communityId: string) => {
       if (isSuperAdmin) return true;
-      if ((isManager || isEditor) && userCommunityId === communityId) return true;
+      if (isManager && userCommunityId === communityId) return true;
       return false;
     },
     canDeleteEvents: (communityId: string) => {
@@ -44,7 +43,7 @@ export function getPermissions(role: UserRole | null, userCommunityId: string | 
     },
     canSetEventStatus: (communityId: string) => {
       if (isSuperAdmin) return true;
-      if ((isManager || isEditor) && userCommunityId === communityId) return true;
+      if (isManager && userCommunityId === communityId) return true;
       return false;
     }
   };

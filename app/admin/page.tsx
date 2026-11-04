@@ -12,7 +12,7 @@ export default function AdminDashboardPage() {
   const { eventsList } = useRealtimeEvents();
   const { communities } = useCommunities();
 
-  const [role, setRole] = useState<UserRole>('editor');
+  const [role, setRole] = useState<UserRole>('manager');
   const [communityId, setCommunityId] = useState<string | null>(null);
   const [communityName, setCommunityName] = useState<string>('My Community');
 
@@ -43,7 +43,7 @@ export default function AdminDashboardPage() {
     fetchProfile();
   }, []);
 
-  const isScoped = role === 'manager' || role === 'editor';
+  const isScoped = role === 'manager';
 
   const filteredEvents = eventsList.filter((e) => {
     if (!isScoped || !communityId) return true;
@@ -145,13 +145,9 @@ export default function AdminDashboardPage() {
               </div>
               <span className="font-extrabold text-sm font-display tracking-wide">Campus Event Activity</span>
             </div>
-
-            <span className="bg-[#24262b] text-xs font-bold px-3 py-1 rounded-full text-neutral-300 border border-neutral-700">
-              Realtime Sync
-            </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 my-2 relative z-10">
+          <div className="grid grid-cols-1 gap-4 my-2 relative z-10">
             <div className="bg-[#24262b] rounded-2xl p-4 space-y-1">
               <div className="flex items-center space-x-2 text-neutral-400 text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-white" />
@@ -174,10 +170,6 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="space-y-3 relative z-10 pt-2 border-t border-neutral-800">
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              Conflict-free scheduling algorithm active across CE Vadakara communities. All slot bookings update in real-time.
-            </p>
-
             <Link
               href="/admin/events"
               className="inline-flex items-center space-x-2 py-3 px-6 rounded-full bg-white hover:bg-neutral-200 text-[#141518] text-xs font-extrabold transition-all shadow-md"
@@ -214,56 +206,30 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
 
-          {role !== 'editor' ? (
-            <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-extrabold text-[#141518] font-display flex items-center gap-2">
-                  <Building className="w-4 h-4 text-[#141518]" />
-                  My Community
-                </h3>
-                <span className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-700 font-bold text-xs">
-                  02
-                </span>
-              </div>
 
-              <p className="text-xs text-neutral-500 font-medium leading-relaxed">
-                Update community profile bio, logo image, initials badge, and theme details.
-              </p>
-
-              <Link
-                href="/admin/my-community"
-                className="py-2.5 px-5 rounded-full bg-neutral-100 hover:bg-neutral-200 text-[#141518] text-xs font-bold inline-flex items-center justify-between w-full transition-all"
-              >
-                <span>Community Workspace</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-[#141518]" />
-              </Link>
+          <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-extrabold text-[#141518] font-display flex items-center gap-2">
+                <Building className="w-4 h-4 text-[#141518]" />
+                My Community
+              </h3>
+              <span className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-700 font-bold text-xs">
+                02
+              </span>
             </div>
-          ) : (
-            <div className="bg-white rounded-[28px] p-6 shadow-sm border border-neutral-200/60 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-extrabold text-[#141518] font-display flex items-center gap-2">
-                  <User className="w-4 h-4 text-[#141518]" />
-                  Profile
-                </h3>
-                <span className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-700 font-bold text-xs">
-                  02
-                </span>
-              </div>
 
-              <p className="text-xs text-neutral-500 font-medium leading-relaxed">
-                Update profile info and avatar image.
-              </p>
+            <p className="text-xs text-neutral-500 font-medium leading-relaxed">
+              Update community profile bio, logo image, initials badge, and theme details.
+            </p>
 
-              <Link
-                href="/admin/profile"
-                className="py-2.5 px-5 rounded-full bg-neutral-100 hover:bg-neutral-200 text-[#141518] text-xs font-bold inline-flex items-center justify-between w-full transition-all"
-              >
-                <span>Edit Profile</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-[#141518]" />
-              </Link>
-            </div>
-          )}
-
+            <Link
+              href="/admin/my-community"
+              className="py-2.5 px-5 rounded-full bg-neutral-100 hover:bg-neutral-200 text-[#141518] text-xs font-bold inline-flex items-center justify-between w-full transition-all"
+            >
+              <span>Community Workspace</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-[#141518]" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>

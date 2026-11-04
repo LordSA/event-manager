@@ -30,14 +30,13 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
   }, []);
 
   const navItems = [
-    { label: 'Dashboard', shortLabel: 'Dashboard', href: '/admin', icon: LayoutDashboard, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
-    { label: 'Event Booking', shortLabel: 'Events', href: '/admin/events', icon: Calendar, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
-    { label: 'My Community', shortLabel: 'Community', href: '/admin/my-community', icon: Building, roleRequired: ['manager', 'editor'] },
-    { label: 'My Events', shortLabel: 'My Events', href: '/admin/my-community/events', icon: Calendar, roleRequired: ['manager', 'editor'] },
-    { label: 'User Roles', shortLabel: 'Users', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin', 'manager'] },
+    { label: 'Dashboard', shortLabel: 'Dashboard', href: '/admin', icon: LayoutDashboard, roleRequired: ['dev', 'admin', 'manager'] },
+    { label: 'Event Booking', shortLabel: 'Events', href: '/admin/events', icon: Calendar, roleRequired: ['dev', 'admin', 'manager'] },
+    { label: 'My Community', shortLabel: 'Community', href: '/admin/my-community', icon: Building, roleRequired: ['manager'] },
+    { label: 'User Roles', shortLabel: 'Users', href: '/admin/users', icon: Users, roleRequired: ['dev', 'admin'] },
     { label: 'Communities', shortLabel: 'Communities', href: '/admin/communities', icon: Building, roleRequired: ['dev', 'admin'] },
     { label: 'Support Inbox', shortLabel: 'Support', href: '/admin/support', icon: LifeBuoy, roleRequired: ['dev', 'admin'] },
-    { label: 'Profile', shortLabel: 'Profile', href: '/admin/profile', icon: User, roleRequired: ['dev', 'admin', 'manager', 'editor'] },
+    { label: 'Profile', shortLabel: 'Profile', href: '/admin/profile', icon: User, roleRequired: ['dev', 'admin', 'manager'] },
   ];
 
   return (
@@ -47,7 +46,6 @@ export default function AdminSidebar({ currentRole, onSignOut }: AdminSidebarPro
         className="hidden md:flex w-64 lg:w-72 h-screen sticky top-0 overflow-y-auto bg-[#18191c] text-white p-6 flex-col justify-between shrink-0 select-none border-r border-[#24262b] z-40"
       >
         <div className="space-y-8">
-
           <div className="flex items-center justify-between px-2 pt-2">
             <Link href="/" className="flex items-center space-x-3 group">
               <img src="/cev_logo.svg" alt="CEV Logo" className="h-7 w-auto object-contain transition-transform group-hover:scale-105" />

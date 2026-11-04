@@ -1,4 +1,4 @@
-export type UserRole = 'dev' | 'admin' | 'manager' | 'editor';
+export type UserRole = 'dev' | 'admin' | 'manager';
 export type EventStatus = 'closed' | 'live';
 
 export interface Profile {

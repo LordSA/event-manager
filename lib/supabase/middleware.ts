@@ -50,7 +50,7 @@ export async function updateSession(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    const role = profile?.role || 'editor';
+    const role = profile?.role || 'manager';
 
     if (pathname.startsWith('/admin/communities')) {
       if (role !== 'dev' && role !== 'admin') {
@@ -61,11 +61,17 @@ export async function updateSession(request: NextRequest) {
     }
 
     if (pathname.startsWith('/admin/users')) {
-      if (role === 'editor') {
+      if (role !== 'dev' && role !== 'admin') {
         const url = request.nextUrl.clone();
         url.pathname = '/admin';
         return NextResponse.redirect(url);
       }
+    }
+
+    if (pathname.startsWith('/admin/my-community/events')) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/admin/my-community';
+      return NextResponse.redirect(url);
     }
   }
 

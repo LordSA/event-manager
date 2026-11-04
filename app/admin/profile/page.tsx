@@ -186,7 +186,7 @@ export default function MyProfilePage() {
           <div className="relative z-10 flex flex-wrap gap-2">
             <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-white text-[#141518] flex items-center gap-1.5">
               <Shield className="w-3 h-3" />
-              {profile?.role || 'editor'}
+              {profile?.role || 'manager'}
             </span>
 
             <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/10 text-white/70 border border-white/10 flex items-center gap-1.5">

@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { Calendar as CalendarIcon, User as UserIcon } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [currentRole, setCurrentRole] = useState<UserRole>('editor');
+  const [currentRole, setCurrentRole] = useState<UserRole>('manager');
   const [userName, setUserName] = useState<string>('Campus Admin');
   const [userEmail, setUserEmail] = useState<string>('admin@cevadakara.ac.in');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);

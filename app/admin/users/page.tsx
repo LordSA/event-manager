@@ -23,7 +23,6 @@ import {
   ShieldAlert,
   Upload,
 } from 'lucide-react';
-import Image from 'next/image';
 import { uploadImageFile } from '@/lib/upload';
 
 export default function UserManagementPage() {
@@ -34,7 +33,7 @@ export default function UserManagementPage() {
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  const [currentUserRole, setCurrentUserRole] = useState<UserRole>('editor');
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole>('manager');
   const [currentUserCommunityId, setCurrentUserCommunityId] = useState<string | null>(null);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -137,24 +136,18 @@ export default function UserManagementPage() {
       return p.role !== 'dev';
     }
 
-    if (currentUserRole === 'manager') {
-      const isOwnCommunity = !currentUserCommunityId || p.community_id === currentUserCommunityId;
-      const isManagerOrEditor = p.role === 'manager' || p.role === 'editor';
-      return isOwnCommunity && isManagerOrEditor;
-    }
-
     return false;
   });
 
-  if (currentUserRole === 'editor') {
+  if (!loading && currentUserRole !== 'dev' && currentUserRole !== 'admin') {
     return (
-      <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-4 max-w-2xl mx-auto my-12">
-        <div className="p-4 rounded-2xl bg-amber-950/60 border border-amber-800 text-amber-300 w-fit mx-auto">
+      <div className="p-8 rounded-3xl bg-white border border-neutral-200/80 text-center space-y-4 max-w-2xl mx-auto my-12 shadow-sm">
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 w-fit mx-auto">
           <ShieldAlert className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-bold text-white">Access Restricted</h2>
-        <p className="text-sm text-slate-400 leading-relaxed">
-          Editors do not have access to User Roles management. Only Community Managers and Super Admins can manage team members.
+        <h2 className="text-2xl font-bold text-[#141518] font-display">Access Restricted</h2>
+        <p className="text-sm text-neutral-500 leading-relaxed">
+          User Roles & Access Management is restricted to Developers and Admins. Managers do not have permission to manage team accounts.
         </p>
       </div>
     );
@@ -168,17 +161,13 @@ export default function UserManagementPage() {
     setPassword('');
     setAvatarUrl('');
     setRole('manager');
-    setCommunityId(currentUserRole === 'manager' ? (currentUserCommunityId || '') : '');
+    setCommunityId('');
     setModalOpen(true);
   };
 
   const openEditModal = (user: Profile) => {
     if (user.role === 'dev' && currentUserRole !== 'dev') {
       setToastMsg({ type: 'error', text: 'Dev (Superuser) accounts cannot be modified.' });
-      return;
-    }
-    if (currentUserRole === 'manager' && user.community_id !== currentUserCommunityId) {
-      setToastMsg({ type: 'error', text: 'Managers can only edit team members in their assigned community.' });
       return;
     }
     setEditingUser(user);
@@ -188,7 +177,7 @@ export default function UserManagementPage() {
     setPassword('');
     setAvatarUrl(user.avatar_url || '');
     setRole(user.role);
-    setCommunityId(user.community_id || (currentUserRole === 'manager' ? (currentUserCommunityId || '') : ''));
+    setCommunityId(user.community_id || '');
     setModalOpen(true);
   };
 
@@ -211,7 +200,7 @@ export default function UserManagementPage() {
     setSaving(true);
     setToastMsg(null);
 
-    const finalCommunityId = currentUserRole === 'manager' ? (currentUserCommunityId || communityId) : communityId;
+    const finalCommunityId = communityId;
     const selectedComm = communities.find((c) => c.id === finalCommunityId);
 
     try {
@@ -260,7 +249,7 @@ export default function UserManagementPage() {
           setToastMsg({ type: 'success', text: 'User profile updated successfully!' });
         } else {
           setProfiles((prev) => [savedProfile, ...prev]);
-          setToastMsg({ type: 'success', text: 'New lead added to community!' });
+          setToastMsg({ type: 'success', text: 'New user added successfully!' });
         }
 
         resetForm();
@@ -290,7 +279,7 @@ export default function UserManagementPage() {
         setProfiles((prev) => [fallbackUser, ...prev]);
       }
 
-      setToastMsg({ type: 'success', text: 'User created successfully!' });
+      setToastMsg({ type: 'success', text: 'User saved successfully!' });
       resetForm();
     } finally {
       setSaving(false);
@@ -329,12 +318,10 @@ export default function UserManagementPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#141518] font-display">
-            {currentUserRole === 'manager' ? 'Team & Community Leads' : 'User Roles & Access Management'}
+            User Roles & Access Management
           </h1>
           <p className="text-xs sm:text-sm text-neutral-500 font-medium">
-            {currentUserRole === 'manager'
-              ? 'Add and modify community leads and editors.'
-              : 'Create, modify, and assign position roles across campus.'}
+            Create, modify, and assign position roles across campus.
           </p>
         </div>
 
@@ -370,7 +357,7 @@ export default function UserManagementPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {profiles.map((profile) => (
+          {displayedProfiles.map((profile) => (
             <div
               key={profile.id}
               className="p-6 rounded-[28px] bg-white border border-neutral-200/60 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-all group"
@@ -447,7 +434,7 @@ export default function UserManagementPage() {
             <div className="flex items-center justify-between border-b border-neutral-100 pb-3 sticky top-0 bg-white z-10">
               <h2 className="text-lg sm:text-xl font-extrabold text-[#141518] flex items-center gap-2 font-display">
                 <UserIcon className="w-5 h-5 text-[#141518]" />
-                {editingUser ? 'Modify Lead Profile' : 'Add New Community Lead'}
+                {editingUser ? 'Modify Lead Profile' : 'Add New User'}
               </h2>
               <button
                 onClick={resetForm}
@@ -590,11 +577,8 @@ export default function UserManagementPage() {
                     {currentUserRole === 'dev' && (
                       <option value="dev">Dev (Super Admin)</option>
                     )}
-                    {(currentUserRole === 'dev' || currentUserRole === 'admin') && (
-                      <option value="admin">Admin</option>
-                    )}
+                    <option value="admin">Admin</option>
                     <option value="manager">Manager (Lead)</option>
-                    <option value="editor">Editor</option>
                   </select>
                 </div>
 
@@ -602,27 +586,18 @@ export default function UserManagementPage() {
                   <label className="block text-[11px] font-extrabold text-[#141518] uppercase tracking-wider mb-1">
                     Associated Community
                   </label>
-                  {currentUserRole === 'manager' ? (
-                    <input
-                      type="text"
-                      disabled
-                      value={communities.find((c) => c.id === currentUserCommunityId)?.name || 'Assigned Community'}
-                      className="w-full bg-neutral-100 text-neutral-500 rounded-full px-3 py-2 text-xs border border-neutral-200 font-bold"
-                    />
-                  ) : (
-                    <select
-                      value={communityId}
-                      onChange={(e) => setCommunityId(e.target.value)}
-                      className="w-full bg-neutral-100 text-[#141518] rounded-full px-3 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
-                    >
-                      <option value="">All Communities (Super Admin)</option>
-                      {communities.filter((c) => c.slug !== 'college' && c.name.toLowerCase() !== 'college').map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
+                  <select
+                    value={communityId}
+                    onChange={(e) => setCommunityId(e.target.value)}
+                    className="w-full bg-neutral-100 text-[#141518] rounded-full px-3 py-2 text-xs border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-black"
+                  >
+                    <option value="">All Communities (Super Admin)</option>
+                    {communities.filter((c) => c.slug !== 'college' && c.name.toLowerCase() !== 'college').map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -639,7 +614,7 @@ export default function UserManagementPage() {
                   disabled={saving}
                   className="py-2.5 px-6 rounded-full bg-[#141518] hover:bg-black text-white text-xs font-extrabold shadow-md disabled:opacity-50 transition-all"
                 >
-                  {saving ? 'Saving...' : editingUser ? 'Update Lead' : 'Add Lead Account'}
+                  {saving ? 'Saving...' : editingUser ? 'Update User' : 'Add User Account'}
                 </button>
               </div>
             </form>

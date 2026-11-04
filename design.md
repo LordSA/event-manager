@@ -93,3 +93,23 @@ The design language of **CEV EVENTS** is governed by the **Nixtio-Inspired Edito
 * **Z-Index Layering:** Mobile Floating Navbar (`z-40`), Main Navbar (`z-[100]`), Modal Windows (`z-50` with backdrop `z-50` and modal container `max-h-[85vh] overflow-y-auto`), AI Assistant Drawer (`z-[200]`).
 * **Admin Google Calendar Slot View:** Fully interactive month/week/day/grid slot view with amber draft indicators (`#f59e0b`), emerald live badges (`#10b981`), direct cell date selection, popovers with quick status toggles, connected multi-day banners, community signature colors, W3C contrast readability, and RBAC matrix enforcement.
 
+---
+
+## 6. Unified Community Workspace & View-First Architecture ([app/admin/my-community/page.tsx](./app/admin/my-community/page.tsx))
+
+### View-First Community Entity Presentation (`001 / COMMUNITY ENTITY`)
+* **Read-Only Default State:** Community details are presented as immutable display cards by default to prevent unintentional edits during day-to-day operations.
+* **Branding Showcase Card:** Features the community logo image container (`w-28 h-28 sm:w-32 sm:h-32 rounded-[24px] bg-neutral-100 border border-neutral-200`), initials badge chip, public slug route preview (`/community/[slug]`), brand accent preview swatch with hex code, and community description paragraph.
+* **Header Actions:** Contains direct "Public View" link pill (`bg-neutral-100 hover:bg-neutral-200 text-[#141518]`) and "Edit Community Details" pill button (`bg-[#141518] hover:bg-black text-white px-5 py-2.5 rounded-full text-xs font-bold`).
+
+### Dedicated Edit Community Details Modal
+* **Modal Overlay:** React Portal mounted to `document.body` with `z-[99999]`, backdrop blur (`bg-black/60 backdrop-blur-sm`), and `data-lenis-prevent` scroll lock.
+* **Form Controls:** Clean input fields for Community Name, Initials, Brand Accent Color (HTML5 color picker + hex input), Description textarea, and direct WebP logo file upload via `uploadImageFile()` alongside direct image URL fallbacks.
+* **Slug Protection:** URL slug is rendered read-only for `manager` roles, editable only by `dev` and `admin`.
+
+### Integrated Community Events Suite (`002 / COMMUNITY EVENTS`)
+* **Embedded Workspace:** Embedded directly below community branding on the same page, eliminating the need for a separate `/admin/my-community/events` route.
+* **Metric Counter Badges:** Pill counters for Total Events, Live (Published), and Draft (Closed).
+* **Filter & Search Bar:** Real-time search query input with status filter pills (`All`, `Live`, `Draft`), format filter pills (`All`, `Offline`, `Online`), and layout view switcher (`Grid` vs `List`).
+* **Interactive Event Management:** Real-time status toggling (`live` ↔ `closed`), event editing modal, public event slug link, and permanent deletion confirmation modal.
+
