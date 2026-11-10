@@ -6,8 +6,8 @@ Security updates and patches are actively applied to the following project versi
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.61.x  | :white_check_mark: |
-| < 0.60  | :x:                |
+| 1.0.0  | :white_check_mark: |
+| < 1.0.0  | :x:                |
 
 ---
 
@@ -25,6 +25,6 @@ If you discover a security vulnerability or RBAC bypass within **CEV EVENTS**, p
 
 * **Author & Lead Maintainer:** Shibili Aman TK
 * **GitHub Profile:** [@LordSA](https://github.com/LordSA)
-* **Direct Contact:** [shibili.tech](https://whatsatcev.shibili.tech)
+* **Direct Contact:** [shibili.xyz](https://whatsatcev.shibili.xyz)
 
 Please **do not** open public GitHub issues for security vulnerabilities.
