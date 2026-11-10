@@ -644,8 +644,17 @@ export default function GoogleCalendarView({
                     };
                   });
 
+                  const laneCount = lanes.length;
+                  const calculatedMinHeight = Math.max(95, 30 + laneCount * 22);
+
                   return (
-                    <div key={`week-row-${weekIdx}`} className="flex-1 min-h-[85px] sm:min-h-[105px] md:min-h-[115px] relative flex flex-col justify-start">
+                    <div
+                      key={`week-row-${weekIdx}`}
+                      style={{
+                        minHeight: `${calculatedMinHeight}px`,
+                      }}
+                      className="flex-1 min-h-[95px] sm:min-h-[110px] md:min-h-[120px] relative flex flex-col justify-start shrink-0 overflow-hidden"
+                    >
                       <div className="absolute inset-0 grid grid-cols-7 divide-x divide-[#28292c] pointer-events-none">
                         {weekRow.days.map((dayCell, dIdx) => {
                           const isToday =
@@ -666,7 +675,7 @@ export default function GoogleCalendarView({
                             >
                               <div className="flex items-center justify-between">
                                 <span
-                                  className={`text-[10px] sm:text-xs font-bold w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 md:w-6 md:h-6 flex items-center justify-center rounded-full ${
+                                  className={`text-[10px] sm:text-xs font-bold w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full ${
                                     isToday
                                       ? 'bg-[#8ab4f8] text-[#131314] font-extrabold shadow-sm'
                                       : dayCell.isCurrentMonth
@@ -682,7 +691,7 @@ export default function GoogleCalendarView({
                         })}
                       </div>
 
-                      <div className="grid grid-cols-7 gap-y-0.5 sm:gap-y-1 relative z-10 pt-5 sm:pt-6 md:pt-7 pb-1 px-0.5 font-sans">
+                      <div className="grid grid-cols-7 gap-y-0.5 sm:gap-y-1 relative z-10 pt-7 sm:pt-8 pb-2 px-0.5 font-sans">
                         {packedEvents.map(({ evt, colStart, colSpan, lane, startIndex, isActualStart, isActualEnd }) => {
                           const commColor = getEventCommunityColor(evt, communities);
                           const textColor = getContrastTextColor(commColor);
@@ -708,7 +717,7 @@ export default function GoogleCalendarView({
                                   borderColor: commColor,
                                   color: textColor,
                                 }}
-                                className={`h-4 sm:h-5 md:h-5.5 flex items-center px-1 sm:px-1.5 md:px-2 text-[9px] sm:text-[10px] md:text-[11px] font-bold border cursor-pointer transition-all shadow-sm select-none ${
+                                className={`h-4 sm:h-5 md:h-5.5 flex items-center px-1 sm:px-1.5 md:px-2 text-[8.5px] sm:text-[10px] md:text-[11px] font-bold border cursor-pointer transition-all shadow-sm select-none leading-none ${
                                   isActualStart ? 'rounded-l sm:rounded-l-md' : 'rounded-l-none'
                                 } ${
                                   isActualEnd ? 'rounded-r sm:rounded-r-md' : 'rounded-r-none'
@@ -735,7 +744,7 @@ export default function GoogleCalendarView({
                                 backgroundColor: commColor,
                                 color: textColor,
                               }}
-                              className={`h-4 sm:h-5 md:h-5.5 flex items-center px-1 sm:px-1.5 md:px-2 text-[9px] sm:text-[10px] md:text-[11px] font-bold cursor-pointer transition-all shadow-sm hover:brightness-110 select-none ${
+                              className={`h-4 sm:h-5 md:h-5.5 flex items-center px-1 sm:px-1.5 md:px-2 text-[8.5px] sm:text-[10px] md:text-[11px] font-bold cursor-pointer transition-all shadow-sm hover:brightness-110 select-none leading-none ${
                                 isActualStart ? 'rounded-l sm:rounded-l-md' : 'rounded-l-none'
                               } ${
                                 isActualEnd ? 'rounded-r sm:rounded-r-md' : 'rounded-r-none'
