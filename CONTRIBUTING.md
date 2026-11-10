@@ -12,7 +12,7 @@ Thank you to everyone who helps improve this project. Every contribution—wheth
 Creator, Lead Architect & Maintainer
 
 - GitHub: [@LordSA](https://github.com/LordSA)
-- Website: [shibili.tech](https://www.shibili.tech)
+- Website: [shibili.xyz](https://www.shibili.xyz)
 
 ---
 
@@ -29,7 +29,7 @@ This project recognizes everyone whose pull requests have been merged into the r
   <img src="https://contrib.rocks/image?repo=LordSA/event-manager&max=500" alt="Project Contributors"/>
 </a>
 
-> **Note:** The contributor wall updates automatically after merged pull requests. If your avatar doesn't appear immediately, GitHub and contrib.rocks may take some time to refresh.
+> **Note:** The contributor wall updates automatically after merged pull requests. If your avatar doesn't appear immediately, GitHub and contrib.rocks oombichu athree ollu.
 
 You can also view the complete contributor list here:
 https://github.com/LordSA/event-manager/graphs/contributors
