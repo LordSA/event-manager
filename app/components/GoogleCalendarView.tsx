@@ -432,7 +432,7 @@ export default function GoogleCalendarView({
         </div>
       </header>
 
-      <div className="flex flex-1 min-h-[550px] sm:min-h-[600px] overflow-hidden relative w-full">
+      <div className="flex flex-1 min-h-[480px] sm:min-h-[550px] md:min-h-[600px] overflow-hidden relative w-full">
         {showSidebar && (
           <aside className="w-64 shrink-0 border-r border-[#28292c] bg-[#1e1f21] p-4 flex flex-col space-y-6 hidden md:flex">
             {isAdminMode && onSelectDateSlot && (
@@ -562,14 +562,14 @@ export default function GoogleCalendarView({
         <div className="flex-1 min-w-0 flex flex-col bg-[#131314] overflow-hidden w-full">
           
           {viewMode === 'month' && (
-            <div className="flex-1 min-w-0 flex flex-col w-full h-full">
-              <div className="grid grid-cols-7 border-b border-[#28292c] bg-[#1e1f21] text-center text-[11px] sm:text-xs font-bold text-slate-400 py-2.5 uppercase tracking-wider w-full">
+            <div className="flex-1 min-w-0 flex flex-col w-full h-full overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#28292c_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-[#28292c] [&::-webkit-scrollbar-thumb]:rounded-full">
+              <div className="grid grid-cols-7 border-b border-[#28292c] bg-[#1e1f21] text-center text-[10px] sm:text-[11px] md:text-xs font-bold text-slate-400 py-2 sm:py-2.5 uppercase tracking-wider w-full sticky top-0 z-20 shrink-0 shadow-sm">
                 {daysOfWeek.map((day) => (
                   <div key={day} className="truncate px-1">{day}</div>
                 ))}
               </div>
 
-              <div className="flex-1 flex flex-col divide-y divide-[#28292c] bg-[#131314] w-full">
+              <div className="flex-1 flex flex-col divide-y divide-[#28292c] bg-[#131314] w-full min-h-0">
                 {monthWeekRows.map((weekRow, weekIdx) => {
                   const weekStartIso = weekRow.days[0].iso;
                   const weekEndIso = weekRow.days[6].iso;
@@ -580,8 +580,72 @@ export default function GoogleCalendarView({
                     return startIso <= weekEndIso && endIso >= weekStartIso;
                   });
 
+                  const sortedEvents = [...intersectingEvents].sort((a, b) => {
+                    const aDates = getEventStartEndIso(a);
+                    const bDates = getEventStartEndIso(b);
+                    const aStart = aDates.startIso || '';
+                    const bStart = bDates.startIso || '';
+                    if (aStart !== bStart) {
+                      return aStart.localeCompare(bStart);
+                    }
+                    const aEnd = aDates.endIso || aStart;
+                    const bEnd = bDates.endIso || bStart;
+                    return bEnd.localeCompare(aEnd);
+                  });
+
+                  const lanes: boolean[][] = [];
+                  const packedEvents = sortedEvents.map((evt) => {
+                    const { startIso, endIso } = getEventStartEndIso(evt);
+
+                    let startIndex = 0;
+                    let endIndex = 6;
+
+                    for (let i = 0; i < 7; i++) {
+                      if (weekRow.days[i].iso === startIso) startIndex = i;
+                      if (weekRow.days[i].iso === endIso) endIndex = i;
+                    }
+
+                    if (startIso < weekStartIso) startIndex = 0;
+                    if (endIso > weekEndIso) endIndex = 6;
+
+                    const colStart = startIndex + 1;
+                    const colSpan = endIndex - startIndex + 1;
+
+                    let targetLane = 0;
+                    while (true) {
+                      if (!lanes[targetLane]) {
+                        lanes[targetLane] = [false, false, false, false, false, false, false];
+                      }
+                      let collision = false;
+                      for (let d = startIndex; d <= endIndex; d++) {
+                        if (lanes[targetLane][d]) {
+                          collision = true;
+                          break;
+                        }
+                      }
+                      if (!collision) {
+                        break;
+                      }
+                      targetLane++;
+                    }
+
+                    for (let d = startIndex; d <= endIndex; d++) {
+                      lanes[targetLane][d] = true;
+                    }
+
+                    return {
+                      evt,
+                      colStart,
+                      colSpan,
+                      lane: targetLane + 1,
+                      startIndex,
+                      isActualStart: weekRow.days[startIndex].iso === startIso,
+                      isActualEnd: weekRow.days[endIndex].iso === endIso,
+                    };
+                  });
+
                   return (
-                    <div key={`week-row-${weekIdx}`} className="flex-1 min-h-[100px] relative flex flex-col justify-start">
+                    <div key={`week-row-${weekIdx}`} className="flex-1 min-h-[85px] sm:min-h-[105px] md:min-h-[115px] relative flex flex-col justify-start">
                       <div className="absolute inset-0 grid grid-cols-7 divide-x divide-[#28292c] pointer-events-none">
                         {weekRow.days.map((dayCell, dIdx) => {
                           const isToday =
@@ -602,7 +666,7 @@ export default function GoogleCalendarView({
                             >
                               <div className="flex items-center justify-between">
                                 <span
-                                  className={`text-xs font-bold w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full ${
+                                  className={`text-[10px] sm:text-xs font-bold w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 md:w-6 md:h-6 flex items-center justify-center rounded-full ${
                                     isToday
                                       ? 'bg-[#8ab4f8] text-[#131314] font-extrabold shadow-sm'
                                       : dayCell.isCurrentMonth
@@ -618,27 +682,8 @@ export default function GoogleCalendarView({
                         })}
                       </div>
 
-                      <div className="grid grid-cols-7 gap-y-1 relative z-10 pt-7 pb-1 px-0.5 font-sans">
-                        {intersectingEvents.map((evt) => {
-                          const { startIso, endIso } = getEventStartEndIso(evt);
-
-                          let startIndex = 0;
-                          let endIndex = 6;
-
-                          for (let i = 0; i < 7; i++) {
-                            if (weekRow.days[i].iso === startIso) startIndex = i;
-                            if (weekRow.days[i].iso === endIso) endIndex = i;
-                          }
-
-                          if (startIso < weekStartIso) startIndex = 0;
-                          if (endIso > weekEndIso) endIndex = 6;
-
-                          const colStart = startIndex + 1; // CSS 1-indexed
-                          const colSpan = endIndex - startIndex + 1;
-
-                          const isActualStart = (weekRow.days[startIndex].iso === startIso);
-                          const isActualEnd = (weekRow.days[endIndex].iso === endIso);
-
+                      <div className="grid grid-cols-7 gap-y-0.5 sm:gap-y-1 relative z-10 pt-5 sm:pt-6 md:pt-7 pb-1 px-0.5 font-sans">
+                        {packedEvents.map(({ evt, colStart, colSpan, lane, startIndex, isActualStart, isActualEnd }) => {
                           const commColor = getEventCommunityColor(evt, communities);
                           const textColor = getContrastTextColor(commColor);
                           const isClosed = evt.status === 'closed';
@@ -658,19 +703,20 @@ export default function GoogleCalendarView({
                                 }}
                                 style={{
                                   gridColumn: `${colStart} / span ${colSpan}`,
+                                  gridRow: lane,
                                   backgroundColor: hexToRgba(commColor, 0.85),
                                   borderColor: commColor,
                                   color: textColor,
                                 }}
-                                className={`h-5 flex items-center px-2 text-[10px] font-bold border cursor-pointer transition-all shadow-sm select-none ${
-                                  isActualStart ? 'rounded-l-md' : 'rounded-l-none'
+                                className={`h-4 sm:h-5 md:h-5.5 flex items-center px-1 sm:px-1.5 md:px-2 text-[9px] sm:text-[10px] md:text-[11px] font-bold border cursor-pointer transition-all shadow-sm select-none ${
+                                  isActualStart ? 'rounded-l sm:rounded-l-md' : 'rounded-l-none'
                                 } ${
-                                  isActualEnd ? 'rounded-r-md' : 'rounded-r-none'
+                                  isActualEnd ? 'rounded-r sm:rounded-r-md' : 'rounded-r-none'
                                 }`}
                               >
-                                <span className="flex items-center gap-1 truncate">
-                                  <Lock className="w-2.5 h-2.5 shrink-0" />
-                                  <span>Slot Reserved</span>
+                                <span className="flex items-center gap-0.5 sm:gap-1 truncate">
+                                  <Lock className="w-2 h-2 sm:w-2.5 sm:h-2.5 shrink-0" />
+                                  <span className="truncate">Slot Reserved</span>
                                 </span>
                               </div>
                             );
@@ -685,19 +731,20 @@ export default function GoogleCalendarView({
                               }}
                               style={{
                                 gridColumn: `${colStart} / span ${colSpan}`,
+                                gridRow: lane,
                                 backgroundColor: commColor,
                                 color: textColor,
                               }}
-                              className={`h-5.5 flex items-center px-2 text-[11px] font-bold cursor-pointer transition-all shadow-sm hover:brightness-110 select-none ${
-                                isActualStart ? 'rounded-l-md' : 'rounded-l-none'
+                              className={`h-4 sm:h-5 md:h-5.5 flex items-center px-1 sm:px-1.5 md:px-2 text-[9px] sm:text-[10px] md:text-[11px] font-bold cursor-pointer transition-all shadow-sm hover:brightness-110 select-none ${
+                                isActualStart ? 'rounded-l sm:rounded-l-md' : 'rounded-l-none'
                               } ${
-                                isActualEnd ? 'rounded-r-md' : 'rounded-r-none'
+                                isActualEnd ? 'rounded-r sm:rounded-r-md' : 'rounded-r-none'
                               }`}
                             >
-                              <span className="truncate">
+                              <span className="truncate font-heading">
                                 {isActualStart || startIndex === 0 ? evt.title : ''}
                               </span>
-                              {isClosed && <Lock className="w-3 h-3 shrink-0 ml-auto opacity-90" />}
+                              {isClosed && <Lock className="w-2 h-2 sm:w-2.5 sm:h-3 shrink-0 ml-auto opacity-90" />}
                             </div>
                           );
                         })}
@@ -710,8 +757,8 @@ export default function GoogleCalendarView({
           )}
 
           {viewMode === 'week' && (
-            <div className="flex-1 min-w-0 flex flex-col w-full h-full">
-              <div className="grid grid-cols-7 border-b border-[#28292c] bg-[#1e1f21] text-center text-xs font-bold text-slate-400 py-3 uppercase tracking-wider w-full">
+            <div className="flex-1 min-w-0 flex flex-col w-full h-full overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#28292c_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-[#28292c] [&::-webkit-scrollbar-thumb]:rounded-full">
+              <div className="grid grid-cols-7 border-b border-[#28292c] bg-[#1e1f21] text-center text-[10px] sm:text-xs font-bold text-slate-400 py-2 sm:py-3 uppercase tracking-wider w-full sticky top-0 z-20 shrink-0 shadow-sm">
                 {weekDays.map((d, i) => {
                   const isToday =
                     new Date().getDate() === d.getDate() &&
@@ -719,9 +766,9 @@ export default function GoogleCalendarView({
                     new Date().getFullYear() === d.getFullYear();
 
                   return (
-                    <div key={i} className="flex flex-col items-center truncate px-1">
+                    <div key={i} className="flex flex-col items-center truncate px-0.5 sm:px-1">
                       <span>{daysOfWeek[i]}</span>
-                      <span className={`w-6 h-6 rounded-full flex items-center justify-center mt-1 text-xs font-bold ${
+                      <span className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center mt-0.5 sm:mt-1 text-[10px] sm:text-xs font-bold ${
                         isToday ? 'bg-[#8ab4f8] text-[#131314]' : 'text-white'
                       }`}>
                         {d.getDate()}
@@ -731,7 +778,7 @@ export default function GoogleCalendarView({
                 })}
               </div>
 
-              <div className="grid grid-cols-7 flex-1 bg-[#131314] w-full">
+              <div className="grid grid-cols-7 flex-1 bg-[#131314] w-full min-h-0">
                 {weekDays.map((d, i) => {
                   const dayEvents = filteredEvents.filter((evt) => isEventOnDate(evt, d));
                   return (
@@ -741,7 +788,7 @@ export default function GoogleCalendarView({
                         setCurrentDate(d);
                         setViewMode('day');
                       }}
-                      className="border-r border-b border-[#28292c] p-2 min-h-[300px] space-y-2 hover:bg-[#1e1f21]/40 cursor-pointer overflow-hidden"
+                      className="border-r border-b border-[#28292c] p-1 sm:p-2 min-h-[220px] sm:min-h-[300px] space-y-1 sm:space-y-2 hover:bg-[#1e1f21]/40 cursor-pointer overflow-hidden"
                     >
                       {dayEvents.map((evt) => {
                         const commColor = getEventCommunityColor(evt, communities);
@@ -758,13 +805,13 @@ export default function GoogleCalendarView({
                               setActiveModalEvent(evt);
                             }}
                             style={{ backgroundColor: commColor, color: textColor }}
-                            className="w-full text-left p-2 rounded-lg text-xs font-bold shadow-sm hover:brightness-110 transition-all space-y-1 block"
+                            className="w-full text-left p-1 sm:p-2 rounded sm:rounded-lg text-[9px] sm:text-xs font-bold shadow-sm hover:brightness-110 transition-all space-y-0.5 sm:space-y-1 block"
                           >
                             <div className="flex items-center justify-between gap-1">
                               <span className="truncate font-heading">{isStart ? evt.title : `${evt.title} (Cont.)`}</span>
-                              {isClosed && <Lock className="w-3 h-3 shrink-0" />}
+                              {isClosed && <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />}
                             </div>
-                            <div className="text-[10px] opacity-90 font-mono truncate">
+                            <div className="text-[8px] sm:text-[10px] opacity-90 font-mono truncate">
                               {evt.community} • {parseTimeSlot(evt.time_slot).displayTime}
                             </div>
                           </button>

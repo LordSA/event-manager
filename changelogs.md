@@ -21,6 +21,12 @@
 - **Embedded Community Events Suite:** Integrated full event management below community branding, featuring search, status filter (`all`, `live`, `closed`), format filter (`all`, `offline`, `online`), view toggles (Grid/List), quick status toggle (`live`/`closed`), and create/edit/delete modals.
 - **Events Route Redirect ([app/admin/my-community/events/page.tsx](./app/admin/my-community/events/page.tsx)):** Configured automatic redirection from `/admin/my-community/events` to `/admin/my-community`.
 
+### 📅 Calendar Multi-Resolution Responsive Lane Packing & Cell Overflow Fix ([app/components/GoogleCalendarView.tsx](./app/components/GoogleCalendarView.tsx))
+- **Greedy Lane Packing Algorithm:** Re-architected month-view event scheduling with a greedy lane packing algorithm sorting events by start date and duration. Each event receives an explicit `gridRow: lane` coordinate alongside `gridColumn`, guaranteeing non-conflicting events share the same line without colliding or overlapping.
+- **Cross-Resolution Event Switch Sizing (Mobile, Tablet, PC):** Dynamically scaled event switch badges across viewports (`h-4 sm:h-5 md:h-5.5`, `px-1 sm:px-1.5 md:px-2`, `text-[9px] sm:text-[10px] md:text-[11px]`, `gap-y-0.5 sm:gap-y-1`), reducing vertical consumption per event by ~38% on mobile while keeping spacious typography on desktop.
+- **Dynamic Week Row Expansion & Scroll Flexibility:** Converted rigid month view to dynamic week row heights (`min-h-[85px] sm:min-h-[105px] md:min-h-[115px]`) backed by smooth vertical scrolling (`overflow-y-auto` with thin scrollbar) and sticky day-of-week headers (`sticky top-0 z-20`), eliminating clipping when dates have 3+ events.
+- **Responsive Week View Polish:** Scaled week view columns and event chips (`min-h-[220px] sm:min-h-[300px]`, `p-1 sm:p-2`, `text-[9px] sm:text-xs`) to prevent horizontal and vertical text cramping on mobile devices.
+
 ### 💫 NeoLeaf-Inspired Liquid Fill Loading Screen ([app/components/LoadingScreen.tsx](./app/components/LoadingScreen.tsx))
 - **Agency Reference Replication:** Overhauled the global preloader to match the Awwwards-honored NeoLeaf (`neoleaf.bytetown.agency`) agency loading sequence.
 - **Dual-Layer Typography & Liquid Reveal:** Set the centered title `CEV EVENTS` (`Quera` display font) with dual-layer text: an underlying muted base (`#26282e`) and a foreground white text layer progressively revealed from bottom to top using `clipPath: inset(${100 - progress}% 0 0 0)`.

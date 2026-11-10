@@ -97,7 +97,7 @@ The design language of **CEV EVENTS** is governed by the **Nixtio-Inspired Edito
 * **HTML5 Time Parser (`parseTimeTo24Hr`):** Converts 12-hour database strings into 24-hour `HH:mm` format for time inputs.
 * **Spacious 2-Column Layout (`max-w-3xl`):** Extended modal container width to `768px` (`max-w-3xl`) with `data-lenis-prevent` for mouse wheel scrolling inside Lenis smooth scroll overlays.
 * **Z-Index Layering:** Mobile Floating Navbar (`z-40`), Main Navbar (`z-[100]`), Modal Windows (`z-50` with backdrop `z-50` and modal container `max-h-[85vh] overflow-y-auto`), AI Assistant Drawer (`z-[200]`).
-* **Admin Google Calendar Slot View:** Fully interactive month/week/day/grid slot view with amber draft indicators (`#f59e0b`), emerald live badges (`#10b981`), direct cell date selection, popovers with quick status toggles, connected multi-day banners, community signature colors, W3C contrast readability, and RBAC matrix enforcement.
+* **Admin & Public Google Calendar Slot View:** Fully interactive month/week/day/grid slot view with amber draft indicators (`#f59e0b`), emerald live badges (`#10b981`), direct cell date selection, popovers with quick status toggles, connected multi-day banners, community signature colors, W3C contrast readability, and RBAC matrix enforcement. Month view incorporates deterministic **Greedy Lane Packing** (`gridRow: lane`), resolution-scaled event switches (`h-4 sm:h-5 md:h-5.5`, `text-[9px] sm:text-[10px] md:text-[11px]`, `px-1 sm:px-1.5 md:px-2`), sticky day-of-week headers (`sticky top-0 z-20`), dynamic week row expansion (`min-h-[85px] sm:min-h-[105px] md:min-h-[115px]`), and slim vertical scrolling (`overflow-y-auto`) to guarantee zero event overlap or clipping across mobile, tablet, and PC screens.
 
 ---
 
